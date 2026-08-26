@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticated/_adm/route'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
+import { Route as AuthenticatedFornecedoresRouteImport } from './routes/_authenticated/fornecedores'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedAdmCalendarioRouteImport } from './routes/_authenticated/_adm/calendario'
 import { Route as AuthenticatedAdmDefinicoesRouteImport } from './routes/_authenticated/_adm/definicoes'
@@ -47,6 +48,12 @@ const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
   path: '/categorias',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFornecedoresRoute =
+  AuthenticatedFornecedoresRouteImport.update({
+    id: '/fornecedores',
+    path: '/fornecedores',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   id: '/painel',
   path: '/painel',
@@ -103,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
+  '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -117,6 +125,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
+  '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -134,6 +143,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/_adm': typeof AuthenticatedAdmRouteRouteWithChildren
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
+  '/_authenticated/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/_adm/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/_authenticated/_adm/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/categorias'
+    | '/fornecedores'
     | '/painel'
     | '/calendario'
     | '/definicoes'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/categorias'
+    | '/fornecedores'
     | '/painel'
     | '/calendario'
     | '/definicoes'
@@ -180,6 +192,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/_adm'
     | '/_authenticated/categorias'
+    | '/_authenticated/fornecedores'
     | '/_authenticated/painel'
     | '/_authenticated/_adm/calendario'
     | '/_authenticated/_adm/definicoes'
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       path: '/categorias'
       fullPath: '/categorias'
       preLoaderRoute: typeof AuthenticatedCategoriasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/fornecedores': {
+      id: '/_authenticated/fornecedores'
+      path: '/fornecedores'
+      fullPath: '/fornecedores'
+      preLoaderRoute: typeof AuthenticatedFornecedoresRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/painel': {
@@ -330,12 +350,14 @@ const AuthenticatedAdmRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdmRouteRoute: typeof AuthenticatedAdmRouteRouteWithChildren
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
+  AuthenticatedFornecedoresRoute: typeof AuthenticatedFornecedoresRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdmRouteRoute: AuthenticatedAdmRouteRouteWithChildren,
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
+  AuthenticatedFornecedoresRoute: AuthenticatedFornecedoresRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
 }
 
