@@ -4,16 +4,23 @@ import {
   BadgeEuro,
   CalendarDays,
   ClipboardList,
+  Contact,
+  Factory,
+  FolderTree,
   History,
   LayoutDashboard,
   ListChecks,
   LogOut,
   Menu,
+  Package,
+  Percent,
   Settings,
   Trash2,
   Truck,
   Users,
+  Wrench,
 } from "lucide-react";
+
 import type { LucideIcon } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
