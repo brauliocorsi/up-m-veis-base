@@ -106,7 +106,14 @@ function PaginaRegras() {
             setRascunhos((atual) => ({ ...atual, [linha.id]: { ...rascunho, ...parcial } }));
 
           return (
-            <section key={linha.id} className="space-y-4 rounded-xl border bg-card p-4">
+            <form
+              key={linha.id}
+              className="space-y-4 rounded-xl border bg-card p-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                mGuardar.mutate(linha.id);
+              }}
+            >
               <h2 className="text-base font-semibold">{ETIQUETA_PERFIL[linha.perfil]}</h2>
 
               <div className="grid gap-4 sm:grid-cols-2">
@@ -148,12 +155,10 @@ function PaginaRegras() {
                 />
               </div>
 
-              <BotaoGuardar
-                aGuardar={mGuardar.isPending}
-                onClick={() => mGuardar.mutate(linha.id)}
-              />
-            </section>
+              <BotaoGuardar estado={mGuardar.isPending ? "a-guardar" : "inativo"} />
+            </form>
           );
+
         })}
       </div>
     </div>
