@@ -28,6 +28,7 @@ import { Route as AuthenticatedAdmMotivosRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdmRegrasDescontoRouteImport } from './routes/_authenticated/_adm/regras-desconto'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
+import { Route as ApiPublicHooksSyncContagemRouteImport } from './routes/api/public/hooks/sync-contagem'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -130,6 +131,12 @@ const AuthenticatedAdmZonasEntregaRoute =
     path: '/zonas-entrega',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const ApiPublicHooksSyncContagemRoute =
+  ApiPublicHooksSyncContagemRouteImport.update({
+    id: '/api/public/hooks/sync-contagem',
+    path: '/api/public/hooks/sync-contagem',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -168,6 +176,7 @@ export interface FileRoutesByTo {
   '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -190,6 +199,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/regras-desconto'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/api/public/hooks/sync-contagem'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/regras-desconto'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/api/public/hooks/sync-contagem'
   id:
     | '__root__'
     | '/'
@@ -251,12 +263,14 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/regras-desconto'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
+    | '/api/public/hooks/sync-contagem'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicHooksSyncContagemRoute: typeof ApiPublicHooksSyncContagemRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -394,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmZonasEntregaRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/api/public/hooks/sync-contagem': {
+      id: '/api/public/hooks/sync-contagem'
+      path: '/api/public/hooks/sync-contagem'
+      fullPath: '/api/public/hooks/sync-contagem'
+      preLoaderRoute: typeof ApiPublicHooksSyncContagemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -453,6 +474,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicHooksSyncContagemRoute: ApiPublicHooksSyncContagemRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
