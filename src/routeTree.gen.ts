@@ -16,6 +16,7 @@ import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedAdmCalendarioRouteImport } from './routes/_authenticated/_adm/calendario'
 import { Route as AuthenticatedAdmFormasPagamentoRouteImport } from './routes/_authenticated/_adm/formas-pagamento'
+import { Route as AuthenticatedAdmMotivosRouteImport } from './routes/_authenticated/_adm/motivos'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
 
@@ -54,6 +55,11 @@ const AuthenticatedAdmFormasPagamentoRoute =
     path: '/formas-pagamento',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedAdmMotivosRoute = AuthenticatedAdmMotivosRouteImport.update({
+  id: '/motivos',
+  path: '/motivos',
+  getParentRoute: () => AuthenticatedAdmRouteRoute,
+} as any)
 const AuthenticatedAdmUtilizadoresRoute =
   AuthenticatedAdmUtilizadoresRouteImport.update({
     id: '/utilizadores',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/painel': typeof AuthenticatedPainelRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/motivos': typeof AuthenticatedAdmMotivosRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/painel': typeof AuthenticatedPainelRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/motivos': typeof AuthenticatedAdmMotivosRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/_adm/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/_authenticated/_adm/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/_authenticated/_adm/motivos': typeof AuthenticatedAdmMotivosRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/calendario'
     | '/formas-pagamento'
+    | '/motivos'
     | '/utilizadores'
     | '/zonas-entrega'
   fileRoutesByTo: FileRoutesByTo
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/calendario'
     | '/formas-pagamento'
+    | '/motivos'
     | '/utilizadores'
     | '/zonas-entrega'
   id:
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel'
     | '/_authenticated/_adm/calendario'
     | '/_authenticated/_adm/formas-pagamento'
+    | '/_authenticated/_adm/motivos'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
   fileRoutesById: FileRoutesById
@@ -186,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmFormasPagamentoRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/_adm/motivos': {
+      id: '/_authenticated/_adm/motivos'
+      path: '/motivos'
+      fullPath: '/motivos'
+      preLoaderRoute: typeof AuthenticatedAdmMotivosRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
     '/_authenticated/_adm/utilizadores': {
       id: '/_authenticated/_adm/utilizadores'
       path: '/utilizadores'
@@ -206,6 +225,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdmRouteRouteChildren {
   AuthenticatedAdmCalendarioRoute: typeof AuthenticatedAdmCalendarioRoute
   AuthenticatedAdmFormasPagamentoRoute: typeof AuthenticatedAdmFormasPagamentoRoute
+  AuthenticatedAdmMotivosRoute: typeof AuthenticatedAdmMotivosRoute
   AuthenticatedAdmUtilizadoresRoute: typeof AuthenticatedAdmUtilizadoresRoute
   AuthenticatedAdmZonasEntregaRoute: typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -213,6 +233,7 @@ interface AuthenticatedAdmRouteRouteChildren {
 const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
   AuthenticatedAdmCalendarioRoute: AuthenticatedAdmCalendarioRoute,
   AuthenticatedAdmFormasPagamentoRoute: AuthenticatedAdmFormasPagamentoRoute,
+  AuthenticatedAdmMotivosRoute: AuthenticatedAdmMotivosRoute,
   AuthenticatedAdmUtilizadoresRoute: AuthenticatedAdmUtilizadoresRoute,
   AuthenticatedAdmZonasEntregaRoute: AuthenticatedAdmZonasEntregaRoute,
 }
