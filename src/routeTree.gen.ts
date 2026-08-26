@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticated/_adm/route'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
+import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
 import { Route as AuthenticatedFornecedoresRouteImport } from './routes/_authenticated/fornecedores'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
@@ -24,6 +25,7 @@ import { Route as AuthenticatedAdmFormasPagamentoRouteImport } from './routes/_a
 import { Route as AuthenticatedAdmHistoricoRouteImport } from './routes/_authenticated/_adm/historico'
 import { Route as AuthenticatedAdmLixeiraRouteImport } from './routes/_authenticated/_adm/lixeira'
 import { Route as AuthenticatedAdmMotivosRouteImport } from './routes/_authenticated/_adm/motivos'
+import { Route as AuthenticatedAdmRegrasDescontoRouteImport } from './routes/_authenticated/_adm/regras-desconto'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
 
@@ -48,6 +50,11 @@ const AuthenticatedAdmRouteRoute = AuthenticatedAdmRouteRouteImport.update({
 const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
   id: '/categorias',
   path: '/categorias',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedClientesRoute = AuthenticatedClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedFornecedoresRoute =
@@ -105,6 +112,12 @@ const AuthenticatedAdmMotivosRoute = AuthenticatedAdmMotivosRouteImport.update({
   path: '/motivos',
   getParentRoute: () => AuthenticatedAdmRouteRoute,
 } as any)
+const AuthenticatedAdmRegrasDescontoRoute =
+  AuthenticatedAdmRegrasDescontoRouteImport.update({
+    id: '/regras-desconto',
+    path: '/regras-desconto',
+    getParentRoute: () => AuthenticatedAdmRouteRoute,
+  } as any)
 const AuthenticatedAdmUtilizadoresRoute =
   AuthenticatedAdmUtilizadoresRouteImport.update({
     id: '/utilizadores',
@@ -122,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
+  '/clientes': typeof AuthenticatedClientesRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/produtos': typeof AuthenticatedProdutosRoute
@@ -132,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/historico': typeof AuthenticatedAdmHistoricoRoute
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
+  '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -139,6 +154,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
+  '/clientes': typeof AuthenticatedClientesRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/produtos': typeof AuthenticatedProdutosRoute
@@ -149,6 +165,7 @@ export interface FileRoutesByTo {
   '/historico': typeof AuthenticatedAdmHistoricoRoute
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
+  '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -159,6 +176,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/_adm': typeof AuthenticatedAdmRouteRouteWithChildren
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
+  '/_authenticated/clientes': typeof AuthenticatedClientesRoute
   '/_authenticated/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
@@ -169,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/historico': typeof AuthenticatedAdmHistoricoRoute
   '/_authenticated/_adm/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/_authenticated/_adm/motivos': typeof AuthenticatedAdmMotivosRoute
+  '/_authenticated/_adm/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -178,6 +197,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/categorias'
+    | '/clientes'
     | '/fornecedores'
     | '/painel'
     | '/produtos'
@@ -188,6 +208,7 @@ export interface FileRouteTypes {
     | '/historico'
     | '/lixeira'
     | '/motivos'
+    | '/regras-desconto'
     | '/utilizadores'
     | '/zonas-entrega'
   fileRoutesByTo: FileRoutesByTo
@@ -195,6 +216,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/categorias'
+    | '/clientes'
     | '/fornecedores'
     | '/painel'
     | '/produtos'
@@ -205,6 +227,7 @@ export interface FileRouteTypes {
     | '/historico'
     | '/lixeira'
     | '/motivos'
+    | '/regras-desconto'
     | '/utilizadores'
     | '/zonas-entrega'
   id:
@@ -214,6 +237,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/_adm'
     | '/_authenticated/categorias'
+    | '/_authenticated/clientes'
     | '/_authenticated/fornecedores'
     | '/_authenticated/painel'
     | '/_authenticated/produtos'
@@ -224,6 +248,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/historico'
     | '/_authenticated/_adm/lixeira'
     | '/_authenticated/_adm/motivos'
+    | '/_authenticated/_adm/regras-desconto'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
   fileRoutesById: FileRoutesById
@@ -269,6 +294,13 @@ declare module '@tanstack/react-router' {
       path: '/categorias'
       fullPath: '/categorias'
       preLoaderRoute: typeof AuthenticatedCategoriasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/clientes': {
+      id: '/_authenticated/clientes'
+      path: '/clientes'
+      fullPath: '/clientes'
+      preLoaderRoute: typeof AuthenticatedClientesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/fornecedores': {
@@ -341,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmMotivosRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/_adm/regras-desconto': {
+      id: '/_authenticated/_adm/regras-desconto'
+      path: '/regras-desconto'
+      fullPath: '/regras-desconto'
+      preLoaderRoute: typeof AuthenticatedAdmRegrasDescontoRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
     '/_authenticated/_adm/utilizadores': {
       id: '/_authenticated/_adm/utilizadores'
       path: '/utilizadores'
@@ -365,6 +404,7 @@ interface AuthenticatedAdmRouteRouteChildren {
   AuthenticatedAdmHistoricoRoute: typeof AuthenticatedAdmHistoricoRoute
   AuthenticatedAdmLixeiraRoute: typeof AuthenticatedAdmLixeiraRoute
   AuthenticatedAdmMotivosRoute: typeof AuthenticatedAdmMotivosRoute
+  AuthenticatedAdmRegrasDescontoRoute: typeof AuthenticatedAdmRegrasDescontoRoute
   AuthenticatedAdmUtilizadoresRoute: typeof AuthenticatedAdmUtilizadoresRoute
   AuthenticatedAdmZonasEntregaRoute: typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -376,6 +416,7 @@ const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
   AuthenticatedAdmHistoricoRoute: AuthenticatedAdmHistoricoRoute,
   AuthenticatedAdmLixeiraRoute: AuthenticatedAdmLixeiraRoute,
   AuthenticatedAdmMotivosRoute: AuthenticatedAdmMotivosRoute,
+  AuthenticatedAdmRegrasDescontoRoute: AuthenticatedAdmRegrasDescontoRoute,
   AuthenticatedAdmUtilizadoresRoute: AuthenticatedAdmUtilizadoresRoute,
   AuthenticatedAdmZonasEntregaRoute: AuthenticatedAdmZonasEntregaRoute,
 }
@@ -388,6 +429,7 @@ const AuthenticatedAdmRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdmRouteRoute: typeof AuthenticatedAdmRouteRouteWithChildren
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
+  AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
   AuthenticatedFornecedoresRoute: typeof AuthenticatedFornecedoresRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
@@ -397,6 +439,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdmRouteRoute: AuthenticatedAdmRouteRouteWithChildren,
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
+  AuthenticatedClientesRoute: AuthenticatedClientesRoute,
   AuthenticatedFornecedoresRoute: AuthenticatedFornecedoresRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,

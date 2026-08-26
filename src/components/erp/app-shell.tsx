@@ -4,16 +4,23 @@ import {
   BadgeEuro,
   CalendarDays,
   ClipboardList,
+  Contact,
+  Factory,
+  FolderTree,
   History,
   LayoutDashboard,
   ListChecks,
   LogOut,
   Menu,
+  Package,
+  Percent,
   Settings,
   Trash2,
   Truck,
   Users,
+  Wrench,
 } from "lucide-react";
+
 import type { LucideIcon } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
@@ -34,7 +41,13 @@ interface ItemNav {
 
 const NAVEGACAO: ItemNav[] = [
   { para: "/painel", etiqueta: "Painel", icone: LayoutDashboard },
+  { para: "/clientes", etiqueta: "Clientes", icone: Contact, perfis: ["adm", "vendedora", "escritorio"] },
+  { para: "/produtos", etiqueta: "Produtos", icone: Package },
+  { para: "/categorias", etiqueta: "Categorias", icone: FolderTree },
+  { para: "/servicos", etiqueta: "Serviços", icone: Wrench },
+  { para: "/fornecedores", etiqueta: "Fornecedores", icone: Factory },
   { para: "/utilizadores", etiqueta: "Utilizadores", icone: Users, perfis: ["adm"] },
+  { para: "/regras-desconto", etiqueta: "Regras de desconto", icone: Percent, perfis: ["adm"] },
   { para: "/formas-pagamento", etiqueta: "Formas de pagamento", icone: BadgeEuro, perfis: ["adm"] },
   { para: "/zonas-entrega", etiqueta: "Zonas de entrega", icone: Truck, perfis: ["adm"] },
   { para: "/calendario", etiqueta: "Calendário", icone: CalendarDays, perfis: ["adm"] },
@@ -43,6 +56,7 @@ const NAVEGACAO: ItemNav[] = [
   { para: "/lixeira", etiqueta: "Lixeira", icone: Trash2, perfis: ["adm"] },
   { para: "/historico", etiqueta: "Histórico", icone: History, perfis: ["adm"] },
 ];
+
 
 function Marca() {
   return (
