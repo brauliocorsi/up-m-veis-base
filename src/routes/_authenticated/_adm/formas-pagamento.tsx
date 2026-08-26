@@ -8,6 +8,7 @@ import { GrupoAcoes } from "@/components/erp/acoes";
 import { CabecalhoPagina } from "@/components/erp/app-shell";
 import { DialogoEliminar } from "@/components/erp/dialogo-eliminar";
 import { DialogoForm } from "@/components/erp/dialogo-form";
+import { Interruptor } from "@/components/erp/interruptor";
 import { Lista, type Coluna } from "@/components/erp/lista";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { useListagem } from "@/hooks/use-listagem";
 import { erp } from "@/lib/erp/db";
 import { primeiraMensagem } from "@/lib/erp/erros";
@@ -388,30 +388,6 @@ function PaginaFormas() {
         aGuardar={mEliminar.isPending}
         onConfirmar={(motivo) => mEliminar.mutate(motivo)}
       />
-    </div>
-  );
-}
-
-export function Interruptor({
-  id,
-  titulo,
-  descricao,
-  valor,
-  onChange,
-}: {
-  id: string;
-  titulo: string;
-  descricao?: string;
-  valor: boolean;
-  onChange: (valor: boolean) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-4 rounded-md border p-3">
-      <div>
-        <Label htmlFor={id}>{titulo}</Label>
-        {descricao && <p className="text-xs text-muted-foreground">{descricao}</p>}
-      </div>
-      <Switch id={id} checked={valor} onCheckedChange={onChange} />
     </div>
   );
 }
