@@ -25,10 +25,18 @@ import { Switch } from "@/components/ui/switch";
 import { useListagem } from "@/hooks/use-listagem";
 import { useSessao } from "@/hooks/use-sessao";
 import { erp, mensagemErro } from "@/lib/erp/db";
+import { primeiraMensagem } from "@/lib/erp/erros";
 import { esquemaCriarUtilizador, esquemaEditarUtilizador } from "@/lib/erp/esquemas";
 import { eliminarRegisto, listar } from "@/lib/erp/listar";
 import { criarUtilizador, definirPalavraPasse } from "@/lib/erp/utilizadores.functions";
-import { ETIQUETA_PERFIL, PERFIS, formatarData, type Perfil, type Utilizador } from "@/lib/erp/tipos";
+import {
+  ETIQUETA_PERFIL,
+  PERFIS,
+  formatarData,
+  type Perfil,
+  type Utilizador,
+} from "@/lib/erp/tipos";
+
 
 export const Route = createFileRoute("/_authenticated/_adm/utilizadores")({
   head: () => ({
