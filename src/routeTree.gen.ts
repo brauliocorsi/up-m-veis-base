@@ -10,33 +10,82 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticated/_adm/route'
+import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
+import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdmRouteRoute = AuthenticatedAdmRouteRouteImport.update({
+  id: '/_adm',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdmUtilizadoresRoute =
+  AuthenticatedAdmUtilizadoresRouteImport.update({
+    id: '/utilizadores',
+    path: '/utilizadores',
+    getParentRoute: () => AuthenticatedAdmRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/painel': typeof AuthenticatedPainelRoute
+  '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/painel': typeof AuthenticatedPainelRoute
+  '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/_adm': typeof AuthenticatedAdmRouteRouteWithChildren
+  '/_authenticated/painel': typeof AuthenticatedPainelRoute
+  '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/auth' | '/painel' | '/utilizadores'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/auth' | '/painel' | '/utilizadores'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/_adm'
+    | '/_authenticated/painel'
+    | '/_authenticated/_adm/utilizadores'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +97,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/_adm': {
+      id: '/_authenticated/_adm'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedAdmRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/painel': {
+      id: '/_authenticated/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof AuthenticatedPainelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_adm/utilizadores': {
+      id: '/_authenticated/_adm/utilizadores'
+      path: '/utilizadores'
+      fullPath: '/utilizadores'
+      preLoaderRoute: typeof AuthenticatedAdmUtilizadoresRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
   }
 }
 
+interface AuthenticatedAdmRouteRouteChildren {
+  AuthenticatedAdmUtilizadoresRoute: typeof AuthenticatedAdmUtilizadoresRoute
+}
+
+const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
+  AuthenticatedAdmUtilizadoresRoute: AuthenticatedAdmUtilizadoresRoute,
+}
+
+const AuthenticatedAdmRouteRouteWithChildren =
+  AuthenticatedAdmRouteRoute._addFileChildren(
+    AuthenticatedAdmRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdmRouteRoute: typeof AuthenticatedAdmRouteRouteWithChildren
+  AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdmRouteRoute: AuthenticatedAdmRouteRouteWithChildren,
+  AuthenticatedPainelRoute: AuthenticatedPainelRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
