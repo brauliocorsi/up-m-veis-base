@@ -10,33 +10,116 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticated/_adm/route'
+import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
+import { Route as AuthenticatedAdmFormasPagamentoRouteImport } from './routes/_authenticated/_adm/formas-pagamento'
+import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
+import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdmRouteRoute = AuthenticatedAdmRouteRouteImport.update({
+  id: '/_adm',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdmFormasPagamentoRoute =
+  AuthenticatedAdmFormasPagamentoRouteImport.update({
+    id: '/formas-pagamento',
+    path: '/formas-pagamento',
+    getParentRoute: () => AuthenticatedAdmRouteRoute,
+  } as any)
+const AuthenticatedAdmUtilizadoresRoute =
+  AuthenticatedAdmUtilizadoresRouteImport.update({
+    id: '/utilizadores',
+    path: '/utilizadores',
+    getParentRoute: () => AuthenticatedAdmRouteRoute,
+  } as any)
+const AuthenticatedAdmZonasEntregaRoute =
+  AuthenticatedAdmZonasEntregaRouteImport.update({
+    id: '/zonas-entrega',
+    path: '/zonas-entrega',
+    getParentRoute: () => AuthenticatedAdmRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/painel': typeof AuthenticatedPainelRoute
+  '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
+  '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/painel': typeof AuthenticatedPainelRoute
+  '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
+  '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/_adm': typeof AuthenticatedAdmRouteRouteWithChildren
+  '/_authenticated/painel': typeof AuthenticatedPainelRoute
+  '/_authenticated/_adm/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
+  '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/painel'
+    | '/formas-pagamento'
+    | '/utilizadores'
+    | '/zonas-entrega'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/painel'
+    | '/formas-pagamento'
+    | '/utilizadores'
+    | '/zonas-entrega'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/_adm'
+    | '/_authenticated/painel'
+    | '/_authenticated/_adm/formas-pagamento'
+    | '/_authenticated/_adm/utilizadores'
+    | '/_authenticated/_adm/zonas-entrega'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +131,92 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/_adm': {
+      id: '/_authenticated/_adm'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedAdmRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/painel': {
+      id: '/_authenticated/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof AuthenticatedPainelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_adm/formas-pagamento': {
+      id: '/_authenticated/_adm/formas-pagamento'
+      path: '/formas-pagamento'
+      fullPath: '/formas-pagamento'
+      preLoaderRoute: typeof AuthenticatedAdmFormasPagamentoRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
+    '/_authenticated/_adm/utilizadores': {
+      id: '/_authenticated/_adm/utilizadores'
+      path: '/utilizadores'
+      fullPath: '/utilizadores'
+      preLoaderRoute: typeof AuthenticatedAdmUtilizadoresRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
+    '/_authenticated/_adm/zonas-entrega': {
+      id: '/_authenticated/_adm/zonas-entrega'
+      path: '/zonas-entrega'
+      fullPath: '/zonas-entrega'
+      preLoaderRoute: typeof AuthenticatedAdmZonasEntregaRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
   }
 }
 
+interface AuthenticatedAdmRouteRouteChildren {
+  AuthenticatedAdmFormasPagamentoRoute: typeof AuthenticatedAdmFormasPagamentoRoute
+  AuthenticatedAdmUtilizadoresRoute: typeof AuthenticatedAdmUtilizadoresRoute
+  AuthenticatedAdmZonasEntregaRoute: typeof AuthenticatedAdmZonasEntregaRoute
+}
+
+const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
+  AuthenticatedAdmFormasPagamentoRoute: AuthenticatedAdmFormasPagamentoRoute,
+  AuthenticatedAdmUtilizadoresRoute: AuthenticatedAdmUtilizadoresRoute,
+  AuthenticatedAdmZonasEntregaRoute: AuthenticatedAdmZonasEntregaRoute,
+}
+
+const AuthenticatedAdmRouteRouteWithChildren =
+  AuthenticatedAdmRouteRoute._addFileChildren(
+    AuthenticatedAdmRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdmRouteRoute: typeof AuthenticatedAdmRouteRouteWithChildren
+  AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdmRouteRoute: AuthenticatedAdmRouteRouteWithChildren,
+  AuthenticatedPainelRoute: AuthenticatedPainelRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
