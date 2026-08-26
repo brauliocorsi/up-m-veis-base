@@ -29,14 +29,14 @@ export async function libertarReserva(reserva_id: string, motivo: string) {
   if (error) throw error;
 }
 
-export async function consumirReserva(reserva_id: string, referencia?: string | null) {
+export async function consumirReserva(reserva_id: string) {
   const { data, error } = await erp().rpc("consumir_reserva", {
     p_reserva_id: reserva_id,
-    p_referencia: referencia ?? null,
   });
   if (error) throw error;
   return data as number;
 }
+
 
 /** Ajuste manual do stock físico (só administração). */
 export async function ajusteManual(params: {
