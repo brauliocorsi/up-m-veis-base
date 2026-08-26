@@ -25,6 +25,7 @@ import { Route as AuthenticatedAdmFormasPagamentoRouteImport } from './routes/_a
 import { Route as AuthenticatedAdmHistoricoRouteImport } from './routes/_authenticated/_adm/historico'
 import { Route as AuthenticatedAdmLixeiraRouteImport } from './routes/_authenticated/_adm/lixeira'
 import { Route as AuthenticatedAdmMotivosRouteImport } from './routes/_authenticated/_adm/motivos'
+import { Route as AuthenticatedAdmRegrasDescontoRouteImport } from './routes/_authenticated/_adm/regras-desconto'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
 
@@ -111,6 +112,12 @@ const AuthenticatedAdmMotivosRoute = AuthenticatedAdmMotivosRouteImport.update({
   path: '/motivos',
   getParentRoute: () => AuthenticatedAdmRouteRoute,
 } as any)
+const AuthenticatedAdmRegrasDescontoRoute =
+  AuthenticatedAdmRegrasDescontoRouteImport.update({
+    id: '/regras-desconto',
+    path: '/regras-desconto',
+    getParentRoute: () => AuthenticatedAdmRouteRoute,
+  } as any)
 const AuthenticatedAdmUtilizadoresRoute =
   AuthenticatedAdmUtilizadoresRouteImport.update({
     id: '/utilizadores',
@@ -139,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/historico': typeof AuthenticatedAdmHistoricoRoute
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
+  '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -157,6 +165,7 @@ export interface FileRoutesByTo {
   '/historico': typeof AuthenticatedAdmHistoricoRoute
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
+  '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -178,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/historico': typeof AuthenticatedAdmHistoricoRoute
   '/_authenticated/_adm/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/_authenticated/_adm/motivos': typeof AuthenticatedAdmMotivosRoute
+  '/_authenticated/_adm/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/historico'
     | '/lixeira'
     | '/motivos'
+    | '/regras-desconto'
     | '/utilizadores'
     | '/zonas-entrega'
   fileRoutesByTo: FileRoutesByTo
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/historico'
     | '/lixeira'
     | '/motivos'
+    | '/regras-desconto'
     | '/utilizadores'
     | '/zonas-entrega'
   id:
@@ -236,6 +248,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/historico'
     | '/_authenticated/_adm/lixeira'
     | '/_authenticated/_adm/motivos'
+    | '/_authenticated/_adm/regras-desconto'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
   fileRoutesById: FileRoutesById
@@ -360,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmMotivosRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/_adm/regras-desconto': {
+      id: '/_authenticated/_adm/regras-desconto'
+      path: '/regras-desconto'
+      fullPath: '/regras-desconto'
+      preLoaderRoute: typeof AuthenticatedAdmRegrasDescontoRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
     '/_authenticated/_adm/utilizadores': {
       id: '/_authenticated/_adm/utilizadores'
       path: '/utilizadores'
@@ -384,6 +404,7 @@ interface AuthenticatedAdmRouteRouteChildren {
   AuthenticatedAdmHistoricoRoute: typeof AuthenticatedAdmHistoricoRoute
   AuthenticatedAdmLixeiraRoute: typeof AuthenticatedAdmLixeiraRoute
   AuthenticatedAdmMotivosRoute: typeof AuthenticatedAdmMotivosRoute
+  AuthenticatedAdmRegrasDescontoRoute: typeof AuthenticatedAdmRegrasDescontoRoute
   AuthenticatedAdmUtilizadoresRoute: typeof AuthenticatedAdmUtilizadoresRoute
   AuthenticatedAdmZonasEntregaRoute: typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -395,6 +416,7 @@ const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
   AuthenticatedAdmHistoricoRoute: AuthenticatedAdmHistoricoRoute,
   AuthenticatedAdmLixeiraRoute: AuthenticatedAdmLixeiraRoute,
   AuthenticatedAdmMotivosRoute: AuthenticatedAdmMotivosRoute,
+  AuthenticatedAdmRegrasDescontoRoute: AuthenticatedAdmRegrasDescontoRoute,
   AuthenticatedAdmUtilizadoresRoute: AuthenticatedAdmUtilizadoresRoute,
   AuthenticatedAdmZonasEntregaRoute: AuthenticatedAdmZonasEntregaRoute,
 }
