@@ -28,6 +28,7 @@ import { Route as AuthenticatedAdmHistoricoRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdmLixeiraRouteImport } from './routes/_authenticated/_adm/lixeira'
 import { Route as AuthenticatedAdmMotivosRouteImport } from './routes/_authenticated/_adm/motivos'
 import { Route as AuthenticatedAdmRegrasDescontoRouteImport } from './routes/_authenticated/_adm/regras-desconto'
+import { Route as AuthenticatedAdmSincronizacaoRouteImport } from './routes/_authenticated/_adm/sincronizacao'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
 import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
@@ -133,6 +134,12 @@ const AuthenticatedAdmRegrasDescontoRoute =
     path: '/regras-desconto',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedAdmSincronizacaoRoute =
+  AuthenticatedAdmSincronizacaoRouteImport.update({
+    id: '/sincronizacao',
+    path: '/sincronizacao',
+    getParentRoute: () => AuthenticatedAdmRouteRoute,
+  } as any)
 const AuthenticatedAdmUtilizadoresRoute =
   AuthenticatedAdmUtilizadoresRouteImport.update({
     id: '/utilizadores',
@@ -181,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
   '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
+  '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
@@ -205,6 +213,7 @@ export interface FileRoutesByTo {
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
   '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
+  '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
@@ -232,6 +241,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/_authenticated/_adm/motivos': typeof AuthenticatedAdmMotivosRoute
   '/_authenticated/_adm/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
+  '/_authenticated/_adm/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
   '/_authenticated/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
@@ -258,6 +268,7 @@ export interface FileRouteTypes {
     | '/lixeira'
     | '/motivos'
     | '/regras-desconto'
+    | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
     | '/stock/$produtoId'
@@ -282,6 +293,7 @@ export interface FileRouteTypes {
     | '/lixeira'
     | '/motivos'
     | '/regras-desconto'
+    | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
     | '/stock/$produtoId'
@@ -308,6 +320,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/lixeira'
     | '/_authenticated/_adm/motivos'
     | '/_authenticated/_adm/regras-desconto'
+    | '/_authenticated/_adm/sincronizacao'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
     | '/_authenticated/stock/$produtoId'
@@ -457,6 +470,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmRegrasDescontoRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/_adm/sincronizacao': {
+      id: '/_authenticated/_adm/sincronizacao'
+      path: '/sincronizacao'
+      fullPath: '/sincronizacao'
+      preLoaderRoute: typeof AuthenticatedAdmSincronizacaoRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
     '/_authenticated/_adm/utilizadores': {
       id: '/_authenticated/_adm/utilizadores'
       path: '/utilizadores'
@@ -503,6 +523,7 @@ interface AuthenticatedAdmRouteRouteChildren {
   AuthenticatedAdmLixeiraRoute: typeof AuthenticatedAdmLixeiraRoute
   AuthenticatedAdmMotivosRoute: typeof AuthenticatedAdmMotivosRoute
   AuthenticatedAdmRegrasDescontoRoute: typeof AuthenticatedAdmRegrasDescontoRoute
+  AuthenticatedAdmSincronizacaoRoute: typeof AuthenticatedAdmSincronizacaoRoute
   AuthenticatedAdmUtilizadoresRoute: typeof AuthenticatedAdmUtilizadoresRoute
   AuthenticatedAdmZonasEntregaRoute: typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -515,6 +536,7 @@ const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
   AuthenticatedAdmLixeiraRoute: AuthenticatedAdmLixeiraRoute,
   AuthenticatedAdmMotivosRoute: AuthenticatedAdmMotivosRoute,
   AuthenticatedAdmRegrasDescontoRoute: AuthenticatedAdmRegrasDescontoRoute,
+  AuthenticatedAdmSincronizacaoRoute: AuthenticatedAdmSincronizacaoRoute,
   AuthenticatedAdmUtilizadoresRoute: AuthenticatedAdmUtilizadoresRoute,
   AuthenticatedAdmZonasEntregaRoute: AuthenticatedAdmZonasEntregaRoute,
 }
