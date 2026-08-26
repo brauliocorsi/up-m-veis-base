@@ -1,0 +1,78 @@
+insert into erp.formas_pagamento (codigo, nome, momento, estado_inicial, exige_comprovativo, prazo_confirmacao_horas, taxa_pct, entra_caixa, ordem) values
+  ('DINHEIRO','Dinheiro','loja','confirmado',false,null,0,true,10),
+  ('MULTIBANCO','Multibanco / TPA','loja','confirmado',false,null,0,true,20),
+  ('MBWAY','MB Way','loja','confirmado',false,null,0,true,30),
+  ('TRANSFERENCIA','Transferência bancária','antecipado','pendente_confirmacao',true,48,0,false,40),
+  ('ENTREGA','Pagar na entrega','entrega','pendente',false,null,0,false,50),
+  ('SEQURA','Sequra','financiador','pendente',false,null,0,false,60),
+  ('SCALAPAY','Scalapay','financiador','pendente',false,null,0,false,70);
+
+insert into erp.calendario (data, tipo, descricao) values
+  ('2026-01-01','feriado','Ano Novo'),
+  ('2026-04-03','feriado','Sexta-feira Santa'),
+  ('2026-04-05','feriado','Páscoa'),
+  ('2026-04-25','feriado','Dia da Liberdade'),
+  ('2026-05-01','feriado','Dia do Trabalhador'),
+  ('2026-06-04','feriado','Corpo de Deus'),
+  ('2026-06-10','feriado','Dia de Portugal'),
+  ('2026-08-15','feriado','Assunção de Nossa Senhora'),
+  ('2026-10-05','feriado','Implantação da República'),
+  ('2026-11-01','feriado','Todos os Santos'),
+  ('2026-12-01','feriado','Restauração da Independência'),
+  ('2026-12-08','feriado','Imaculada Conceição'),
+  ('2026-12-25','feriado','Natal'),
+  ('2027-01-01','feriado','Ano Novo'),
+  ('2027-03-26','feriado','Sexta-feira Santa'),
+  ('2027-03-28','feriado','Páscoa'),
+  ('2027-04-25','feriado','Dia da Liberdade'),
+  ('2027-05-01','feriado','Dia do Trabalhador'),
+  ('2027-05-27','feriado','Corpo de Deus'),
+  ('2027-06-10','feriado','Dia de Portugal'),
+  ('2027-08-15','feriado','Assunção de Nossa Senhora'),
+  ('2027-10-05','feriado','Implantação da República'),
+  ('2027-11-01','feriado','Todos os Santos'),
+  ('2027-12-01','feriado','Restauração da Independência'),
+  ('2027-12-08','feriado','Imaculada Conceição'),
+  ('2027-12-25','feriado','Natal');
+
+insert into erp.motivos (contexto, descricao, exige_texto, ordem) values
+  ('cancelamento','Cliente desistiu',false,10),
+  ('cancelamento','Prazo de entrega demasiado longo',false,20),
+  ('cancelamento','Artigo indisponível',false,30),
+  ('cancelamento','Pagamento não confirmado',false,40),
+  ('cancelamento','Outro motivo',true,90),
+  ('alteracao_data','Pedido do cliente',false,10),
+  ('alteracao_data','Atraso na produção',false,20),
+  ('alteracao_data','Falta de artigo em armazém',false,30),
+  ('alteracao_data','Rota de entrega alterada',false,40),
+  ('alteracao_data','Outro motivo',true,90),
+  ('eliminacao','Registo duplicado',false,10),
+  ('eliminacao','Criado por erro',false,20),
+  ('eliminacao','Já não se aplica',false,30),
+  ('eliminacao','Substituído por outro registo',false,40),
+  ('eliminacao','Outro motivo',true,90),
+  ('saida_caixa','Depósito bancário',false,10),
+  ('saida_caixa','Devolução ao cliente',false,20),
+  ('saida_caixa','Despesa de loja',false,30),
+  ('saida_caixa','Correção de caixa',true,40),
+  ('saida_caixa','Outro motivo',true,90),
+  ('desconto_excecional','Cliente habitual',false,10),
+  ('desconto_excecional','Artigo de exposição',false,20),
+  ('desconto_excecional','Pequeno defeito',false,30),
+  ('desconto_excecional','Campanha aprovada',false,40),
+  ('desconto_excecional','Outro motivo',true,90),
+  ('reabertura','Erro de fecho',false,10),
+  ('reabertura','Cliente retomou a compra',false,20),
+  ('reabertura','Correção de valores',false,30),
+  ('reabertura','Outro motivo',true,90);
+
+insert into erp.definicoes (chave, valor, descricao) values
+  ('empresa', '{"nome":"UP Móveis","nif":"","morada":"Paços de Ferreira, Portugal","telefone":"","email":"","logotipo_url":""}'::jsonb, 'Dados da empresa'),
+  ('iva_pct', '23'::jsonb, 'Taxa de IVA em percentagem'),
+  ('dias_separacao', '1'::jsonb, 'Dias de separação antes da entrega'),
+  ('validade_orcamento_dias', '15'::jsonb, 'Validade dos orçamentos em dias'),
+  ('limites_desconto_pct', '{"vendedora":5,"escritorio":10,"compras":0,"financeiro":10,"adm":100}'::jsonb, 'Limite de desconto por perfil, em percentagem');
+
+insert into erp.zonas_entrega (nome, cp_inicio, cp_fim, valor_base, valor_por_m3, valor_min, gratis_acima, dias_rota) values
+  ('Paços de Ferreira e concelhos vizinhos','4590','4599',15.00,5.00,15.00,500.00,'{2,3,4,5,6}'),
+  ('Grande Porto','4000','4499',25.00,7.50,25.00,750.00,'{3,5}');
