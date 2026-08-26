@@ -29,6 +29,7 @@ import { Route as AuthenticatedAdmRegrasDescontoRouteImport } from './routes/_au
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
 import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
+import { Route as AuthenticatedStockProdutoIdRouteImport } from './routes/_authenticated/stock.$produtoId'
 import { Route as ApiPublicHooksSyncContagemRouteImport } from './routes/api/public/hooks/sync-contagem'
 
 const IndexRoute = IndexRouteImport.update({
@@ -137,6 +138,12 @@ const AuthenticatedStockIndexRoute = AuthenticatedStockIndexRouteImport.update({
   path: '/stock/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedStockProdutoIdRoute =
+  AuthenticatedStockProdutoIdRouteImport.update({
+    id: '/stock/$produtoId',
+    path: '/stock/$produtoId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicHooksSyncContagemRoute =
   ApiPublicHooksSyncContagemRouteImport.update({
     id: '/api/public/hooks/sync-contagem',
@@ -162,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/stock/': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -183,6 +191,7 @@ export interface FileRoutesByTo {
   '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/stock': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -207,6 +216,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/_authenticated/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/_authenticated/stock/': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/regras-desconto'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/stock/$produtoId'
     | '/stock/'
     | '/api/public/hooks/sync-contagem'
   fileRoutesByTo: FileRoutesByTo
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/regras-desconto'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/stock/$produtoId'
     | '/stock'
     | '/api/public/hooks/sync-contagem'
   id:
@@ -274,6 +286,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/regras-desconto'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
+    | '/_authenticated/stock/$produtoId'
     | '/_authenticated/stock/'
     | '/api/public/hooks/sync-contagem'
   fileRoutesById: FileRoutesById
@@ -427,6 +440,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStockIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/stock/$produtoId': {
+      id: '/_authenticated/stock/$produtoId'
+      path: '/stock/$produtoId'
+      fullPath: '/stock/$produtoId'
+      preLoaderRoute: typeof AuthenticatedStockProdutoIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/hooks/sync-contagem': {
       id: '/api/public/hooks/sync-contagem'
       path: '/api/public/hooks/sync-contagem'
@@ -474,6 +494,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
   AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
+  AuthenticatedStockProdutoIdRoute: typeof AuthenticatedStockProdutoIdRoute
   AuthenticatedStockIndexRoute: typeof AuthenticatedStockIndexRoute
 }
 
@@ -485,6 +506,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,
   AuthenticatedServicosRoute: AuthenticatedServicosRoute,
+  AuthenticatedStockProdutoIdRoute: AuthenticatedStockProdutoIdRoute,
   AuthenticatedStockIndexRoute: AuthenticatedStockIndexRoute,
 }
 
