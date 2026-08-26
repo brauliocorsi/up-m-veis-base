@@ -16,6 +16,7 @@ import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedFornecedoresRouteImport } from './routes/_authenticated/fornecedores'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
+import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
 import { Route as AuthenticatedAdmCalendarioRouteImport } from './routes/_authenticated/_adm/calendario'
 import { Route as AuthenticatedAdmDefinicoesRouteImport } from './routes/_authenticated/_adm/definicoes'
 import { Route as AuthenticatedAdmFormasPagamentoRouteImport } from './routes/_authenticated/_adm/formas-pagamento'
@@ -57,6 +58,11 @@ const AuthenticatedFornecedoresRoute =
 const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   id: '/painel',
   path: '/painel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedServicosRoute = AuthenticatedServicosRouteImport.update({
+  id: '/servicos',
+  path: '/servicos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdmCalendarioRoute =
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/painel': typeof AuthenticatedPainelRoute
+  '/servicos': typeof AuthenticatedServicosRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByTo {
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/painel': typeof AuthenticatedPainelRoute
+  '/servicos': typeof AuthenticatedServicosRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
@@ -145,6 +153,7 @@ export interface FileRoutesById {
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
+  '/_authenticated/servicos': typeof AuthenticatedServicosRoute
   '/_authenticated/_adm/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/_authenticated/_adm/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/_authenticated/_adm/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
@@ -162,6 +171,7 @@ export interface FileRouteTypes {
     | '/categorias'
     | '/fornecedores'
     | '/painel'
+    | '/servicos'
     | '/calendario'
     | '/definicoes'
     | '/formas-pagamento'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/categorias'
     | '/fornecedores'
     | '/painel'
+    | '/servicos'
     | '/calendario'
     | '/definicoes'
     | '/formas-pagamento'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/_authenticated/categorias'
     | '/_authenticated/fornecedores'
     | '/_authenticated/painel'
+    | '/_authenticated/servicos'
     | '/_authenticated/_adm/calendario'
     | '/_authenticated/_adm/definicoes'
     | '/_authenticated/_adm/formas-pagamento'
@@ -259,6 +271,13 @@ declare module '@tanstack/react-router' {
       path: '/painel'
       fullPath: '/painel'
       preLoaderRoute: typeof AuthenticatedPainelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/servicos': {
+      id: '/_authenticated/servicos'
+      path: '/servicos'
+      fullPath: '/servicos'
+      preLoaderRoute: typeof AuthenticatedServicosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/_adm/calendario': {
@@ -352,6 +371,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedFornecedoresRoute: typeof AuthenticatedFornecedoresRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
+  AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -359,6 +379,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedFornecedoresRoute: AuthenticatedFornecedoresRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
+  AuthenticatedServicosRoute: AuthenticatedServicosRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
