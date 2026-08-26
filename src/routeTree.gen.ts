@@ -17,6 +17,7 @@ import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAdmCalendarioRouteImport } from './routes/_authenticated/_adm/calendario'
 import { Route as AuthenticatedAdmDefinicoesRouteImport } from './routes/_authenticated/_adm/definicoes'
 import { Route as AuthenticatedAdmFormasPagamentoRouteImport } from './routes/_authenticated/_adm/formas-pagamento'
+import { Route as AuthenticatedAdmLixeiraRouteImport } from './routes/_authenticated/_adm/lixeira'
 import { Route as AuthenticatedAdmMotivosRouteImport } from './routes/_authenticated/_adm/motivos'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
@@ -62,6 +63,11 @@ const AuthenticatedAdmFormasPagamentoRoute =
     path: '/formas-pagamento',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedAdmLixeiraRoute = AuthenticatedAdmLixeiraRouteImport.update({
+  id: '/lixeira',
+  path: '/lixeira',
+  getParentRoute: () => AuthenticatedAdmRouteRoute,
+} as any)
 const AuthenticatedAdmMotivosRoute = AuthenticatedAdmMotivosRouteImport.update({
   id: '/motivos',
   path: '/motivos',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/_authenticated/_adm/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/_authenticated/_adm/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/_authenticated/_adm/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/_authenticated/_adm/motivos': typeof AuthenticatedAdmMotivosRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/definicoes'
     | '/formas-pagamento'
+    | '/lixeira'
     | '/motivos'
     | '/utilizadores'
     | '/zonas-entrega'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/definicoes'
     | '/formas-pagamento'
+    | '/lixeira'
     | '/motivos'
     | '/utilizadores'
     | '/zonas-entrega'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/calendario'
     | '/_authenticated/_adm/definicoes'
     | '/_authenticated/_adm/formas-pagamento'
+    | '/_authenticated/_adm/lixeira'
     | '/_authenticated/_adm/motivos'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
@@ -218,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmFormasPagamentoRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/_adm/lixeira': {
+      id: '/_authenticated/_adm/lixeira'
+      path: '/lixeira'
+      fullPath: '/lixeira'
+      preLoaderRoute: typeof AuthenticatedAdmLixeiraRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
     '/_authenticated/_adm/motivos': {
       id: '/_authenticated/_adm/motivos'
       path: '/motivos'
@@ -246,6 +265,7 @@ interface AuthenticatedAdmRouteRouteChildren {
   AuthenticatedAdmCalendarioRoute: typeof AuthenticatedAdmCalendarioRoute
   AuthenticatedAdmDefinicoesRoute: typeof AuthenticatedAdmDefinicoesRoute
   AuthenticatedAdmFormasPagamentoRoute: typeof AuthenticatedAdmFormasPagamentoRoute
+  AuthenticatedAdmLixeiraRoute: typeof AuthenticatedAdmLixeiraRoute
   AuthenticatedAdmMotivosRoute: typeof AuthenticatedAdmMotivosRoute
   AuthenticatedAdmUtilizadoresRoute: typeof AuthenticatedAdmUtilizadoresRoute
   AuthenticatedAdmZonasEntregaRoute: typeof AuthenticatedAdmZonasEntregaRoute
@@ -255,6 +275,7 @@ const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
   AuthenticatedAdmCalendarioRoute: AuthenticatedAdmCalendarioRoute,
   AuthenticatedAdmDefinicoesRoute: AuthenticatedAdmDefinicoesRoute,
   AuthenticatedAdmFormasPagamentoRoute: AuthenticatedAdmFormasPagamentoRoute,
+  AuthenticatedAdmLixeiraRoute: AuthenticatedAdmLixeiraRoute,
   AuthenticatedAdmMotivosRoute: AuthenticatedAdmMotivosRoute,
   AuthenticatedAdmUtilizadoresRoute: AuthenticatedAdmUtilizadoresRoute,
   AuthenticatedAdmZonasEntregaRoute: AuthenticatedAdmZonasEntregaRoute,
