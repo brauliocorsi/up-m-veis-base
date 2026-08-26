@@ -17,6 +17,7 @@ import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAdmCalendarioRouteImport } from './routes/_authenticated/_adm/calendario'
 import { Route as AuthenticatedAdmDefinicoesRouteImport } from './routes/_authenticated/_adm/definicoes'
 import { Route as AuthenticatedAdmFormasPagamentoRouteImport } from './routes/_authenticated/_adm/formas-pagamento'
+import { Route as AuthenticatedAdmHistoricoRouteImport } from './routes/_authenticated/_adm/historico'
 import { Route as AuthenticatedAdmLixeiraRouteImport } from './routes/_authenticated/_adm/lixeira'
 import { Route as AuthenticatedAdmMotivosRouteImport } from './routes/_authenticated/_adm/motivos'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
@@ -63,6 +64,12 @@ const AuthenticatedAdmFormasPagamentoRoute =
     path: '/formas-pagamento',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedAdmHistoricoRoute =
+  AuthenticatedAdmHistoricoRouteImport.update({
+    id: '/historico',
+    path: '/historico',
+    getParentRoute: () => AuthenticatedAdmRouteRoute,
+  } as any)
 const AuthenticatedAdmLixeiraRoute = AuthenticatedAdmLixeiraRouteImport.update({
   id: '/lixeira',
   path: '/lixeira',
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/historico': typeof AuthenticatedAdmHistoricoRoute
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
@@ -105,6 +113,7 @@ export interface FileRoutesByTo {
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/historico': typeof AuthenticatedAdmHistoricoRoute
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
@@ -120,6 +129,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/_authenticated/_adm/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/_authenticated/_adm/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
+  '/_authenticated/_adm/historico': typeof AuthenticatedAdmHistoricoRoute
   '/_authenticated/_adm/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/_authenticated/_adm/motivos': typeof AuthenticatedAdmMotivosRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/definicoes'
     | '/formas-pagamento'
+    | '/historico'
     | '/lixeira'
     | '/motivos'
     | '/utilizadores'
@@ -146,6 +157,7 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/definicoes'
     | '/formas-pagamento'
+    | '/historico'
     | '/lixeira'
     | '/motivos'
     | '/utilizadores'
@@ -160,6 +172,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/calendario'
     | '/_authenticated/_adm/definicoes'
     | '/_authenticated/_adm/formas-pagamento'
+    | '/_authenticated/_adm/historico'
     | '/_authenticated/_adm/lixeira'
     | '/_authenticated/_adm/motivos'
     | '/_authenticated/_adm/utilizadores'
@@ -230,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmFormasPagamentoRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/_adm/historico': {
+      id: '/_authenticated/_adm/historico'
+      path: '/historico'
+      fullPath: '/historico'
+      preLoaderRoute: typeof AuthenticatedAdmHistoricoRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
     '/_authenticated/_adm/lixeira': {
       id: '/_authenticated/_adm/lixeira'
       path: '/lixeira'
@@ -265,6 +285,7 @@ interface AuthenticatedAdmRouteRouteChildren {
   AuthenticatedAdmCalendarioRoute: typeof AuthenticatedAdmCalendarioRoute
   AuthenticatedAdmDefinicoesRoute: typeof AuthenticatedAdmDefinicoesRoute
   AuthenticatedAdmFormasPagamentoRoute: typeof AuthenticatedAdmFormasPagamentoRoute
+  AuthenticatedAdmHistoricoRoute: typeof AuthenticatedAdmHistoricoRoute
   AuthenticatedAdmLixeiraRoute: typeof AuthenticatedAdmLixeiraRoute
   AuthenticatedAdmMotivosRoute: typeof AuthenticatedAdmMotivosRoute
   AuthenticatedAdmUtilizadoresRoute: typeof AuthenticatedAdmUtilizadoresRoute
@@ -275,6 +296,7 @@ const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
   AuthenticatedAdmCalendarioRoute: AuthenticatedAdmCalendarioRoute,
   AuthenticatedAdmDefinicoesRoute: AuthenticatedAdmDefinicoesRoute,
   AuthenticatedAdmFormasPagamentoRoute: AuthenticatedAdmFormasPagamentoRoute,
+  AuthenticatedAdmHistoricoRoute: AuthenticatedAdmHistoricoRoute,
   AuthenticatedAdmLixeiraRoute: AuthenticatedAdmLixeiraRoute,
   AuthenticatedAdmMotivosRoute: AuthenticatedAdmMotivosRoute,
   AuthenticatedAdmUtilizadoresRoute: AuthenticatedAdmUtilizadoresRoute,
