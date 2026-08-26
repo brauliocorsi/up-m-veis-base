@@ -32,7 +32,7 @@ export function BotaoAcao({ acao }: { acao: Acao }) {
           type="button"
           variant="ghost"
           size="icon"
-          disabled={acao.desativada}
+          disabled={acao.desativada ?? false}
           aria-label={acao.etiqueta}
           onClick={acao.onSelect}
           className={cn("h-8 w-8", acao.destrutiva && "text-destructive hover:text-destructive")}
@@ -76,7 +76,7 @@ export function GrupoAcoes({ acoes, extra }: { acoes: Acao[]; extra?: ReactNode 
             {normais.map((acao) => (
               <DropdownMenuItem
                 key={acao.chave}
-                disabled={acao.desativada}
+                disabled={acao.desativada ?? false}
                 onSelect={acao.onSelect}
               >
                 <acao.icone className="mr-2 h-4 w-4" />
@@ -87,7 +87,7 @@ export function GrupoAcoes({ acoes, extra }: { acoes: Acao[]; extra?: ReactNode 
             {destrutivas.map((acao) => (
               <DropdownMenuItem
                 key={acao.chave}
-                disabled={acao.desativada}
+                disabled={acao.desativada ?? false}
                 onSelect={acao.onSelect}
                 className="text-destructive focus:text-destructive"
               >
