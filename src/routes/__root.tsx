@@ -77,14 +77,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "UP Vendas — ERP da UP Móveis" },
+      {
+        name: "description",
+        content: "Gestão interna da UP Móveis: utilizadores, configurações e auditoria.",
+      },
+      { name: "author", content: "UP Móveis" },
+      { property: "og:title", content: "UP Vendas — ERP da UP Móveis" },
+      {
+        property: "og:description",
+        content: "Gestão interna da UP Móveis: utilizadores, configurações e auditoria.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -99,6 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
+
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
