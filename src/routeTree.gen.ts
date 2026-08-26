@@ -16,6 +16,7 @@ import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedAdmFormasPagamentoRouteImport } from './routes/_authenticated/_adm/formas-pagamento'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
+import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,12 @@ const AuthenticatedAdmUtilizadoresRoute =
     path: '/utilizadores',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedAdmZonasEntregaRoute =
+  AuthenticatedAdmZonasEntregaRouteImport.update({
+    id: '/zonas-entrega',
+    path: '/zonas-entrega',
+    getParentRoute: () => AuthenticatedAdmRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/painel': typeof AuthenticatedPainelRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
+  '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
   '/painel': typeof AuthenticatedPainelRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
+  '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -76,12 +85,25 @@ export interface FileRoutesById {
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/_adm/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
+  '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/painel' | '/formas-pagamento' | '/utilizadores'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/painel'
+    | '/formas-pagamento'
+    | '/utilizadores'
+    | '/zonas-entrega'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/painel' | '/formas-pagamento' | '/utilizadores'
+  to:
+    | '/'
+    | '/auth'
+    | '/painel'
+    | '/formas-pagamento'
+    | '/utilizadores'
+    | '/zonas-entrega'
   id:
     | '__root__'
     | '/'
@@ -91,6 +113,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel'
     | '/_authenticated/_adm/formas-pagamento'
     | '/_authenticated/_adm/utilizadores'
+    | '/_authenticated/_adm/zonas-entrega'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -150,17 +173,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmUtilizadoresRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/_adm/zonas-entrega': {
+      id: '/_authenticated/_adm/zonas-entrega'
+      path: '/zonas-entrega'
+      fullPath: '/zonas-entrega'
+      preLoaderRoute: typeof AuthenticatedAdmZonasEntregaRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
   }
 }
 
 interface AuthenticatedAdmRouteRouteChildren {
   AuthenticatedAdmFormasPagamentoRoute: typeof AuthenticatedAdmFormasPagamentoRoute
   AuthenticatedAdmUtilizadoresRoute: typeof AuthenticatedAdmUtilizadoresRoute
+  AuthenticatedAdmZonasEntregaRoute: typeof AuthenticatedAdmZonasEntregaRoute
 }
 
 const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
   AuthenticatedAdmFormasPagamentoRoute: AuthenticatedAdmFormasPagamentoRoute,
   AuthenticatedAdmUtilizadoresRoute: AuthenticatedAdmUtilizadoresRoute,
+  AuthenticatedAdmZonasEntregaRoute: AuthenticatedAdmZonasEntregaRoute,
 }
 
 const AuthenticatedAdmRouteRouteWithChildren =
