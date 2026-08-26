@@ -330,6 +330,153 @@ export interface DuplicadoLog extends CamposComuns {
   snapshot_absorvido: Record<string, unknown>;
 }
 
+// ---------------------------------------------------------------- Fase 3: stock
+export type TipoMovimento =
+  | "entrada"
+  | "saida"
+  | "ajuste"
+  | "quarentena_entrada"
+  | "quarentena_saida"
+  | "inventario_inicial";
+
+export const TIPOS_MOVIMENTO: Array<{ valor: TipoMovimento; etiqueta: string }> = [
+  { valor: "entrada", etiqueta: "Entrada" },
+  { valor: "saida", etiqueta: "Saída" },
+  { valor: "ajuste", etiqueta: "Ajuste" },
+  { valor: "quarentena_entrada", etiqueta: "Entrada em quarentena" },
+  { valor: "quarentena_saida", etiqueta: "Saída de quarentena" },
+  { valor: "inventario_inicial", etiqueta: "Inventário inicial" },
+];
+
+export const ETIQUETA_MOVIMENTO: Record<TipoMovimento, string> = {
+  entrada: "Entrada",
+  saida: "Saída",
+  ajuste: "Ajuste",
+  quarentena_entrada: "Entrada em quarentena",
+  quarentena_saida: "Saída de quarentena",
+  inventario_inicial: "Inventário inicial",
+};
+
+export type OrigemMovimento = "contagem" | "erp" | "manual";
+
+export const ORIGENS_MOVIMENTO: Array<{ valor: OrigemMovimento; etiqueta: string }> = [
+  { valor: "contagem", etiqueta: "Contagem (armazém)" },
+  { valor: "erp", etiqueta: "UP Vendas" },
+  { valor: "manual", etiqueta: "Manual" },
+];
+
+export interface LinhaStock {
+  produto_id: string;
+  cod_barras: string;
+  nome_cliente: string;
+  categoria_id: string;
+  ponto_reposicao: number | null;
+  tipo_fornecimento: TipoFornecimento;
+  fisico: number;
+  quarentena: number;
+  reservado: number;
+  em_transito_compra: number;
+  margem_seguranca: number;
+  vendavel: number;
+  prometivel: number;
+  atualizado_em: string | null;
+}
+
+export interface Movimento {
+  id: number;
+  produto_id: string;
+  cod_barras: string;
+  nome_cliente: string;
+  tipo: TipoMovimento;
+  quantidade: number;
+  origem: OrigemMovimento;
+  ref_externa: string | null;
+  chave_idempotencia: string;
+  documento_tipo: string | null;
+  documento_id: string | null;
+  motivo: string | null;
+  ocorrido_em: string;
+  registado_em: string;
+  registado_por: string | null;
+}
+
+export type EstadoReserva = "ativa" | "consumida" | "libertada" | "expirada";
+
+export const ESTADOS_RESERVA: Array<{ valor: EstadoReserva; etiqueta: string }> = [
+  { valor: "ativa", etiqueta: "Ativa" },
+  { valor: "consumida", etiqueta: "Consumida" },
+  { valor: "libertada", etiqueta: "Libertada" },
+  { valor: "expirada", etiqueta: "Expirada" },
+];
+
+export const ETIQUETA_RESERVA: Record<EstadoReserva, string> = {
+  ativa: "Ativa",
+  consumida: "Consumida",
+  libertada: "Libertada",
+  expirada: "Expirada",
+};
+
+export interface Reserva extends CamposComuns {
+  produto_id: string;
+  cod_barras?: string;
+  nome_cliente?: string;
+  quantidade: number;
+  documento_tipo: string;
+  documento_id: string;
+  linha_id: string | null;
+  estado: EstadoReserva;
+  expira_em: string | null;
+  consumida_em: string | null;
+  libertada_em: string | null;
+  motivo_libertacao: string | null;
+}
+
+export type EstadoSync = "ok" | "atrasado" | "erro";
+
+export interface SyncEstado {
+  fonte: string;
+  cursor: string | null;
+  ultima_sync_ok: string | null;
+  ultima_tentativa: string | null;
+  estado: EstadoSync;
+  estado_calculado: EstadoSync;
+  segundos_desde_sync: number | null;
+  erro: string | null;
+  movimentos_processados: number;
+  inventario_inicial_em: string | null;
+}
+
+export interface SyncPendente {
+  id: number;
+  payload: unknown;
+  erro: string | null;
+  tentativas: number;
+  resolvido_em: string | null;
+  criado_em: string;
+}
+
+export interface Reconciliacao extends CamposComuns {
+  executada_em: string;
+  total_produtos: number;
+  divergencias: number;
+  estado: "limpa" | "com_divergencias" | "resolvida";
+}
+
+export interface Divergencia extends CamposComuns {
+  reconciliacao_id: string;
+  produto_id: string;
+  cod_barras?: string;
+  nome_cliente?: string;
+  fisico_erp: number;
+  fisico_contagem: number;
+  diferenca: number;
+  estado: "aberta" | "regularizada" | "ignorada";
+  movimento_regularizacao: number | null;
+  resolvido_por: string | null;
+  resolvido_em: string | null;
+  nota: string | null;
+}
+
 export const TABELAS: Array<{ valor: string; etiqueta: string; rotulo: string }> = [
   { valor: "utilizadores", etiqueta: "Utilizadores", rotulo: "nome" },
   { valor: "formas_pagamento", etiqueta: "Formas de pagamento", rotulo: "nome" },
@@ -343,7 +490,9 @@ export const TABELAS: Array<{ valor: string; etiqueta: string; rotulo: string }>
   { valor: "servicos", etiqueta: "Serviços", rotulo: "nome" },
   { valor: "fornecedores", etiqueta: "Fornecedores", rotulo: "nome" },
   { valor: "clientes", etiqueta: "Clientes", rotulo: "nome" },
+  { valor: "reservas", etiqueta: "Reservas", rotulo: "documento_tipo" },
 ];
+
 
 
 export function formatarData(valor?: string | null): string {

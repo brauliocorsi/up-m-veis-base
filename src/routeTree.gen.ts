@@ -16,8 +16,10 @@ import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
 import { Route as AuthenticatedFornecedoresRouteImport } from './routes/_authenticated/fornecedores'
+import { Route as AuthenticatedMovimentosRouteImport } from './routes/_authenticated/movimentos'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
+import { Route as AuthenticatedReservasRouteImport } from './routes/_authenticated/reservas'
 import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
 import { Route as AuthenticatedAdmCalendarioRouteImport } from './routes/_authenticated/_adm/calendario'
 import { Route as AuthenticatedAdmDefinicoesRouteImport } from './routes/_authenticated/_adm/definicoes'
@@ -26,8 +28,12 @@ import { Route as AuthenticatedAdmHistoricoRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdmLixeiraRouteImport } from './routes/_authenticated/_adm/lixeira'
 import { Route as AuthenticatedAdmMotivosRouteImport } from './routes/_authenticated/_adm/motivos'
 import { Route as AuthenticatedAdmRegrasDescontoRouteImport } from './routes/_authenticated/_adm/regras-desconto'
+import { Route as AuthenticatedAdmSincronizacaoRouteImport } from './routes/_authenticated/_adm/sincronizacao'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
+import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
+import { Route as AuthenticatedStockProdutoIdRouteImport } from './routes/_authenticated/stock.$produtoId'
+import { Route as ApiPublicHooksSyncContagemRouteImport } from './routes/api/public/hooks/sync-contagem'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -63,6 +69,11 @@ const AuthenticatedFornecedoresRoute =
     path: '/fornecedores',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMovimentosRoute = AuthenticatedMovimentosRouteImport.update({
+  id: '/movimentos',
+  path: '/movimentos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   id: '/painel',
   path: '/painel',
@@ -71,6 +82,11 @@ const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
 const AuthenticatedProdutosRoute = AuthenticatedProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedReservasRoute = AuthenticatedReservasRouteImport.update({
+  id: '/reservas',
+  path: '/reservas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedServicosRoute = AuthenticatedServicosRouteImport.update({
@@ -118,6 +134,12 @@ const AuthenticatedAdmRegrasDescontoRoute =
     path: '/regras-desconto',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedAdmSincronizacaoRoute =
+  AuthenticatedAdmSincronizacaoRouteImport.update({
+    id: '/sincronizacao',
+    path: '/sincronizacao',
+    getParentRoute: () => AuthenticatedAdmRouteRoute,
+  } as any)
 const AuthenticatedAdmUtilizadoresRoute =
   AuthenticatedAdmUtilizadoresRouteImport.update({
     id: '/utilizadores',
@@ -130,6 +152,23 @@ const AuthenticatedAdmZonasEntregaRoute =
     path: '/zonas-entrega',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedStockIndexRoute = AuthenticatedStockIndexRouteImport.update({
+  id: '/stock/',
+  path: '/stock/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedStockProdutoIdRoute =
+  AuthenticatedStockProdutoIdRouteImport.update({
+    id: '/stock/$produtoId',
+    path: '/stock/$produtoId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ApiPublicHooksSyncContagemRoute =
+  ApiPublicHooksSyncContagemRouteImport.update({
+    id: '/api/public/hooks/sync-contagem',
+    path: '/api/public/hooks/sync-contagem',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -137,8 +176,10 @@ export interface FileRoutesByFullPath {
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
+  '/movimentos': typeof AuthenticatedMovimentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/produtos': typeof AuthenticatedProdutosRoute
+  '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -147,8 +188,12 @@ export interface FileRoutesByFullPath {
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
   '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
+  '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/stock/': typeof AuthenticatedStockIndexRoute
+  '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -156,8 +201,10 @@ export interface FileRoutesByTo {
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
+  '/movimentos': typeof AuthenticatedMovimentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/produtos': typeof AuthenticatedProdutosRoute
+  '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -166,8 +213,12 @@ export interface FileRoutesByTo {
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
   '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
+  '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/stock': typeof AuthenticatedStockIndexRoute
+  '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -178,8 +229,10 @@ export interface FileRoutesById {
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/clientes': typeof AuthenticatedClientesRoute
   '/_authenticated/fornecedores': typeof AuthenticatedFornecedoresRoute
+  '/_authenticated/movimentos': typeof AuthenticatedMovimentosRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
+  '/_authenticated/reservas': typeof AuthenticatedReservasRoute
   '/_authenticated/servicos': typeof AuthenticatedServicosRoute
   '/_authenticated/_adm/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/_authenticated/_adm/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -188,8 +241,12 @@ export interface FileRoutesById {
   '/_authenticated/_adm/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/_authenticated/_adm/motivos': typeof AuthenticatedAdmMotivosRoute
   '/_authenticated/_adm/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
+  '/_authenticated/_adm/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/_authenticated/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/_authenticated/stock/': typeof AuthenticatedStockIndexRoute
+  '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -199,8 +256,10 @@ export interface FileRouteTypes {
     | '/categorias'
     | '/clientes'
     | '/fornecedores'
+    | '/movimentos'
     | '/painel'
     | '/produtos'
+    | '/reservas'
     | '/servicos'
     | '/calendario'
     | '/definicoes'
@@ -209,8 +268,12 @@ export interface FileRouteTypes {
     | '/lixeira'
     | '/motivos'
     | '/regras-desconto'
+    | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/stock/$produtoId'
+    | '/stock/'
+    | '/api/public/hooks/sync-contagem'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -218,8 +281,10 @@ export interface FileRouteTypes {
     | '/categorias'
     | '/clientes'
     | '/fornecedores'
+    | '/movimentos'
     | '/painel'
     | '/produtos'
+    | '/reservas'
     | '/servicos'
     | '/calendario'
     | '/definicoes'
@@ -228,8 +293,12 @@ export interface FileRouteTypes {
     | '/lixeira'
     | '/motivos'
     | '/regras-desconto'
+    | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/stock/$produtoId'
+    | '/stock'
+    | '/api/public/hooks/sync-contagem'
   id:
     | '__root__'
     | '/'
@@ -239,8 +308,10 @@ export interface FileRouteTypes {
     | '/_authenticated/categorias'
     | '/_authenticated/clientes'
     | '/_authenticated/fornecedores'
+    | '/_authenticated/movimentos'
     | '/_authenticated/painel'
     | '/_authenticated/produtos'
+    | '/_authenticated/reservas'
     | '/_authenticated/servicos'
     | '/_authenticated/_adm/calendario'
     | '/_authenticated/_adm/definicoes'
@@ -249,14 +320,19 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/lixeira'
     | '/_authenticated/_adm/motivos'
     | '/_authenticated/_adm/regras-desconto'
+    | '/_authenticated/_adm/sincronizacao'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
+    | '/_authenticated/stock/$produtoId'
+    | '/_authenticated/stock/'
+    | '/api/public/hooks/sync-contagem'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicHooksSyncContagemRoute: typeof ApiPublicHooksSyncContagemRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -310,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFornecedoresRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/movimentos': {
+      id: '/_authenticated/movimentos'
+      path: '/movimentos'
+      fullPath: '/movimentos'
+      preLoaderRoute: typeof AuthenticatedMovimentosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/painel': {
       id: '/_authenticated/painel'
       path: '/painel'
@@ -322,6 +405,13 @@ declare module '@tanstack/react-router' {
       path: '/produtos'
       fullPath: '/produtos'
       preLoaderRoute: typeof AuthenticatedProdutosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reservas': {
+      id: '/_authenticated/reservas'
+      path: '/reservas'
+      fullPath: '/reservas'
+      preLoaderRoute: typeof AuthenticatedReservasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/servicos': {
@@ -380,6 +470,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmRegrasDescontoRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/_adm/sincronizacao': {
+      id: '/_authenticated/_adm/sincronizacao'
+      path: '/sincronizacao'
+      fullPath: '/sincronizacao'
+      preLoaderRoute: typeof AuthenticatedAdmSincronizacaoRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
     '/_authenticated/_adm/utilizadores': {
       id: '/_authenticated/_adm/utilizadores'
       path: '/utilizadores'
@@ -394,6 +491,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmZonasEntregaRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/stock/': {
+      id: '/_authenticated/stock/'
+      path: '/stock'
+      fullPath: '/stock/'
+      preLoaderRoute: typeof AuthenticatedStockIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/stock/$produtoId': {
+      id: '/_authenticated/stock/$produtoId'
+      path: '/stock/$produtoId'
+      fullPath: '/stock/$produtoId'
+      preLoaderRoute: typeof AuthenticatedStockProdutoIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/hooks/sync-contagem': {
+      id: '/api/public/hooks/sync-contagem'
+      path: '/api/public/hooks/sync-contagem'
+      fullPath: '/api/public/hooks/sync-contagem'
+      preLoaderRoute: typeof ApiPublicHooksSyncContagemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -405,6 +523,7 @@ interface AuthenticatedAdmRouteRouteChildren {
   AuthenticatedAdmLixeiraRoute: typeof AuthenticatedAdmLixeiraRoute
   AuthenticatedAdmMotivosRoute: typeof AuthenticatedAdmMotivosRoute
   AuthenticatedAdmRegrasDescontoRoute: typeof AuthenticatedAdmRegrasDescontoRoute
+  AuthenticatedAdmSincronizacaoRoute: typeof AuthenticatedAdmSincronizacaoRoute
   AuthenticatedAdmUtilizadoresRoute: typeof AuthenticatedAdmUtilizadoresRoute
   AuthenticatedAdmZonasEntregaRoute: typeof AuthenticatedAdmZonasEntregaRoute
 }
@@ -417,6 +536,7 @@ const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
   AuthenticatedAdmLixeiraRoute: AuthenticatedAdmLixeiraRoute,
   AuthenticatedAdmMotivosRoute: AuthenticatedAdmMotivosRoute,
   AuthenticatedAdmRegrasDescontoRoute: AuthenticatedAdmRegrasDescontoRoute,
+  AuthenticatedAdmSincronizacaoRoute: AuthenticatedAdmSincronizacaoRoute,
   AuthenticatedAdmUtilizadoresRoute: AuthenticatedAdmUtilizadoresRoute,
   AuthenticatedAdmZonasEntregaRoute: AuthenticatedAdmZonasEntregaRoute,
 }
@@ -431,9 +551,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
   AuthenticatedFornecedoresRoute: typeof AuthenticatedFornecedoresRoute
+  AuthenticatedMovimentosRoute: typeof AuthenticatedMovimentosRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
+  AuthenticatedReservasRoute: typeof AuthenticatedReservasRoute
   AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
+  AuthenticatedStockProdutoIdRoute: typeof AuthenticatedStockProdutoIdRoute
+  AuthenticatedStockIndexRoute: typeof AuthenticatedStockIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -441,9 +565,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedClientesRoute: AuthenticatedClientesRoute,
   AuthenticatedFornecedoresRoute: AuthenticatedFornecedoresRoute,
+  AuthenticatedMovimentosRoute: AuthenticatedMovimentosRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,
+  AuthenticatedReservasRoute: AuthenticatedReservasRoute,
   AuthenticatedServicosRoute: AuthenticatedServicosRoute,
+  AuthenticatedStockProdutoIdRoute: AuthenticatedStockProdutoIdRoute,
+  AuthenticatedStockIndexRoute: AuthenticatedStockIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -453,6 +581,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicHooksSyncContagemRoute: ApiPublicHooksSyncContagemRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
