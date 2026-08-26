@@ -1,0 +1,213 @@
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  BadgeEuro,
+  CalendarDays,
+  ClipboardList,
+  History,
+  LayoutDashboard,
+  ListChecks,
+  LogOut,
+  Menu,
+  Settings,
+  Trash2,
+  Truck,
+  Users,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { useState, type ReactNode } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { useSessao } from "@/hooks/use-sessao";
+import { supabase } from "@/integrations/supabase/client";
+import { ETIQUETA_PERFIL, type Perfil } from "@/lib/erp/tipos";
+import { cn } from "@/lib/utils";
+
+interface ItemNav {
+  para: string;
+  etiqueta: string;
+  icone: LucideIcon;
+  perfis?: Perfil[];
+}
+
+const NAVEGACAO: ItemNav[] = [
+  { para: "/painel", etiqueta: "Painel", icone: LayoutDashboard },
+  { para: "/utilizadores", etiqueta: "Utilizadores", icone: Users, perfis: ["adm"] },
+  { para: "/formas-pagamento", etiqueta: "Formas de pagamento", icone: BadgeEuro, perfis: ["adm"] },
+  { para: "/zonas-entrega", etiqueta: "Zonas de entrega", icone: Truck, perfis: ["adm"] },
+  { para: "/calendario", etiqueta: "Calendário", icone: CalendarDays, perfis: ["adm"] },
+  { para: "/motivos", etiqueta: "Motivos", icone: ListChecks, perfis: ["adm"] },
+  { para: "/definicoes", etiqueta: "Definições", icone: Settings, perfis: ["adm"] },
+  { para: "/lixeira", etiqueta: "Lixeira", icone: Trash2, perfis: ["adm"] },
+  { para: "/historico", etiqueta: "Histórico", icone: History, perfis: ["adm"] },
+];
+
+function Marca() {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
+        UP
+      </span>
+      <span className="text-sm font-semibold tracking-tight">UP Vendas</span>
+    </div>
+  );
+}
+
+export function AppShell({ children }: { children: ReactNode }) {
+  const { data: sessao, isLoading } = useSessao();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const caminho = useRouterState({ select: (s) => s.location.pathname });
+  const [menuAberto, setMenuAberto] = useState(false);
+
+  async function sair() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
+        A carregar…
+      </div>
+    );
+  }
+
+  const utilizador = sessao?.utilizador ?? null;
+
+  if (!utilizador || !utilizador.ativo) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="w-full max-w-md space-y-4 rounded-xl border bg-card p-6 text-center">
+          <Marca />
+          <h1 className="text-lg font-semibold">Acesso suspenso</h1>
+          <p className="text-sm text-muted-foreground">
+            {utilizador
+              ? "A sua conta está desativada. Fale com a Administração da UP Móveis para voltar a ter acesso."
+              : "A sua conta ainda não está associada à UP Móveis. Pedimos que fale com a Administração."}
+          </p>
+          <Button variant="outline" onClick={sair} className="w-full">
+            <LogOut className="mr-2 h-4 w-4" /> Sair
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const itens = NAVEGACAO.filter((item) => !item.perfis || item.perfis.includes(utilizador.perfil));
+  const itensMobile = itens.slice(0, 3);
+  const restantes = itens.slice(3);
+
+  const linhaNav = (item: ItemNav, aoClicar?: () => void) => {
+    const ativo = caminho === item.para;
+    return (
+      <Link
+        key={item.para}
+        to={item.para}
+        onClick={aoClicar}
+        className={cn(
+          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+          ativo
+            ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+            : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
+        )}
+      >
+        <item.icone className="h-4 w-4" />
+        {item.etiqueta}
+      </Link>
+    );
+  };
+
+  return (
+    <TooltipProvider delayDuration={200}>
+      <div className="min-h-screen bg-background md:flex">
+        <aside className="hidden w-64 shrink-0 border-r bg-sidebar p-4 md:block">
+          <div className="mb-6">
+            <Marca />
+          </div>
+          <nav className="space-y-1">{itens.map((item) => linhaNav(item))}</nav>
+        </aside>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur">
+            <div className="md:hidden">
+              <Marca />
+            </div>
+            <div className="ml-auto flex items-center gap-3">
+              <div className="text-right leading-tight">
+                <p className="text-sm font-medium">{utilizador.nome}</p>
+                <p className="text-xs text-muted-foreground">
+                  {ETIQUETA_PERFIL[utilizador.perfil]}
+                </p>
+              </div>
+              <Button variant="outline" size="sm" onClick={sair}>
+                <LogOut className="mr-2 h-4 w-4" /> Sair
+              </Button>
+            </div>
+          </header>
+
+          <main className="flex-1 px-4 pb-24 pt-4 md:px-6 md:pb-8">{children}</main>
+        </div>
+
+        <nav className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t bg-background/95 px-2 py-2 backdrop-blur md:hidden">
+          {itensMobile.map((item) => {
+            const ativo = caminho === item.para;
+            return (
+              <Link
+                key={item.para}
+                to={item.para}
+                className={cn(
+                  "flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-1 text-[11px]",
+                  ativo ? "text-primary" : "text-muted-foreground",
+                )}
+              >
+                <item.icone className="h-5 w-5" />
+                <span className="truncate">{item.etiqueta}</span>
+              </Link>
+            );
+          })}
+          {restantes.length > 0 && (
+            <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
+              <SheetTrigger asChild>
+                <button className="flex flex-1 flex-col items-center gap-1 px-1 py-1 text-[11px] text-muted-foreground">
+                  <Menu className="h-5 w-5" />
+                  Mais
+                </button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="space-y-2 pb-8">
+                <SheetTitle>Menu</SheetTitle>
+                <nav className="space-y-1">
+                  {restantes.map((item) => linhaNav(item, () => setMenuAberto(false)))}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          )}
+        </nav>
+      </div>
+    </TooltipProvider>
+  );
+}
+
+export function CabecalhoPagina({
+  titulo,
+  descricao,
+  acao,
+}: {
+  titulo: string;
+  descricao?: string;
+  acao?: ReactNode;
+}) {
+  return (
+    <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h1 className="text-xl font-semibold tracking-tight md:text-2xl">{titulo}</h1>
+        {descricao && <p className="mt-1 text-sm text-muted-foreground">{descricao}</p>}
+      </div>
+      {acao}
+    </div>
+  );
+}
