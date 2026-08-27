@@ -59,6 +59,8 @@ export function mensagemErro(
   const objeto = (erro ?? {}) as { message?: string; code?: string; details?: string };
   const texto = `${objeto.message ?? ""} ${objeto.details ?? ""}`.toLowerCase();
   const codigo = objeto.code ?? "";
+  // Mensagens escritas por nós nas funções da base de dados já estão em português.
+  if (codigo === "P0001" && objeto.message) return objeto.message;
   for (const entrada of MENSAGENS) {
     if (entrada.teste(texto, codigo)) return entrada.mensagem;
   }
