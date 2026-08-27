@@ -105,10 +105,14 @@ function Pedidos() {
       cabecalho: "Número",
       ordenavel: true,
       celula: (p) => (
-        <div className="leading-tight">
-          <p className="font-medium">{p.numero}</p>
-          <p className="text-xs text-muted-foreground md:hidden">{p.cliente_nome}</p>
-        </div>
+        <Link
+          to="/pedidos/$pedidoId"
+          params={{ pedidoId: p.id }}
+          className="block leading-tight hover:underline"
+        >
+          <span className="font-medium">{p.numero}</span>
+          <span className="block text-xs text-muted-foreground md:hidden">{p.cliente_nome}</span>
+        </Link>
       ),
     },
     {

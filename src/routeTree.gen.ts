@@ -32,6 +32,7 @@ import { Route as AuthenticatedAdmRegrasDescontoRouteImport } from './routes/_au
 import { Route as AuthenticatedAdmSincronizacaoRouteImport } from './routes/_authenticated/_adm/sincronizacao'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
+import { Route as AuthenticatedPedidosIndexRouteImport } from './routes/_authenticated/pedidos.index'
 import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
 import { Route as AuthenticatedStockProdutoIdRouteImport } from './routes/_authenticated/stock.$produtoId'
 import { Route as ApiPublicHooksSyncContagemRouteImport } from './routes/api/public/hooks/sync-contagem'
@@ -159,6 +160,12 @@ const AuthenticatedAdmZonasEntregaRoute =
     path: '/zonas-entrega',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedPedidosIndexRoute =
+  AuthenticatedPedidosIndexRouteImport.update({
+    id: '/pedidos/',
+    path: '/pedidos/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedStockIndexRoute = AuthenticatedStockIndexRouteImport.update({
   id: '/stock/',
   path: '/stock/',
@@ -200,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/pedidos/': typeof AuthenticatedPedidosIndexRoute
   '/stock/': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -226,6 +234,7 @@ export interface FileRoutesByTo {
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/pedidos': typeof AuthenticatedPedidosIndexRoute
   '/stock': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -255,6 +264,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
   '/_authenticated/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/_authenticated/pedidos/': typeof AuthenticatedPedidosIndexRoute
   '/_authenticated/stock/': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/utilizadores'
     | '/zonas-entrega'
     | '/stock/$produtoId'
+    | '/pedidos/'
     | '/stock/'
     | '/api/public/hooks/sync-contagem'
   fileRoutesByTo: FileRoutesByTo
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '/utilizadores'
     | '/zonas-entrega'
     | '/stock/$produtoId'
+    | '/pedidos'
     | '/stock'
     | '/api/public/hooks/sync-contagem'
   id:
@@ -337,6 +349,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
     | '/_authenticated/stock/$produtoId'
+    | '/_authenticated/pedidos/'
     | '/_authenticated/stock/'
     | '/api/public/hooks/sync-contagem'
   fileRoutesById: FileRoutesById
@@ -511,6 +524,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmZonasEntregaRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/pedidos/': {
+      id: '/_authenticated/pedidos/'
+      path: '/pedidos'
+      fullPath: '/pedidos/'
+      preLoaderRoute: typeof AuthenticatedPedidosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/stock/': {
       id: '/_authenticated/stock/'
       path: '/stock'
@@ -579,6 +599,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedReservasRoute: typeof AuthenticatedReservasRoute
   AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
   AuthenticatedStockProdutoIdRoute: typeof AuthenticatedStockProdutoIdRoute
+  AuthenticatedPedidosIndexRoute: typeof AuthenticatedPedidosIndexRoute
   AuthenticatedStockIndexRoute: typeof AuthenticatedStockIndexRoute
 }
 
@@ -593,6 +614,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedReservasRoute: AuthenticatedReservasRoute,
   AuthenticatedServicosRoute: AuthenticatedServicosRoute,
   AuthenticatedStockProdutoIdRoute: AuthenticatedStockProdutoIdRoute,
+  AuthenticatedPedidosIndexRoute: AuthenticatedPedidosIndexRoute,
   AuthenticatedStockIndexRoute: AuthenticatedStockIndexRoute,
 }
 
