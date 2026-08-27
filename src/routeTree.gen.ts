@@ -27,6 +27,7 @@ import { Route as AuthenticatedAdmFormasPagamentoRouteImport } from './routes/_a
 import { Route as AuthenticatedAdmHistoricoRouteImport } from './routes/_authenticated/_adm/historico'
 import { Route as AuthenticatedAdmLixeiraRouteImport } from './routes/_authenticated/_adm/lixeira'
 import { Route as AuthenticatedAdmMotivosRouteImport } from './routes/_authenticated/_adm/motivos'
+import { Route as AuthenticatedAdmReconciliacaoRouteImport } from './routes/_authenticated/_adm/reconciliacao'
 import { Route as AuthenticatedAdmRegrasDescontoRouteImport } from './routes/_authenticated/_adm/regras-desconto'
 import { Route as AuthenticatedAdmSincronizacaoRouteImport } from './routes/_authenticated/_adm/sincronizacao'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
@@ -128,6 +129,12 @@ const AuthenticatedAdmMotivosRoute = AuthenticatedAdmMotivosRouteImport.update({
   path: '/motivos',
   getParentRoute: () => AuthenticatedAdmRouteRoute,
 } as any)
+const AuthenticatedAdmReconciliacaoRoute =
+  AuthenticatedAdmReconciliacaoRouteImport.update({
+    id: '/reconciliacao',
+    path: '/reconciliacao',
+    getParentRoute: () => AuthenticatedAdmRouteRoute,
+  } as any)
 const AuthenticatedAdmRegrasDescontoRoute =
   AuthenticatedAdmRegrasDescontoRouteImport.update({
     id: '/regras-desconto',
@@ -187,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/historico': typeof AuthenticatedAdmHistoricoRoute
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
+  '/reconciliacao': typeof AuthenticatedAdmReconciliacaoRoute
   '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
@@ -212,6 +220,7 @@ export interface FileRoutesByTo {
   '/historico': typeof AuthenticatedAdmHistoricoRoute
   '/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/motivos': typeof AuthenticatedAdmMotivosRoute
+  '/reconciliacao': typeof AuthenticatedAdmReconciliacaoRoute
   '/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
@@ -240,6 +249,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/historico': typeof AuthenticatedAdmHistoricoRoute
   '/_authenticated/_adm/lixeira': typeof AuthenticatedAdmLixeiraRoute
   '/_authenticated/_adm/motivos': typeof AuthenticatedAdmMotivosRoute
+  '/_authenticated/_adm/reconciliacao': typeof AuthenticatedAdmReconciliacaoRoute
   '/_authenticated/_adm/regras-desconto': typeof AuthenticatedAdmRegrasDescontoRoute
   '/_authenticated/_adm/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/historico'
     | '/lixeira'
     | '/motivos'
+    | '/reconciliacao'
     | '/regras-desconto'
     | '/sincronizacao'
     | '/utilizadores'
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/historico'
     | '/lixeira'
     | '/motivos'
+    | '/reconciliacao'
     | '/regras-desconto'
     | '/sincronizacao'
     | '/utilizadores'
@@ -319,6 +331,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/historico'
     | '/_authenticated/_adm/lixeira'
     | '/_authenticated/_adm/motivos'
+    | '/_authenticated/_adm/reconciliacao'
     | '/_authenticated/_adm/regras-desconto'
     | '/_authenticated/_adm/sincronizacao'
     | '/_authenticated/_adm/utilizadores'
@@ -463,6 +476,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmMotivosRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/_adm/reconciliacao': {
+      id: '/_authenticated/_adm/reconciliacao'
+      path: '/reconciliacao'
+      fullPath: '/reconciliacao'
+      preLoaderRoute: typeof AuthenticatedAdmReconciliacaoRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
     '/_authenticated/_adm/regras-desconto': {
       id: '/_authenticated/_adm/regras-desconto'
       path: '/regras-desconto'
@@ -522,6 +542,7 @@ interface AuthenticatedAdmRouteRouteChildren {
   AuthenticatedAdmHistoricoRoute: typeof AuthenticatedAdmHistoricoRoute
   AuthenticatedAdmLixeiraRoute: typeof AuthenticatedAdmLixeiraRoute
   AuthenticatedAdmMotivosRoute: typeof AuthenticatedAdmMotivosRoute
+  AuthenticatedAdmReconciliacaoRoute: typeof AuthenticatedAdmReconciliacaoRoute
   AuthenticatedAdmRegrasDescontoRoute: typeof AuthenticatedAdmRegrasDescontoRoute
   AuthenticatedAdmSincronizacaoRoute: typeof AuthenticatedAdmSincronizacaoRoute
   AuthenticatedAdmUtilizadoresRoute: typeof AuthenticatedAdmUtilizadoresRoute
@@ -535,6 +556,7 @@ const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
   AuthenticatedAdmHistoricoRoute: AuthenticatedAdmHistoricoRoute,
   AuthenticatedAdmLixeiraRoute: AuthenticatedAdmLixeiraRoute,
   AuthenticatedAdmMotivosRoute: AuthenticatedAdmMotivosRoute,
+  AuthenticatedAdmReconciliacaoRoute: AuthenticatedAdmReconciliacaoRoute,
   AuthenticatedAdmRegrasDescontoRoute: AuthenticatedAdmRegrasDescontoRoute,
   AuthenticatedAdmSincronizacaoRoute: AuthenticatedAdmSincronizacaoRoute,
   AuthenticatedAdmUtilizadoresRoute: AuthenticatedAdmUtilizadoresRoute,
