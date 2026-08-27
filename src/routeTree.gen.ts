@@ -33,6 +33,7 @@ import { Route as AuthenticatedAdmSincronizacaoRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
 import { Route as AuthenticatedPedidosIndexRouteImport } from './routes/_authenticated/pedidos.index'
+import { Route as AuthenticatedPedidosPedidoIdRouteImport } from './routes/_authenticated/pedidos.$pedidoId'
 import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
 import { Route as AuthenticatedStockProdutoIdRouteImport } from './routes/_authenticated/stock.$produtoId'
 import { Route as ApiPublicHooksSyncContagemRouteImport } from './routes/api/public/hooks/sync-contagem'
@@ -166,6 +167,12 @@ const AuthenticatedPedidosIndexRoute =
     path: '/pedidos/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPedidosPedidoIdRoute =
+  AuthenticatedPedidosPedidoIdRouteImport.update({
+    id: '/pedidos/$pedidoId',
+    path: '/pedidos/$pedidoId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedStockIndexRoute = AuthenticatedStockIndexRouteImport.update({
   id: '/stock/',
   path: '/stock/',
@@ -206,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/pedidos/': typeof AuthenticatedPedidosIndexRoute
   '/stock/': typeof AuthenticatedStockIndexRoute
@@ -233,6 +241,7 @@ export interface FileRoutesByTo {
   '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/pedidos': typeof AuthenticatedPedidosIndexRoute
   '/stock': typeof AuthenticatedStockIndexRoute
@@ -263,6 +272,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/_authenticated/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/_authenticated/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/_authenticated/pedidos/': typeof AuthenticatedPedidosIndexRoute
   '/_authenticated/stock/': typeof AuthenticatedStockIndexRoute
@@ -292,6 +302,7 @@ export interface FileRouteTypes {
     | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/pedidos/$pedidoId'
     | '/stock/$produtoId'
     | '/pedidos/'
     | '/stock/'
@@ -319,6 +330,7 @@ export interface FileRouteTypes {
     | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/pedidos/$pedidoId'
     | '/stock/$produtoId'
     | '/pedidos'
     | '/stock'
@@ -348,6 +360,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/sincronizacao'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
+    | '/_authenticated/pedidos/$pedidoId'
     | '/_authenticated/stock/$produtoId'
     | '/_authenticated/pedidos/'
     | '/_authenticated/stock/'
@@ -531,6 +544,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPedidosIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pedidos/$pedidoId': {
+      id: '/_authenticated/pedidos/$pedidoId'
+      path: '/pedidos/$pedidoId'
+      fullPath: '/pedidos/$pedidoId'
+      preLoaderRoute: typeof AuthenticatedPedidosPedidoIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/stock/': {
       id: '/_authenticated/stock/'
       path: '/stock'
@@ -598,6 +618,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
   AuthenticatedReservasRoute: typeof AuthenticatedReservasRoute
   AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
+  AuthenticatedPedidosPedidoIdRoute: typeof AuthenticatedPedidosPedidoIdRoute
   AuthenticatedStockProdutoIdRoute: typeof AuthenticatedStockProdutoIdRoute
   AuthenticatedPedidosIndexRoute: typeof AuthenticatedPedidosIndexRoute
   AuthenticatedStockIndexRoute: typeof AuthenticatedStockIndexRoute
@@ -613,6 +634,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,
   AuthenticatedReservasRoute: AuthenticatedReservasRoute,
   AuthenticatedServicosRoute: AuthenticatedServicosRoute,
+  AuthenticatedPedidosPedidoIdRoute: AuthenticatedPedidosPedidoIdRoute,
   AuthenticatedStockProdutoIdRoute: AuthenticatedStockProdutoIdRoute,
   AuthenticatedPedidosIndexRoute: AuthenticatedPedidosIndexRoute,
   AuthenticatedStockIndexRoute: AuthenticatedStockIndexRoute,
