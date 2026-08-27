@@ -49,6 +49,7 @@ import {
   ORIGENS_PEDIDO,
   type LinhaStock,
   type Motivo,
+  type Pedido,
   type PedidoItem,
   type Produto,
   type Servico,
@@ -499,7 +500,7 @@ function LinhaItem({
 }
 
 // ------------------------------------------------------------------- totais
-function Totais({ pedido }: { pedido: ReturnType<typeof Object> & Record<string, any> }) {
+function Totais({ pedido }: { pedido: Pedido }) {
   const linha = (etiqueta: string, valor: number, forte = false) => (
     <div className={`flex justify-between ${forte ? "text-base font-semibold" : "text-sm"}`}>
       <span className={forte ? "" : "text-muted-foreground"}>{etiqueta}</span>
@@ -534,7 +535,7 @@ function Descontos({
   editavel,
   onGuardar,
 }: {
-  pedido: Record<string, any>;
+  pedido: Pedido;
   editavel: boolean;
   onGuardar: (campos: Record<string, unknown>) => void;
 }) {
@@ -619,7 +620,7 @@ function Entrega({
   editavel,
   onGuardar,
 }: {
-  pedido: Record<string, any>;
+  pedido: Pedido;
   editavel: boolean;
   onGuardar: (campos: Record<string, unknown>) => void;
 }) {
