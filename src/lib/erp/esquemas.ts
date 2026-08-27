@@ -263,3 +263,21 @@ export const esquemaRegraDesconto = z.object({
   pode_alterar_preco: z.boolean(),
   pode_alterar_entrega: z.boolean(),
 });
+
+export const esquemaCupao = z.object({
+  codigo: z
+    .string()
+    .trim()
+    .min(3, "Indique o código do cupão.")
+    .regex(/^[A-Z0-9_-]+$/, "Use só letras maiúsculas, números, - e _."),
+  descricao: z.string().trim().max(200).optional().or(z.literal("")),
+  tipo: z.enum(["percentagem", "valor", "entrega_gratis"]),
+  valor: z.coerce.number().min(0, "O valor não pode ser negativo."),
+  minimo_compra: numeroOpcional,
+  valido_de: z.string().trim().min(10, "Indique a data de início."),
+  valido_ate: z.string().trim().optional().or(z.literal("")),
+  usos_max: numeroOpcional,
+  usos_por_cliente: z.coerce.number().int().min(1, "Pelo menos 1 utilização por cliente."),
+  acumulavel: z.boolean(),
+  ativo: z.boolean(),
+});
