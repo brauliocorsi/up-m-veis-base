@@ -35,7 +35,22 @@ export const Route = createFileRoute("/api/public/hooks/sync-contagem")({
           expiradas = 0;
         }
 
+        let tarefa = "sincronizar";
         try {
+          const corpo = (await request.json()) as { tarefa?: string } | null;
+          tarefa = corpo?.tarefa ?? "sincronizar";
+        } catch {
+          tarefa = "sincronizar";
+        }
+
+        try {
+          if (tarefa === "reconciliar") {
+            const { correrReconciliacao } = await import("@/lib/erp/contagem.server");
+            const resultado = await correrReconciliacao();
+            return new Response(JSON.stringify({ ok: true, expiradas, ...resultado }), {
+              headers: { "Content-Type": "application/json" },
+            });
+          }
           const { sincronizarContagem } = await import("@/lib/erp/contagem.server");
           const resultado = await sincronizarContagem();
           return new Response(JSON.stringify({ ok: true, expiradas, ...resultado }), {
@@ -43,11 +58,12 @@ export const Route = createFileRoute("/api/public/hooks/sync-contagem")({
           });
         } catch (erro) {
           const mensagem = erro instanceof Error ? erro.message : "Falha na sincronização.";
-          return new Response(JSON.stringify({ ok: false, expiradas, erro: mensagem }), {
+          return new Response(JSON.stringify({ ok: false, tarefa, expiradas, erro: mensagem }), {
             status: 200,
             headers: { "Content-Type": "application/json" },
           });
         }
+
       },
     },
   },
