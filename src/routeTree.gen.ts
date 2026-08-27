@@ -22,6 +22,7 @@ import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedReservasRouteImport } from './routes/_authenticated/reservas'
 import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
 import { Route as AuthenticatedAdmCalendarioRouteImport } from './routes/_authenticated/_adm/calendario'
+import { Route as AuthenticatedAdmCupoesRouteImport } from './routes/_authenticated/_adm/cupoes'
 import { Route as AuthenticatedAdmDefinicoesRouteImport } from './routes/_authenticated/_adm/definicoes'
 import { Route as AuthenticatedAdmFormasPagamentoRouteImport } from './routes/_authenticated/_adm/formas-pagamento'
 import { Route as AuthenticatedAdmHistoricoRouteImport } from './routes/_authenticated/_adm/historico'
@@ -103,6 +104,11 @@ const AuthenticatedAdmCalendarioRoute =
     path: '/calendario',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedAdmCupoesRoute = AuthenticatedAdmCupoesRouteImport.update({
+  id: '/cupoes',
+  path: '/cupoes',
+  getParentRoute: () => AuthenticatedAdmRouteRoute,
+} as any)
 const AuthenticatedAdmDefinicoesRoute =
   AuthenticatedAdmDefinicoesRouteImport.update({
     id: '/definicoes',
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
+  '/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
   '/historico': typeof AuthenticatedAdmHistoricoRoute
@@ -231,6 +238,7 @@ export interface FileRoutesByTo {
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
+  '/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
   '/historico': typeof AuthenticatedAdmHistoricoRoute
@@ -262,6 +270,7 @@ export interface FileRoutesById {
   '/_authenticated/reservas': typeof AuthenticatedReservasRoute
   '/_authenticated/servicos': typeof AuthenticatedServicosRoute
   '/_authenticated/_adm/calendario': typeof AuthenticatedAdmCalendarioRoute
+  '/_authenticated/_adm/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/_authenticated/_adm/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/_authenticated/_adm/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
   '/_authenticated/_adm/historico': typeof AuthenticatedAdmHistoricoRoute
@@ -292,6 +301,7 @@ export interface FileRouteTypes {
     | '/reservas'
     | '/servicos'
     | '/calendario'
+    | '/cupoes'
     | '/definicoes'
     | '/formas-pagamento'
     | '/historico'
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/reservas'
     | '/servicos'
     | '/calendario'
+    | '/cupoes'
     | '/definicoes'
     | '/formas-pagamento'
     | '/historico'
@@ -350,6 +361,7 @@ export interface FileRouteTypes {
     | '/_authenticated/reservas'
     | '/_authenticated/servicos'
     | '/_authenticated/_adm/calendario'
+    | '/_authenticated/_adm/cupoes'
     | '/_authenticated/_adm/definicoes'
     | '/_authenticated/_adm/formas-pagamento'
     | '/_authenticated/_adm/historico'
@@ -467,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmCalendarioRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/_adm/cupoes': {
+      id: '/_authenticated/_adm/cupoes'
+      path: '/cupoes'
+      fullPath: '/cupoes'
+      preLoaderRoute: typeof AuthenticatedAdmCupoesRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
     '/_authenticated/_adm/definicoes': {
       id: '/_authenticated/_adm/definicoes'
       path: '/definicoes'
@@ -577,6 +596,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdmRouteRouteChildren {
   AuthenticatedAdmCalendarioRoute: typeof AuthenticatedAdmCalendarioRoute
+  AuthenticatedAdmCupoesRoute: typeof AuthenticatedAdmCupoesRoute
   AuthenticatedAdmDefinicoesRoute: typeof AuthenticatedAdmDefinicoesRoute
   AuthenticatedAdmFormasPagamentoRoute: typeof AuthenticatedAdmFormasPagamentoRoute
   AuthenticatedAdmHistoricoRoute: typeof AuthenticatedAdmHistoricoRoute
@@ -591,6 +611,7 @@ interface AuthenticatedAdmRouteRouteChildren {
 
 const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
   AuthenticatedAdmCalendarioRoute: AuthenticatedAdmCalendarioRoute,
+  AuthenticatedAdmCupoesRoute: AuthenticatedAdmCupoesRoute,
   AuthenticatedAdmDefinicoesRoute: AuthenticatedAdmDefinicoesRoute,
   AuthenticatedAdmFormasPagamentoRoute: AuthenticatedAdmFormasPagamentoRoute,
   AuthenticatedAdmHistoricoRoute: AuthenticatedAdmHistoricoRoute,
