@@ -510,3 +510,183 @@ export function formatarDinheiro(valor: number | string | null | undefined): str
   const numero = Number(valor ?? 0);
   return numero.toLocaleString("pt-PT", { style: "currency", currency: "EUR" });
 }
+
+// ------------------------------------------------------------- Fase 4: a venda
+export type EstadoPedido =
+  | "orcamento"
+  | "confirmado"
+  | "em_preparacao"
+  | "pronto"
+  | "entregue"
+  | "cancelado";
+
+export const ETIQUETA_PEDIDO: Record<EstadoPedido, string> = {
+  orcamento: "Orçamento",
+  confirmado: "Confirmado",
+  em_preparacao: "Em preparação",
+  pronto: "Pronto",
+  entregue: "Entregue",
+  cancelado: "Cancelado",
+};
+
+export const ESTADOS_PEDIDO: Array<{ valor: EstadoPedido; etiqueta: string }> = (
+  Object.keys(ETIQUETA_PEDIDO) as EstadoPedido[]
+).map((valor) => ({ valor, etiqueta: ETIQUETA_PEDIDO[valor] }));
+
+export type EstadoItem =
+  | "pendente"
+  | "reservado"
+  | "encomendado"
+  | "recebido"
+  | "separado"
+  | "entregue"
+  | "cancelado";
+
+export const ETIQUETA_ITEM: Record<EstadoItem, string> = {
+  pendente: "Pendente",
+  reservado: "Reservado",
+  encomendado: "Encomendado",
+  recebido: "Recebido",
+  separado: "Separado",
+  entregue: "Entregue",
+  cancelado: "Cancelado",
+};
+
+export type OrigemPedido = "loja" | "telefone" | "online" | "whatsapp" | "outro";
+
+export const ORIGENS_PEDIDO: Array<{ valor: OrigemPedido; etiqueta: string }> = [
+  { valor: "loja", etiqueta: "Na loja" },
+  { valor: "telefone", etiqueta: "Telefone" },
+  { valor: "online", etiqueta: "Online" },
+  { valor: "whatsapp", etiqueta: "WhatsApp" },
+  { valor: "outro", etiqueta: "Outro" },
+];
+
+export type TipoCupao = "percentagem" | "valor" | "entrega_gratis";
+
+export const TIPOS_CUPAO: Array<{ valor: TipoCupao; etiqueta: string }> = [
+  { valor: "percentagem", etiqueta: "Percentagem" },
+  { valor: "valor", etiqueta: "Valor fixo" },
+  { valor: "entrega_gratis", etiqueta: "Entrega grátis" },
+];
+
+export const ETIQUETA_CUPAO: Record<TipoCupao, string> = {
+  percentagem: "Percentagem",
+  valor: "Valor fixo",
+  entrega_gratis: "Entrega grátis",
+};
+
+export interface Pedido extends CamposComuns {
+  numero: string;
+  tipo: "orcamento" | "pedido";
+  origem: OrigemPedido;
+  cliente_id: string;
+  vendedor_id: string | null;
+  estado: EstadoPedido;
+  data_entrega_prevista: string | null;
+  data_entrega_prometida: string | null;
+  data_entrega_origem: "calculada" | "manual";
+  motivo_data_id: string | null;
+  nota_data: string | null;
+  entrega_domicilio: boolean;
+  morada_entrega: string | null;
+  cp4_entrega: string | null;
+  cp3_entrega: string | null;
+  localidade_entrega: string | null;
+  zona_entrega_id: string | null;
+  contacto_entrega: string | null;
+  notas_entrega: string | null;
+  subtotal: number;
+  desconto_linhas: number;
+  desconto_cabecalho_pct: number;
+  desconto_cabecalho: number;
+  cupao_id: string | null;
+  desconto_cupao: number;
+  valor_montagem: number;
+  valor_entrega: number;
+  valor_entrega_origem: "calculado" | "manual";
+  total_sem_iva: number;
+  total_iva: number;
+  total: number;
+  total_pago: number;
+  observacoes: string | null;
+  observacoes_internas: string | null;
+  confirmado_em: string | null;
+  cancelado_em: string | null;
+  motivo_cancelamento_id: string | null;
+  nota_cancelamento: string | null;
+  reaberto_em: string | null;
+  nota_reabertura: string | null;
+  cliente_nome?: string;
+  cliente_telefone?: string | null;
+  cliente_nif?: string | null;
+  vendedor_nome?: string | null;
+  zona_nome?: string | null;
+  n_itens?: number;
+}
+
+export interface PedidoItem extends CamposComuns {
+  pedido_id: string;
+  linha: number;
+  produto_id: string | null;
+  servico_id: string | null;
+  descricao: string;
+  cod_barras: string | null;
+  quantidade: number;
+  preco_unitario: number;
+  preco_tabela: number;
+  desconto_pct: number;
+  desconto_valor: number;
+  total_linha: number;
+  iva_pct: number;
+  montagem_incluida: boolean;
+  valor_montagem_unit: number;
+  tipo_fornecimento: string | null;
+  data_prevista: string | null;
+  estado: EstadoItem;
+  reserva_id: string | null;
+  nota: string | null;
+  produto_nome?: string | null;
+  servico_nome?: string | null;
+  imagem_url?: string | null;
+}
+
+export interface Cupao extends CamposComuns {
+  codigo: string;
+  descricao: string;
+  tipo: TipoCupao;
+  valor: number;
+  minimo_compra: number | null;
+  valido_de: string;
+  valido_ate: string | null;
+  usos_max: number | null;
+  usos_atuais: number;
+  usos_por_cliente: number;
+  aplica_a: "tudo" | "categoria" | "produto";
+  aplica_a_ids: string[];
+  acumulavel: boolean;
+  ativo: boolean;
+}
+
+export interface NecessidadeCompra extends CamposComuns {
+  pedido_id: string;
+  item_id: string;
+  produto_id: string;
+  fornecedor_id: string | null;
+  quantidade: number;
+  estado: "aberta" | "encomendada" | "recebida" | "cancelada";
+  pedido_numero?: string;
+  produto_nome?: string;
+  cod_barras?: string;
+  fornecedor_nome?: string | null;
+}
+
+export function formatarDataCurta(valor?: string | null): string {
+  if (!valor) return "—";
+  return new Date(`${valor}T00:00:00`).toLocaleDateString("pt-PT", {
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}

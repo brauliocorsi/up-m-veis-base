@@ -18,6 +18,8 @@ import {
   RefreshCw,
   ScanSearch,
   Settings,
+  ShoppingCart,
+  Ticket,
   Trash2,
   Truck,
   Users,
@@ -46,6 +48,8 @@ interface ItemNav {
 
 const NAVEGACAO: ItemNav[] = [
   { para: "/painel", etiqueta: "Painel", icone: LayoutDashboard },
+  { para: "/pedidos", etiqueta: "Vendas", icone: ShoppingCart },
+  { para: "/cupoes", etiqueta: "Cupões", icone: Ticket, perfis: ["adm"] },
   { para: "/clientes", etiqueta: "Clientes", icone: Contact, perfis: ["adm", "vendedora", "escritorio"] },
   { para: "/produtos", etiqueta: "Produtos", icone: Package },
   { para: "/stock", etiqueta: "Stock", icone: Warehouse },

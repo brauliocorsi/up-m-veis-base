@@ -22,6 +22,7 @@ import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedReservasRouteImport } from './routes/_authenticated/reservas'
 import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
 import { Route as AuthenticatedAdmCalendarioRouteImport } from './routes/_authenticated/_adm/calendario'
+import { Route as AuthenticatedAdmCupoesRouteImport } from './routes/_authenticated/_adm/cupoes'
 import { Route as AuthenticatedAdmDefinicoesRouteImport } from './routes/_authenticated/_adm/definicoes'
 import { Route as AuthenticatedAdmFormasPagamentoRouteImport } from './routes/_authenticated/_adm/formas-pagamento'
 import { Route as AuthenticatedAdmHistoricoRouteImport } from './routes/_authenticated/_adm/historico'
@@ -32,6 +33,8 @@ import { Route as AuthenticatedAdmRegrasDescontoRouteImport } from './routes/_au
 import { Route as AuthenticatedAdmSincronizacaoRouteImport } from './routes/_authenticated/_adm/sincronizacao'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
+import { Route as AuthenticatedPedidosIndexRouteImport } from './routes/_authenticated/pedidos.index'
+import { Route as AuthenticatedPedidosPedidoIdRouteImport } from './routes/_authenticated/pedidos.$pedidoId'
 import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
 import { Route as AuthenticatedStockProdutoIdRouteImport } from './routes/_authenticated/stock.$produtoId'
 import { Route as ApiPublicHooksSyncContagemRouteImport } from './routes/api/public/hooks/sync-contagem'
@@ -101,6 +104,11 @@ const AuthenticatedAdmCalendarioRoute =
     path: '/calendario',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedAdmCupoesRoute = AuthenticatedAdmCupoesRouteImport.update({
+  id: '/cupoes',
+  path: '/cupoes',
+  getParentRoute: () => AuthenticatedAdmRouteRoute,
+} as any)
 const AuthenticatedAdmDefinicoesRoute =
   AuthenticatedAdmDefinicoesRouteImport.update({
     id: '/definicoes',
@@ -159,6 +167,18 @@ const AuthenticatedAdmZonasEntregaRoute =
     path: '/zonas-entrega',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedPedidosIndexRoute =
+  AuthenticatedPedidosIndexRouteImport.update({
+    id: '/pedidos/',
+    path: '/pedidos/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPedidosPedidoIdRoute =
+  AuthenticatedPedidosPedidoIdRouteImport.update({
+    id: '/pedidos/$pedidoId',
+    path: '/pedidos/$pedidoId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedStockIndexRoute = AuthenticatedStockIndexRouteImport.update({
   id: '/stock/',
   path: '/stock/',
@@ -189,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
+  '/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
   '/historico': typeof AuthenticatedAdmHistoricoRoute
@@ -199,7 +220,9 @@ export interface FileRoutesByFullPath {
   '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/pedidos/': typeof AuthenticatedPedidosIndexRoute
   '/stock/': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -215,6 +238,7 @@ export interface FileRoutesByTo {
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
+  '/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
   '/historico': typeof AuthenticatedAdmHistoricoRoute
@@ -225,7 +249,9 @@ export interface FileRoutesByTo {
   '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/pedidos': typeof AuthenticatedPedidosIndexRoute
   '/stock': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -244,6 +270,7 @@ export interface FileRoutesById {
   '/_authenticated/reservas': typeof AuthenticatedReservasRoute
   '/_authenticated/servicos': typeof AuthenticatedServicosRoute
   '/_authenticated/_adm/calendario': typeof AuthenticatedAdmCalendarioRoute
+  '/_authenticated/_adm/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/_authenticated/_adm/definicoes': typeof AuthenticatedAdmDefinicoesRoute
   '/_authenticated/_adm/formas-pagamento': typeof AuthenticatedAdmFormasPagamentoRoute
   '/_authenticated/_adm/historico': typeof AuthenticatedAdmHistoricoRoute
@@ -254,7 +281,9 @@ export interface FileRoutesById {
   '/_authenticated/_adm/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/_authenticated/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/_authenticated/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/_authenticated/pedidos/': typeof AuthenticatedPedidosIndexRoute
   '/_authenticated/stock/': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -272,6 +301,7 @@ export interface FileRouteTypes {
     | '/reservas'
     | '/servicos'
     | '/calendario'
+    | '/cupoes'
     | '/definicoes'
     | '/formas-pagamento'
     | '/historico'
@@ -282,7 +312,9 @@ export interface FileRouteTypes {
     | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/pedidos/$pedidoId'
     | '/stock/$produtoId'
+    | '/pedidos/'
     | '/stock/'
     | '/api/public/hooks/sync-contagem'
   fileRoutesByTo: FileRoutesByTo
@@ -298,6 +330,7 @@ export interface FileRouteTypes {
     | '/reservas'
     | '/servicos'
     | '/calendario'
+    | '/cupoes'
     | '/definicoes'
     | '/formas-pagamento'
     | '/historico'
@@ -308,7 +341,9 @@ export interface FileRouteTypes {
     | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/pedidos/$pedidoId'
     | '/stock/$produtoId'
+    | '/pedidos'
     | '/stock'
     | '/api/public/hooks/sync-contagem'
   id:
@@ -326,6 +361,7 @@ export interface FileRouteTypes {
     | '/_authenticated/reservas'
     | '/_authenticated/servicos'
     | '/_authenticated/_adm/calendario'
+    | '/_authenticated/_adm/cupoes'
     | '/_authenticated/_adm/definicoes'
     | '/_authenticated/_adm/formas-pagamento'
     | '/_authenticated/_adm/historico'
@@ -336,7 +372,9 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/sincronizacao'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
+    | '/_authenticated/pedidos/$pedidoId'
     | '/_authenticated/stock/$produtoId'
+    | '/_authenticated/pedidos/'
     | '/_authenticated/stock/'
     | '/api/public/hooks/sync-contagem'
   fileRoutesById: FileRoutesById
@@ -441,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmCalendarioRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/_adm/cupoes': {
+      id: '/_authenticated/_adm/cupoes'
+      path: '/cupoes'
+      fullPath: '/cupoes'
+      preLoaderRoute: typeof AuthenticatedAdmCupoesRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
     '/_authenticated/_adm/definicoes': {
       id: '/_authenticated/_adm/definicoes'
       path: '/definicoes'
@@ -511,6 +556,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmZonasEntregaRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/pedidos/': {
+      id: '/_authenticated/pedidos/'
+      path: '/pedidos'
+      fullPath: '/pedidos/'
+      preLoaderRoute: typeof AuthenticatedPedidosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pedidos/$pedidoId': {
+      id: '/_authenticated/pedidos/$pedidoId'
+      path: '/pedidos/$pedidoId'
+      fullPath: '/pedidos/$pedidoId'
+      preLoaderRoute: typeof AuthenticatedPedidosPedidoIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/stock/': {
       id: '/_authenticated/stock/'
       path: '/stock'
@@ -537,6 +596,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdmRouteRouteChildren {
   AuthenticatedAdmCalendarioRoute: typeof AuthenticatedAdmCalendarioRoute
+  AuthenticatedAdmCupoesRoute: typeof AuthenticatedAdmCupoesRoute
   AuthenticatedAdmDefinicoesRoute: typeof AuthenticatedAdmDefinicoesRoute
   AuthenticatedAdmFormasPagamentoRoute: typeof AuthenticatedAdmFormasPagamentoRoute
   AuthenticatedAdmHistoricoRoute: typeof AuthenticatedAdmHistoricoRoute
@@ -551,6 +611,7 @@ interface AuthenticatedAdmRouteRouteChildren {
 
 const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
   AuthenticatedAdmCalendarioRoute: AuthenticatedAdmCalendarioRoute,
+  AuthenticatedAdmCupoesRoute: AuthenticatedAdmCupoesRoute,
   AuthenticatedAdmDefinicoesRoute: AuthenticatedAdmDefinicoesRoute,
   AuthenticatedAdmFormasPagamentoRoute: AuthenticatedAdmFormasPagamentoRoute,
   AuthenticatedAdmHistoricoRoute: AuthenticatedAdmHistoricoRoute,
@@ -578,7 +639,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
   AuthenticatedReservasRoute: typeof AuthenticatedReservasRoute
   AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
+  AuthenticatedPedidosPedidoIdRoute: typeof AuthenticatedPedidosPedidoIdRoute
   AuthenticatedStockProdutoIdRoute: typeof AuthenticatedStockProdutoIdRoute
+  AuthenticatedPedidosIndexRoute: typeof AuthenticatedPedidosIndexRoute
   AuthenticatedStockIndexRoute: typeof AuthenticatedStockIndexRoute
 }
 
@@ -592,7 +655,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,
   AuthenticatedReservasRoute: AuthenticatedReservasRoute,
   AuthenticatedServicosRoute: AuthenticatedServicosRoute,
+  AuthenticatedPedidosPedidoIdRoute: AuthenticatedPedidosPedidoIdRoute,
   AuthenticatedStockProdutoIdRoute: AuthenticatedStockProdutoIdRoute,
+  AuthenticatedPedidosIndexRoute: AuthenticatedPedidosIndexRoute,
   AuthenticatedStockIndexRoute: AuthenticatedStockIndexRoute,
 }
 
