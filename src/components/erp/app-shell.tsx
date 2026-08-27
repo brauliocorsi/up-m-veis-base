@@ -4,6 +4,7 @@ import {
   BadgeEuro,
   CalendarDays,
   ClipboardList,
+  Boxes,
   Contact,
   Factory,
   FolderTree,
@@ -14,10 +15,13 @@ import {
   Menu,
   Package,
   Percent,
+  RefreshCw,
+  ScanSearch,
   Settings,
   Trash2,
   Truck,
   Users,
+  Warehouse,
   Wrench,
 } from "lucide-react";
 
@@ -25,6 +29,7 @@ import type { LucideIcon } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
+import { IndicadorSync } from "@/components/erp/indicador-sync";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSessao } from "@/hooks/use-sessao";
@@ -43,6 +48,9 @@ const NAVEGACAO: ItemNav[] = [
   { para: "/painel", etiqueta: "Painel", icone: LayoutDashboard },
   { para: "/clientes", etiqueta: "Clientes", icone: Contact, perfis: ["adm", "vendedora", "escritorio"] },
   { para: "/produtos", etiqueta: "Produtos", icone: Package },
+  { para: "/stock", etiqueta: "Stock", icone: Warehouse },
+  { para: "/reservas", etiqueta: "Reservas", icone: Boxes },
+  { para: "/movimentos", etiqueta: "Movimentos", icone: ClipboardList },
   { para: "/categorias", etiqueta: "Categorias", icone: FolderTree },
   { para: "/servicos", etiqueta: "Serviços", icone: Wrench },
   { para: "/fornecedores", etiqueta: "Fornecedores", icone: Factory },
@@ -52,6 +60,8 @@ const NAVEGACAO: ItemNav[] = [
   { para: "/zonas-entrega", etiqueta: "Zonas de entrega", icone: Truck, perfis: ["adm"] },
   { para: "/calendario", etiqueta: "Calendário", icone: CalendarDays, perfis: ["adm"] },
   { para: "/motivos", etiqueta: "Motivos", icone: ListChecks, perfis: ["adm"] },
+  { para: "/sincronizacao", etiqueta: "Sincronização", icone: RefreshCw, perfis: ["adm"] },
+  { para: "/reconciliacao", etiqueta: "Reconciliação", icone: ScanSearch, perfis: ["adm"] },
   { para: "/definicoes", etiqueta: "Definições", icone: Settings, perfis: ["adm"] },
   { para: "/lixeira", etiqueta: "Lixeira", icone: Trash2, perfis: ["adm"] },
   { para: "/historico", etiqueta: "Histórico", icone: History, perfis: ["adm"] },
@@ -152,6 +162,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Marca />
             </div>
             <div className="ml-auto flex items-center gap-3">
+              <IndicadorSync podeGerir={utilizador.perfil === "adm"} />
               <div className="text-right leading-tight">
                 <p className="text-sm font-medium">{utilizador.nome}</p>
                 <p className="text-xs text-muted-foreground">
