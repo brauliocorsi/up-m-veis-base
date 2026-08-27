@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Eye, Shield, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -70,6 +70,7 @@ function PaginaStock() {
   const estado = useListagem("nome_cliente", true);
   const queryClient = useQueryClient();
   const { data: sessao } = useSessao();
+  const navigate = useNavigate();
   const eAdm = sessao?.utilizador?.perfil === "adm";
 
   const [vista, setVista] = useState<Vista>("todos");
@@ -228,9 +229,8 @@ function PaginaStock() {
             chave: "ver",
             etiqueta: "Ver ficha de stock",
             icone: Eye,
-            onSelect: () => {
-              window.location.href = `/stock/${linha.produto_id}`;
-            },
+            onSelect: () =>
+              navigate({ to: "/stock/$produtoId", params: { produtoId: linha.produto_id } }),
           },
         ];
         if (eAdm) {
