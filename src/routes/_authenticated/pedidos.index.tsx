@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Plus, Search, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -189,31 +189,22 @@ function Pedidos() {
         ))}
       </div>
 
-      <div
-        className="[&_tbody_tr]:cursor-pointer"
-        onClick={(evento) => {
-          const linha = (evento.target as HTMLElement).closest("tr[data-id]");
-          const id = linha?.getAttribute("data-id");
-          if (id) navigate({ to: "/pedidos/$pedidoId", params: { pedidoId: id } });
-        }}
-      >
-        <Lista
-          colunas={colunas}
-          linhas={(data?.linhas ?? []).map((p) => ({ ...p }))}
-          total={data?.total ?? 0}
-          pagina={lista.pagina}
-          tamanho={lista.tamanho}
-          aCarregar={isLoading}
-          pesquisa={lista.pesquisa}
-          ordenarPor={lista.ordenarPor}
-          ascendente={lista.ascendente}
-          vazio="Ainda não há vendas."
-          onPesquisa={lista.onPesquisa}
-          onPagina={lista.onPagina}
-          onOrdenar={lista.onOrdenar}
-          chave={(p) => p.id}
-        />
-      </div>
+      <Lista
+        colunas={colunas}
+        linhas={data?.linhas ?? []}
+        total={data?.total ?? 0}
+        pagina={lista.pagina}
+        tamanho={lista.tamanho}
+        aCarregar={isLoading}
+        pesquisa={lista.pesquisa}
+        ordenarPor={lista.ordenarPor}
+        ascendente={lista.ascendente}
+        vazio="Ainda não há vendas."
+        onPesquisa={lista.onPesquisa}
+        onPagina={lista.onPagina}
+        onOrdenar={lista.onOrdenar}
+        chave={(p) => p.id}
+      />
 
       <DialogoNovaVenda
         aberto={novaVenda}
