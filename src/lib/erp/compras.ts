@@ -36,16 +36,31 @@ export async function criarOcLinhas(
   return data as string;
 }
 
-/** Linhas de ordens de compra ligadas às linhas de uma venda. */
-export async function fornecimentoDoPedido(pedidoId: string): Promise<OcItem[]> {
+/**
+ * Fornecimento das linhas de uma venda, SEM custos.
+ * Lê v_fornecimento_linha (exceção deliberada, acessível a todos os perfis ativos).
+ */
+export async function fornecimentoDoPedido(pedidoId: string): Promise<FornecimentoLinha[]> {
   const { data, error } = await erp()
-    .from("v_oc_itens")
+    .from("v_fornecimento_linha")
     .select("*")
     .eq("pedido_id", pedidoId)
-    .neq("oc_estado", "cancelada")
-    .order("criado_em", { ascending: true });
+    .not("oc_item_id", "is", null)
+    .neq("oc_estado", "cancelada");
   if (error) throw error;
-  return (data ?? []) as OcItem[];
+  return (data ?? []) as FornecimentoLinha[];
+}
+
+/** Fornecimento de um produto (todas as vendas), SEM custos. */
+export async function fornecimentoDoProduto(produtoId: string): Promise<FornecimentoLinha[]> {
+  const { data, error } = await erp()
+    .from("v_fornecimento_linha")
+    .select("*")
+    .eq("produto_id", produtoId)
+    .not("oc_item_id", "is", null)
+    .limit(100);
+  if (error) throw error;
+  return (data ?? []) as FornecimentoLinha[];
 }
 
 /** Necessidades ligadas a uma venda (mesmo as que ainda não têm ordem de compra). */
