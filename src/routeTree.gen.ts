@@ -17,6 +17,7 @@ import { Route as AuthenticatedCaixaRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
 import { Route as AuthenticatedContasPagarRouteImport } from './routes/_authenticated/contas-pagar'
+import { Route as AuthenticatedContasReceberRouteImport } from './routes/_authenticated/contas-receber'
 import { Route as AuthenticatedFornecedoresRouteImport } from './routes/_authenticated/fornecedores'
 import { Route as AuthenticatedMovimentosRouteImport } from './routes/_authenticated/movimentos'
 import { Route as AuthenticatedNecessidadesRouteImport } from './routes/_authenticated/necessidades'
@@ -85,6 +86,12 @@ const AuthenticatedContasPagarRoute =
   AuthenticatedContasPagarRouteImport.update({
     id: '/contas-pagar',
     path: '/contas-pagar',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedContasReceberRoute =
+  AuthenticatedContasReceberRouteImport.update({
+    id: '/contas-receber',
+    path: '/contas-receber',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedFornecedoresRoute =
@@ -263,6 +270,7 @@ export interface FileRoutesByFullPath {
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/contas-pagar': typeof AuthenticatedContasPagarRoute
+  '/contas-receber': typeof AuthenticatedContasReceberRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/movimentos': typeof AuthenticatedMovimentosRoute
   '/necessidades': typeof AuthenticatedNecessidadesRoute
@@ -301,6 +309,7 @@ export interface FileRoutesByTo {
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/contas-pagar': typeof AuthenticatedContasPagarRoute
+  '/contas-receber': typeof AuthenticatedContasReceberRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/movimentos': typeof AuthenticatedMovimentosRoute
   '/necessidades': typeof AuthenticatedNecessidadesRoute
@@ -342,6 +351,7 @@ export interface FileRoutesById {
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/clientes': typeof AuthenticatedClientesRoute
   '/_authenticated/contas-pagar': typeof AuthenticatedContasPagarRoute
+  '/_authenticated/contas-receber': typeof AuthenticatedContasReceberRoute
   '/_authenticated/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/_authenticated/movimentos': typeof AuthenticatedMovimentosRoute
   '/_authenticated/necessidades': typeof AuthenticatedNecessidadesRoute
@@ -382,6 +392,7 @@ export interface FileRouteTypes {
     | '/categorias'
     | '/clientes'
     | '/contas-pagar'
+    | '/contas-receber'
     | '/fornecedores'
     | '/movimentos'
     | '/necessidades'
@@ -420,6 +431,7 @@ export interface FileRouteTypes {
     | '/categorias'
     | '/clientes'
     | '/contas-pagar'
+    | '/contas-receber'
     | '/fornecedores'
     | '/movimentos'
     | '/necessidades'
@@ -460,6 +472,7 @@ export interface FileRouteTypes {
     | '/_authenticated/categorias'
     | '/_authenticated/clientes'
     | '/_authenticated/contas-pagar'
+    | '/_authenticated/contas-receber'
     | '/_authenticated/fornecedores'
     | '/_authenticated/movimentos'
     | '/_authenticated/necessidades'
@@ -555,6 +568,13 @@ declare module '@tanstack/react-router' {
       path: '/contas-pagar'
       fullPath: '/contas-pagar'
       preLoaderRoute: typeof AuthenticatedContasPagarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/contas-receber': {
+      id: '/_authenticated/contas-receber'
+      path: '/contas-receber'
+      fullPath: '/contas-receber'
+      preLoaderRoute: typeof AuthenticatedContasReceberRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/fornecedores': {
@@ -813,6 +833,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
   AuthenticatedContasPagarRoute: typeof AuthenticatedContasPagarRoute
+  AuthenticatedContasReceberRoute: typeof AuthenticatedContasReceberRoute
   AuthenticatedFornecedoresRoute: typeof AuthenticatedFornecedoresRoute
   AuthenticatedMovimentosRoute: typeof AuthenticatedMovimentosRoute
   AuthenticatedNecessidadesRoute: typeof AuthenticatedNecessidadesRoute
@@ -837,6 +858,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedClientesRoute: AuthenticatedClientesRoute,
   AuthenticatedContasPagarRoute: AuthenticatedContasPagarRoute,
+  AuthenticatedContasReceberRoute: AuthenticatedContasReceberRoute,
   AuthenticatedFornecedoresRoute: AuthenticatedFornecedoresRoute,
   AuthenticatedMovimentosRoute: AuthenticatedMovimentosRoute,
   AuthenticatedNecessidadesRoute: AuthenticatedNecessidadesRoute,
