@@ -19,9 +19,13 @@ import {
   FolderTree,
   History,
   LayoutDashboard,
+  LifeBuoy,
   ListChecks,
   LogOut,
+  MapPinned,
   Menu,
+  Route,
+
   Package,
   PackageCheck,
   PackageSearch,
