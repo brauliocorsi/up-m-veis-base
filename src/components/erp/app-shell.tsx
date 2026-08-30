@@ -3,6 +3,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   BadgeEuro,
   CalendarDays,
+  ChevronDown,
+  ChevronRight,
   ClipboardCheck,
   ClipboardList,
   Boxes,
@@ -34,7 +36,7 @@ import {
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { IndicadorSync } from "@/components/erp/indicador-sync";
@@ -161,6 +163,19 @@ export function AppShell({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const caminho = useRouterState({ select: (s) => s.location.pathname });
   const [menuAberto, setMenuAberto] = useState(false);
+  const [categoriaAberta, setCategoriaAberta] = useState<string | null>(null);
+
+  useEffect(() => {
+    const utilizador = sessao?.utilizador;
+    if (!utilizador || !utilizador.ativo) return;
+    const ativa = NAVEGACAO.find((grupo) =>
+      grupo.itens.some((item) => {
+        if (item.perfis && !item.perfis.includes(utilizador.perfil)) return false;
+        return caminho === item.para;
+      }),
+    );
+    if (ativa) setCategoriaAberta(ativa.etiqueta);
+  }, [caminho, sessao?.utilizador?.perfil]);
 
   async function sair() {
     await queryClient.cancelQueries();
@@ -169,6 +184,16 @@ export function AppShell({ children }: { children: ReactNode }) {
     navigate({ to: "/auth", replace: true });
   }
 
+  const utilizador = sessao?.utilizador ?? null;
+  const grupos = utilizador
+    ? NAVEGACAO.map((grupo) => ({
+        ...grupo,
+        itens: grupo.itens.filter(
+          (item) => !item.perfis || item.perfis.includes(utilizador.perfil),
+        ),
+      })).filter((grupo) => grupo.itens.length > 0)
+    : [];
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
@@ -176,8 +201,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
     );
   }
-
-  const utilizador = sessao?.utilizador ?? null;
 
   if (!utilizador || !utilizador.ativo) {
     return (
@@ -198,12 +221,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     );
   }
 
-  const grupos = NAVEGACAO.map((grupo) => ({
-    ...grupo,
-    itens: grupo.itens.filter(
-      (item) => !item.perfis || item.perfis.includes(utilizador.perfil),
-    ),
-  })).filter((grupo) => grupo.itens.length > 0);
   const itens = grupos.flatMap((g) => g.itens);
   const itensMobile = itens.slice(0, 3);
   const restantes = itens.slice(3);
@@ -238,15 +255,31 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="mb-6">
             <Marca />
           </div>
-          <nav className="space-y-4">
-            {grupos.map((grupo) => (
-              <div key={grupo.etiqueta}>
-                <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  {grupo.etiqueta}
-                </p>
-                <div className="space-y-1">{grupo.itens.map((item) => linhaNav(item))}</div>
-              </div>
-            ))}
+          <nav className="space-y-2">
+            {grupos.map((grupo) => {
+              const aberto = categoriaAberta === grupo.etiqueta;
+              return (
+                <div key={grupo.etiqueta}>
+                  <button
+                    type="button"
+                    onClick={() => setCategoriaAberta(aberto ? null : grupo.etiqueta)}
+                    className="flex w-full items-center justify-between rounded-md px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-sidebar-accent/40"
+                  >
+                    {grupo.etiqueta}
+                    {aberto ? (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    )}
+                  </button>
+                  {aberto && (
+                    <div className="mt-1 space-y-1 px-1">
+                      {grupo.itens.map((item) => linhaNav(item))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
         </aside>
 
@@ -299,17 +332,33 @@ export function AppShell({ children }: { children: ReactNode }) {
               </SheetTrigger>
               <SheetContent side="bottom" className="space-y-2 pb-8">
                 <SheetTitle>Menu</SheetTitle>
-                <nav className="space-y-4">
-                  {gruposRestantes.map((grupo) => (
-                    <div key={grupo.etiqueta}>
-                      <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        {grupo.etiqueta}
-                      </p>
-                      <div className="space-y-1">
-                        {grupo.itens.map((item) => linhaNav(item, () => setMenuAberto(false)))}
+                <nav className="space-y-2">
+                  {gruposRestantes.map((grupo) => {
+                    const aberto = categoriaAberta === grupo.etiqueta;
+                    return (
+                      <div key={grupo.etiqueta}>
+                        <button
+                          type="button"
+                          onClick={() => setCategoriaAberta(aberto ? null : grupo.etiqueta)}
+                          className="flex w-full items-center justify-between rounded-md px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted"
+                        >
+                          {grupo.etiqueta}
+                          {aberto ? (
+                            <ChevronDown className="h-3.5 w-3.5" />
+                          ) : (
+                            <ChevronRight className="h-3.5 w-3.5" />
+                          )}
+                        </button>
+                        {aberto && (
+                          <div className="mt-1 space-y-1 px-1">
+                            {grupo.itens.map((item) =>
+                              linhaNav(item, () => setMenuAberto(false)),
+                            )}
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </nav>
               </SheetContent>
             </Sheet>
