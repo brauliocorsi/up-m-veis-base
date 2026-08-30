@@ -59,14 +59,18 @@ import {
 export const Route = createFileRoute("/_authenticated/caixa")({
   head: () => ({
     meta: [
-      { title: "Caixa do dia — UP Vendas" },
+      { title: "Caixa da loja — UP Vendas" },
       {
         name: "description",
         content:
-          "Caixa diário da UP Móveis: abrir o dia, ver recebimentos em dinheiro, registar saídas e fechar com contagem.",
+          "Caixa da loja da UP Móveis: abrir o dia, dar entrada de dinheiro, registar saídas, conciliar envelopes das rotas e fechar com contagem.",
       },
-      { property: "og:title", content: "Caixa do dia — UP Vendas" },
-      { property: "og:description", content: "Caixa diário da UP Móveis." },
+      { property: "og:title", content: "Caixa da loja — UP Vendas" },
+      {
+        property: "og:description",
+        content: "Entradas, saídas e conciliação do dinheiro no escritório da UP Móveis.",
+      },
+
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
