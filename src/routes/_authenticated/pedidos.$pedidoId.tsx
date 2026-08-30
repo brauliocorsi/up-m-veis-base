@@ -197,7 +197,7 @@ function EcraVenda() {
               </Button>
             )}
             {p.tipo === "pedido" && (
-              <Button variant="outline" onClick={() => nota.mutate(true)} disabled={nota.isPending}>
+              <Button variant="outline" onClick={() => nota.mutate(false)} disabled={nota.isPending}>
                 <Printer className="mr-2 h-4 w-4" /> Nota de encomenda
               </Button>
             )}
