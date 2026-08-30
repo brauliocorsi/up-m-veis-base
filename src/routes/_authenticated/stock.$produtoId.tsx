@@ -124,9 +124,10 @@ function FichaStock() {
     queryFn: () => vendasDoProduto(produtoId),
   });
 
-  const aChegar = (compras ?? []).filter(
+  const emFalta = (compras ?? []).filter(
     (c) => c.oc_estado !== "cancelada" && Number(c.quantidade_recebida) < Number(c.quantidade),
   );
+  const aChegar = emFalta[0] ?? null;
 
   const mLibertar = useMutation({
     mutationFn: async () => {
@@ -179,10 +180,10 @@ function FichaStock() {
         <span className="text-muted-foreground">
           {" · "}Reservado: {stock.reservado} · Vendável: {stock.vendavel} · A chegar:{" "}
           {stock.em_transito_compra}
-          {aChegar.length > 0
-            ? ` (${aChegar[0].oc_numero}${
-                aChegar[0].data_prevista_item ?? aChegar[0].oc_data_prevista
-                  ? `, ${formatarDataCurta(aChegar[0].data_prevista_item ?? aChegar[0].oc_data_prevista)}`
+          {aChegar
+            ? ` (${aChegar.oc_numero}${
+                aChegar.data_prevista_item ?? aChegar.oc_data_prevista
+                  ? `, ${formatarDataCurta(aChegar.data_prevista_item ?? aChegar.oc_data_prevista)}`
                   : ""
               })`
             : ""}
