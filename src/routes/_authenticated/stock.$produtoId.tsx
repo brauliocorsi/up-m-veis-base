@@ -12,7 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { comprasDoProduto, vendasDoProduto } from "@/lib/erp/compras";
+import { comprasDoProduto, fornecimentoDoProduto, vendasDoProduto } from "@/lib/erp/compras";
+import { usePermissoes } from "@/hooks/use-permissoes";
 import { erp } from "@/lib/erp/db";
 import { primeiraMensagem } from "@/lib/erp/erros";
 import { libertarReserva } from "@/lib/erp/stock";
@@ -114,9 +115,20 @@ function FichaStock() {
     },
   });
 
+  const perm = usePermissoes();
+  const podeVerCompras = perm.comprar || perm.verCustos;
+
+  // Com custos — só Compras/Financeiro/ADM (v_oc_itens tem RLS restrita).
   const { data: compras } = useQuery({
     queryKey: ["produto-compras", produtoId],
     queryFn: () => comprasDoProduto(produtoId),
+    enabled: podeVerCompras,
+  });
+
+  // Sem custos — acessível a todos os perfis ativos (exceção deliberada).
+  const { data: fornecimento } = useQuery({
+    queryKey: ["produto-fornecimento", produtoId],
+    queryFn: () => fornecimentoDoProduto(produtoId),
   });
 
   const { data: vendas } = useQuery({
@@ -124,8 +136,8 @@ function FichaStock() {
     queryFn: () => vendasDoProduto(produtoId),
   });
 
-  const emFalta = (compras ?? []).filter(
-    (c) => c.oc_estado !== "cancelada" && Number(c.quantidade_recebida) < Number(c.quantidade),
+  const emFalta = (fornecimento ?? []).filter(
+    (c) => c.oc_estado !== "cancelada" && Number(c.qt_em_falta ?? 0) > 0,
   );
   const aChegar = emFalta[0] ?? null;
 
@@ -182,8 +194,8 @@ function FichaStock() {
           {stock.em_transito_compra}
           {aChegar
             ? ` (${aChegar.oc_numero}${
-                aChegar.data_prevista_item ?? aChegar.oc_data_prevista
-                  ? `, ${formatarDataCurta(aChegar.data_prevista_item ?? aChegar.oc_data_prevista)}`
+                aChegar.data_prevista_chegada
+                  ? `, ${formatarDataCurta(aChegar.data_prevista_chegada)}`
                   : ""
               })`
             : ""}
@@ -216,7 +228,7 @@ function FichaStock() {
         <TabsList className="w-full justify-start overflow-x-auto">
           <TabsTrigger value="reservas">Reservas</TabsTrigger>
           <TabsTrigger value="movimentos">Movimentos</TabsTrigger>
-          <TabsTrigger value="compras">Compras</TabsTrigger>
+          {podeVerCompras && <TabsTrigger value="compras">Compras</TabsTrigger>}
           <TabsTrigger value="vendas">Vendas</TabsTrigger>
         </TabsList>
 
