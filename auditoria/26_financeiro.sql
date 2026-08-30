@@ -67,15 +67,17 @@ begin
 
   insert into erp.pedidos (numero, cliente_id, vendedor_id, estado, total, origem)
   values ('AUD-FIN7-1', v_cliente, (select id from erp.utilizadores where user_id = v_vend),
-          'confirmado', 200.00, 'loja')
+          'orcamento', 0, 'loja')
   returning id into v_pedido;
 
   insert into erp.pedido_itens (pedido_id, linha, produto_id, descricao, quantidade,
                                 preco_unitario, preco_tabela)
   values (v_pedido, 1, v_produto, '[AUD] Produto Financeiro', 2, 100.00, 100.00);
 
+  update erp.pedidos set estado = 'confirmado' where id = v_pedido;
+
   insert into erp.pagamentos (pedido_id, forma_id, valor, estado)
-  values (v_pedido, v_forma_transf, 200.00, 'pendente_confirmacao')
+  values (v_pedido, v_forma_transf, 246.00, 'pendente_confirmacao')
   returning id into v_pag;
 
   -- A — o prazo-limite de confirmação é preenchido automaticamente
@@ -107,7 +109,7 @@ begin
 
   -- E — o total pago do pedido reflete o recebimento
   select total_pago into v_num from erp.pedidos where id = v_pedido;
-  perform pg_temp.verificar('E · total pago do pedido', '200.00', to_char(v_num, 'FM999990.00'));
+  perform pg_temp.verificar('E · total pago do pedido', '246.00', to_char(v_num, 'FM999990.00'));
 
   -- F — devolução retira do total pago e o pedido volta a parcial/por pagar
   perform erp.devolver_pagamento(v_pag, 'Cliente desistiu');
@@ -117,18 +119,18 @@ begin
 
   -- G — a devolução não altera o valor confirmado do pagamento
   select to_char(valor, 'FM999990.00') into v_txt from erp.pagamentos where id = v_pag;
-  perform pg_temp.verificar('G · valor preservado na devolução', '200.00', v_txt);
+  perform pg_temp.verificar('G · valor preservado na devolução', '246.00', v_txt);
 
   -- H — conciliação identifica o pedido divergente
   insert into erp.pagamentos (pedido_id, forma_id, valor, estado)
   values (v_pedido, v_forma_transf, 120.00, 'pendente_confirmacao') returning id into v_pag2;
   select to_char(divergencia, 'FM999990.00') into v_txt
     from erp.v_conciliacao_vendas where pedido_id = v_pedido;
-  perform pg_temp.verificar('H · divergência identifica pedido', '80.00', v_txt);
+  perform pg_temp.verificar('H · divergência identifica pedido', '126.00', v_txt);
 
   -- I — coberto na totalidade dá zero divergência
   insert into erp.pagamentos (pedido_id, forma_id, valor, estado)
-  values (v_pedido, v_forma_transf, 80.00, 'pendente_confirmacao');
+  values (v_pedido, v_forma_transf, 126.00, 'pendente_confirmacao');
   select to_char(divergencia, 'FM999990.00') into v_txt
     from erp.v_conciliacao_vendas where pedido_id = v_pedido;
   perform pg_temp.verificar('I · sem divergências dá zero', '0.00', v_txt);
