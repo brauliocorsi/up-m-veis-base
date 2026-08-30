@@ -98,6 +98,55 @@ function PaginaDefinicoes() {
     );
   }, [definicoes]);
 
+  const enviarLogotipo = useServerFn(carregarLogotipo);
+  const pedirUrl = useServerFn(urlDocumento);
+  const [prevLogo, setPrevLogo] = useState<string | null>(null);
+  const [aEnviar, setAEnviar] = useState(false);
+
+  useEffect(() => {
+    if (!empresa.logotipo_path) {
+      setPrevLogo(null);
+      return;
+    }
+    let vivo = true;
+    pedirUrl({ data: { caminho: empresa.logotipo_path } })
+      .then((r) => {
+        if (vivo) setPrevLogo(r.url);
+      })
+      .catch(() => setPrevLogo(null));
+    return () => {
+      vivo = false;
+    };
+  }, [empresa.logotipo_path, pedirUrl]);
+
+  async function escolherLogotipo(ficheiro: File) {
+    if (!/^image\/(png|jpeg)$/.test(ficheiro.type)) {
+      toast.error("Use uma imagem PNG ou JPG.");
+      return;
+    }
+    setAEnviar(true);
+    try {
+      const buffer = await ficheiro.arrayBuffer();
+      let bin = "";
+      const bytes = new Uint8Array(buffer);
+      for (let i = 0; i < bytes.length; i += 1) bin += String.fromCharCode(bytes[i]!);
+      const resultado = await enviarLogotipo({
+        data: { base64: btoa(bin), tipo: ficheiro.type as "image/png" | "image/jpeg" },
+      });
+      const atualizada = { ...empresa, logotipo_path: resultado.caminho };
+      setEmpresa(atualizada);
+      setPrevLogo(resultado.url);
+      await gravar("empresa", esquemaEmpresa.parse(atualizada));
+      queryClient.invalidateQueries({ queryKey: ["definicoes"] });
+      toast.success("Logótipo atualizado.");
+    } catch (erro) {
+      toast.error(primeiraMensagem(erro));
+    } finally {
+      setAEnviar(false);
+    }
+  }
+
+
   async function gravar(chave: string, valor: unknown) {
     const { error } = await erp().from("definicoes").update({ valor }).eq("chave", chave);
     if (error) throw error;
