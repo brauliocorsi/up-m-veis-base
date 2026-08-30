@@ -30,6 +30,11 @@ export function usePermissoes() {
 
     /** Confirmar e devolver recebimentos. */
     receber: ativo && (perfil === "adm" || perfil === "financeiro" || perfil === "escritorio"),
+
+    /** Qualquer utilizador ativo — incluindo vendedoras — registra entregas. */
+    entregar: ativo,
+    /** Documentos fiscais: emitir e anular. */
+    faturar: ativo && (perfil === "adm" || perfil === "financeiro" || perfil === "escritorio"),
   };
 }
 
