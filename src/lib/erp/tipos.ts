@@ -1,10 +1,17 @@
-export type Perfil = "vendedora" | "escritorio" | "compras" | "financeiro" | "adm";
+export type Perfil =
+  | "vendedora"
+  | "escritorio"
+  | "compras"
+  | "financeiro"
+  | "entregador"
+  | "adm";
 
 export const PERFIS: Array<{ valor: Perfil; etiqueta: string }> = [
   { valor: "vendedora", etiqueta: "Vendedora" },
   { valor: "escritorio", etiqueta: "Escritório" },
   { valor: "compras", etiqueta: "Compras" },
   { valor: "financeiro", etiqueta: "Financeiro" },
+  { valor: "entregador", etiqueta: "Entregador" },
   { valor: "adm", etiqueta: "Administração" },
 ];
 
@@ -13,8 +20,10 @@ export const ETIQUETA_PERFIL: Record<Perfil, string> = {
   escritorio: "Escritório",
   compras: "Compras",
   financeiro: "Financeiro",
+  entregador: "Entregador",
   adm: "Administração",
 };
+
 
 export interface CamposComuns {
   id: string;
@@ -97,7 +106,11 @@ export type Contexto =
   | "eliminacao"
   | "saida_caixa"
   | "desconto_excecional"
-  | "reabertura";
+  | "reabertura"
+  | "nao_entrega"
+  | "reagendamento"
+  | "saida_rota"
+  | "assistencia";
 
 export const CONTEXTOS: Array<{ valor: Contexto; etiqueta: string }> = [
   { valor: "cancelamento", etiqueta: "Cancelamento" },
@@ -106,7 +119,12 @@ export const CONTEXTOS: Array<{ valor: Contexto; etiqueta: string }> = [
   { valor: "saida_caixa", etiqueta: "Saída de caixa" },
   { valor: "desconto_excecional", etiqueta: "Desconto excecional" },
   { valor: "reabertura", etiqueta: "Reabertura" },
+  { valor: "nao_entrega", etiqueta: "Não entrega" },
+  { valor: "reagendamento", etiqueta: "Reagendamento" },
+  { valor: "saida_rota", etiqueta: "Saída de rota" },
+  { valor: "assistencia", etiqueta: "Assistência" },
 ];
+
 
 export interface Motivo extends CamposComuns {
   contexto: Contexto;
@@ -1358,4 +1376,167 @@ export interface EntreguePorReceber {
   cliente_nif: string | null;
   data_entrega_efetiva: string | null;
   dias_desde_entrega: number | null;
+}
+
+// ================================================= Fase 9 — área do entregador
+export type EstadoRota = "planeada" | "em_curso" | "concluida" | "fechada" | "conferida";
+
+export const ETIQUETA_ROTA: Record<EstadoRota, string> = {
+  planeada: "Planeada",
+  em_curso: "Em curso",
+  concluida: "Concluída",
+  fechada: "Fechada",
+  conferida: "Conferida",
+};
+
+export type Desfecho = "entregue" | "parcial" | "reagendada" | "cancelada" | "ausente";
+
+export const ETIQUETA_DESFECHO: Record<Desfecho, string> = {
+  entregue: "Entregue",
+  parcial: "Entrega parcial",
+  reagendada: "Reagendada",
+  cancelada: "Cancelada",
+  ausente: "Não entregue",
+};
+
+export interface Rota extends CamposComuns {
+  data: string;
+  nome: string;
+  responsavel_id: string;
+  viatura: string | null;
+  estado: EstadoRota;
+  previsto_entregas: number;
+  previsto_receber: number;
+  realizado_entregas: number | null;
+  realizado_recebido: number | null;
+  realizado_dinheiro: number | null;
+  realizado_saidas: number | null;
+  esperado_envelope: number | null;
+  valor_envelope: number | null;
+  aberta_em: string | null;
+  fechada_em: string | null;
+  fechada_por: string | null;
+  conferida_em: string | null;
+  conferida_por: string | null;
+  valor_conferido: number | null;
+  diferenca: number | null;
+  justificacao_diferenca: string | null;
+  observacoes: string | null;
+  responsavel?: string | null;
+  paragens?: number;
+  paragens_fechadas?: number;
+  caixa_id?: string | null;
+}
+
+export interface RotaParagem extends CamposComuns {
+  rota_id: string;
+  pedido_id: string;
+  ordem: number;
+  previsto_receber: number;
+  desfecho: Desfecho | null;
+  data_reagendamento: string | null;
+  motivo_id: string | null;
+  motivo: string | null;
+  entrega_id: string | null;
+  concluida_em: string | null;
+  rota_data?: string;
+  rota_nome?: string;
+  rota_estado?: EstadoRota;
+  responsavel_id?: string;
+  pedido_numero?: string;
+  pedido_estado?: EstadoPedido;
+  total?: number;
+  total_pago?: number;
+  pendente?: number;
+  morada_entrega?: string | null;
+  localidade_entrega?: string | null;
+  cp4_entrega?: string | null;
+  cp3_entrega?: string | null;
+  contacto_entrega?: string | null;
+  notas_entrega?: string | null;
+  entrega_domicilio?: boolean;
+  cliente?: string | null;
+  cliente_telefone?: string | null;
+  cliente_telefone_alt?: string | null;
+  motivo_descricao?: string | null;
+}
+
+export interface RotaMovimento {
+  id: string;
+  rota_id: string;
+  criado_em: string;
+  tipo: string;
+  valor: number;
+  sentido: number;
+  pedido_id: string | null;
+  pagamento_id: string | null;
+  descricao: string | null;
+  comprovativo_url: string | null;
+  forma: string | null;
+  motivo: string | null;
+}
+
+export interface RotaContas {
+  rota_id: string;
+  data: string;
+  nome: string;
+  estado: EstadoRota;
+  responsavel_id: string;
+  responsavel: string | null;
+  previsto_entregas: number;
+  previsto_receber: number;
+  entregas_feitas: number;
+  reagendadas: number;
+  nao_entregues: number;
+  recebido: number;
+  dinheiro: number;
+  saidas: number;
+  esperado_envelope: number;
+  valor_envelope: number | null;
+  valor_conferido: number | null;
+  diferenca: number | null;
+  justificacao_diferenca: string | null;
+  fechada_em: string | null;
+  conferida_em: string | null;
+}
+
+export type EstadoAssistencia =
+  | "aberta"
+  | "em_analise"
+  | "peca_encomendada"
+  | "agendada"
+  | "resolvida"
+  | "cancelada";
+
+export const ETIQUETA_ASSISTENCIA: Record<EstadoAssistencia, string> = {
+  aberta: "Aberta",
+  em_analise: "Em análise",
+  peca_encomendada: "Peça encomendada",
+  agendada: "Agendada",
+  resolvida: "Resolvida",
+  cancelada: "Cancelada",
+};
+
+export const ESTADOS_ASSISTENCIA: Array<{ valor: EstadoAssistencia; etiqueta: string }> = (
+  Object.keys(ETIQUETA_ASSISTENCIA) as EstadoAssistencia[]
+).map((valor) => ({ valor, etiqueta: ETIQUETA_ASSISTENCIA[valor] }));
+
+export interface Assistencia extends CamposComuns {
+  pedido_id: string;
+  pedido_item_id: string | null;
+  entrega_id: string | null;
+  paragem_id: string | null;
+  origem: "entrega" | "cliente" | "oficina";
+  motivo: string;
+  peca_afetada: string | null;
+  descricao: string;
+  fotos: string[] | null;
+  estado: EstadoAssistencia;
+  aberta_por: string | null;
+  resolvida_em: string | null;
+  nota_resolucao: string | null;
+  pedido_numero?: string;
+  cliente?: string | null;
+  item_descricao?: string | null;
+  aberta_por_nome?: string | null;
 }

@@ -19,9 +19,13 @@ import {
   FolderTree,
   History,
   LayoutDashboard,
+  LifeBuoy,
   ListChecks,
   LogOut,
+  MapPinned,
   Menu,
+  Route,
+
   Package,
   PackageCheck,
   PackageSearch,
@@ -76,6 +80,29 @@ const NAVEGACAO: GrupoNav[] = [
     itens: [{ para: "/painel", etiqueta: "Painel", icone: LayoutDashboard }],
   },
   {
+    etiqueta: "Rota",
+    itens: [
+      {
+        para: "/rota",
+        etiqueta: "A minha rota",
+        icone: Route,
+        perfis: ["entregador", "adm"],
+      },
+      {
+        para: "/rotas",
+        etiqueta: "Rotas",
+        icone: MapPinned,
+        perfis: ["adm", "escritorio", "financeiro"],
+      },
+      {
+        para: "/assistencias",
+        etiqueta: "Assistências",
+        icone: LifeBuoy,
+        perfis: ["adm", "escritorio", "financeiro"],
+      },
+    ],
+  },
+  {
     etiqueta: "Vendas",
     itens: [
       { para: "/pedidos", etiqueta: "Vendas", icone: ShoppingCart },
@@ -90,6 +117,7 @@ const NAVEGACAO: GrupoNav[] = [
       { para: "/cupoes", etiqueta: "Cupões", icone: Ticket, perfis: ["adm"] },
     ],
   },
+
   {
     etiqueta: "Caixa e pagamentos",
     itens: [
@@ -268,14 +296,18 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   const utilizador = sessao?.utilizador ?? null;
+  // O entregador só vê o que estiver explicitamente aberto ao seu perfil.
   const grupos = utilizador
     ? NAVEGACAO.map((grupo) => ({
         ...grupo,
-        itens: grupo.itens.filter(
-          (item) => !item.perfis || item.perfis.includes(utilizador.perfil),
+        itens: grupo.itens.filter((item) =>
+          utilizador.perfil === "entregador"
+            ? Boolean(item.perfis?.includes("entregador"))
+            : !item.perfis || item.perfis.includes(utilizador.perfil),
         ),
       })).filter((grupo) => grupo.itens.length > 0)
     : [];
+
 
   if (isLoading) {
     return (

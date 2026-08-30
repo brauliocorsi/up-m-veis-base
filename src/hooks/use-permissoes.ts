@@ -6,35 +6,44 @@ export function usePermissoes() {
   const { data: sessao, isLoading } = useSessao();
   const perfil = (sessao?.utilizador?.perfil ?? null) as Perfil | null;
   const ativo = Boolean(sessao?.utilizador?.ativo);
+  const é = (...perfis: Perfil[]) => ativo && perfil !== null && perfis.includes(perfil);
 
   return {
     isLoading,
     perfil,
-    adm: ativo && perfil === "adm",
-    editarCatalogo: ativo && (perfil === "adm" || perfil === "compras"),
-    editarClientes:
-      ativo && (perfil === "adm" || perfil === "vendedora" || perfil === "escritorio"),
+    adm: é("adm"),
+    /** O entregador vive na área da rota e não entra no resto do ERP. */
+    entregador: é("entregador"),
+    editarCatalogo: é("adm", "compras"),
+    editarClientes: é("adm", "vendedora", "escritorio"),
     /** Compras e Administração emitem e recebem ordens de compra. */
-    comprar: ativo && (perfil === "adm" || perfil === "compras"),
+    comprar: é("adm", "compras"),
     /** Financeiro e Administração pagam a fornecedores. */
-    pagar: ativo && (perfil === "adm" || perfil === "financeiro"),
+    pagar: é("adm", "financeiro"),
     /** Escritório também acompanha necessidades e estados de fornecimento. */
-    verCompras: ativo && perfil !== "vendedora",
-    /** Ecrãs financeiros: tudo menos vendedoras. */
-    verFinanceiro: ativo && perfil !== "vendedora",
+    verCompras: é("adm", "compras", "escritorio", "financeiro"),
+    /** Ecrãs financeiros: nem vendedoras nem entregadores. */
+    verFinanceiro: é("adm", "financeiro", "escritorio", "compras"),
     /** Custos e margens: só Financeiro e Administração. */
-    verCustos: ativo && (perfil === "adm" || perfil === "financeiro"),
+    verCustos: é("adm", "financeiro"),
     /** Quem pode ler e gravar custos e margens mínimas de produto. */
-    editarCustos:
-      ativo && (perfil === "adm" || perfil === "financeiro" || perfil === "compras"),
+    editarCustos: é("adm", "financeiro", "compras"),
 
     /** Confirmar e devolver recebimentos. */
-    receber: ativo && (perfil === "adm" || perfil === "financeiro" || perfil === "escritorio"),
+    receber: é("adm", "financeiro", "escritorio"),
 
-    /** Qualquer utilizador ativo — incluindo vendedoras — registra entregas. */
+    /** Quem registra entregas — inclui vendedoras e entregadores. */
     entregar: ativo,
     /** Documentos fiscais: emitir e anular. */
-    faturar: ativo && (perfil === "adm" || perfil === "financeiro" || perfil === "escritorio"),
+    faturar: é("adm", "financeiro", "escritorio"),
+
+    /** Montar rotas, atribuir responsáveis e tratar reagendamentos. */
+    montarRotas: é("adm", "escritorio"),
+    /** Abrir envelopes e conferir o dinheiro das rotas. */
+    conferirRotas: é("adm", "financeiro"),
+    /** Ver o previsto contra o realizado das rotas de toda a equipa. */
+    verRotas: é("adm", "escritorio", "financeiro"),
+    /** Tratar assistências abertas na rua ou pelo cliente. */
+    tratarAssistencias: é("adm", "escritorio", "financeiro"),
   };
 }
-

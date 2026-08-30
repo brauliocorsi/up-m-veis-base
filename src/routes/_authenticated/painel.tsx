@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { BadgeEuro, CalendarDays, Truck, Users } from "lucide-react";
 
 import { CabecalhoPagina } from "@/components/erp/app-shell";
@@ -36,10 +36,12 @@ function Painel() {
   const { data: sessao } = useSessao();
   const utilizador = sessao?.utilizador;
   const eAdm = utilizador?.perfil === "adm";
+  // O entregador trabalha só na sua rota do dia.
+  const eEntregador = utilizador?.perfil === "entregador";
 
   const { data: totais } = useQuery({
     queryKey: ["painel-totais", eAdm],
-    enabled: Boolean(utilizador),
+    enabled: Boolean(utilizador) && !eEntregador,
     queryFn: async () => ({
       utilizadores: eAdm ? await contar("v_utilizadores") : 0,
       formas: await contar("v_formas_pagamento"),
@@ -67,7 +69,10 @@ function Painel() {
     { etiqueta: "Dias marcados", valor: totais?.dias, icone: CalendarDays, para: "/calendario" },
   ].filter((c) => eAdm || c.etiqueta !== "Utilizadores");
 
+  if (eEntregador) return <Navigate to="/rota" replace />;
+
   return (
+
     <div>
       <CabecalhoPagina
         titulo={`Bom trabalho, ${utilizador?.nome?.split(" ")[0] ?? ""}`}
