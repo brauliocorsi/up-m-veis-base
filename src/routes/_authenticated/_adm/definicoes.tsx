@@ -35,6 +35,10 @@ interface Empresa {
   telefone: string;
   email: string;
   logotipo_url: string;
+  logotipo_path: string;
+  mensagem_documento: string;
+  apoio_url: string;
+  observacoes_documento: string;
 }
 
 const EMPRESA_VAZIA: Empresa = {
@@ -44,6 +48,10 @@ const EMPRESA_VAZIA: Empresa = {
   telefone: "",
   email: "",
   logotipo_url: "",
+  logotipo_path: "",
+  mensagem_documento: "",
+  apoio_url: "",
+  observacoes_documento: "",
 };
 
 type Limites = Record<Perfil, number>;
