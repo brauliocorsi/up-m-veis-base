@@ -4,7 +4,7 @@ export const esquemaCriarUtilizador = z.object({
   nome: z.string().trim().min(3, "O nome tem de ter pelo menos 3 letras."),
   email: z.string().trim().email("Escreva um email válido."),
   telefone: z.string().trim().max(30).optional().or(z.literal("")),
-  perfil: z.enum(["vendedora", "escritorio", "compras", "financeiro", "adm"]),
+  perfil: z.enum(["vendedora", "escritorio", "compras", "financeiro", "entregador", "adm"]),
   palavra_passe: z.string().min(8, "A palavra-passe tem de ter pelo menos 8 caracteres."),
 });
 
