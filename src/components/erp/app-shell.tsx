@@ -357,16 +357,20 @@ export function AppShell({ children }: { children: ReactNode }) {
           <main className="flex-1 px-4 pb-24 pt-4 md:px-6 md:pb-8">{children}</main>
         </div>
 
-        <nav className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t bg-background/95 px-2 py-2 backdrop-blur md:hidden">
+        <nav
+          data-menu
+          className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t bg-background/95 px-2 py-2 backdrop-blur md:hidden"
+        >
           {itensMobile.map((item) => {
-            const ativo = caminho === item.para;
+            const ativo = rotaAtiva(caminho, item.para);
             return (
               <Link
                 key={item.para}
                 to={item.para}
+                aria-current={ativo ? "page" : undefined}
                 className={cn(
-                  "flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-1 text-[11px]",
-                  ativo ? "text-primary" : "text-muted-foreground",
+                  "flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-1 text-[11px] transition-colors",
+                  ativo ? "font-medium text-primary" : "text-muted-foreground",
                 )}
               >
                 <item.icone className="h-5 w-5" />
@@ -382,40 +386,18 @@ export function AppShell({ children }: { children: ReactNode }) {
                   Mais
                 </button>
               </SheetTrigger>
-              <SheetContent side="bottom" className="space-y-2 pb-8">
+              <SheetContent side="bottom" data-menu className="space-y-2 pb-8">
                 <SheetTitle>Menu</SheetTitle>
                 <nav className="space-y-2">
-                  {gruposRestantes.map((grupo) => {
-                    const aberto = categoriaAberta === grupo.etiqueta;
-                    return (
-                      <div key={grupo.etiqueta}>
-                        <button
-                          type="button"
-                          onClick={() => setCategoriaAberta(aberto ? null : grupo.etiqueta)}
-                          className="flex w-full items-center justify-between rounded-md px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted"
-                        >
-                          {grupo.etiqueta}
-                          {aberto ? (
-                            <ChevronDown className="h-3.5 w-3.5" />
-                          ) : (
-                            <ChevronRight className="h-3.5 w-3.5" />
-                          )}
-                        </button>
-                        {aberto && (
-                          <div className="mt-1 space-y-1 px-1">
-                            {grupo.itens.map((item) =>
-                              linhaNav(item, () => setMenuAberto(false)),
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {gruposRestantes.map((grupo) =>
+                    grupoNav(grupo, () => setMenuAberto(false), "hover:bg-muted"),
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>
           )}
         </nav>
+
       </div>
     </TooltipProvider>
   );
