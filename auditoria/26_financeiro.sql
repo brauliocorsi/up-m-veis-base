@@ -60,10 +60,13 @@ begin
   insert into erp.categorias (codigo, nome) values ('AUDF7', 'Auditoria Financeiro')
     on conflict (codigo) do nothing;
   insert into erp.produtos (cod_barras, categoria_id, nome_cliente, tipo_fornecimento,
-                            preco_base, custo_ultimo, n_colis)
-  select 'AUD-FIN7', id, '[AUD] Produto Financeiro', 'stock', 100.00, 40.00, 1
+                            preco_base, n_colis)
+  select 'AUD-FIN7', id, '[AUD] Produto Financeiro', 'stock', 100.00, 1
     from erp.categorias where codigo = 'AUDF7'
   returning id into v_produto;
+
+  -- custos vivem em erp.produto_custos desde a correção de agosto/2026
+  perform erp.definir_custos(v_produto, 40.00, null);
 
   insert into erp.pedidos (numero, cliente_id, vendedor_id, estado, total, origem)
   values ('AUD-FIN7-1', v_cliente, (select id from erp.utilizadores where user_id = v_vend),

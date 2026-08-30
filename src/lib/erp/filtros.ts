@@ -5,20 +5,20 @@ import { formatarDataCurta, type Pedido } from "./tipos";
 
 /** Filtros partilhados por Vendas, Financeiro e Entregas. Vivem no URL. */
 export interface FiltrosVendas {
-  de?: string;
-  ate?: string;
-  entrega_de?: string;
-  entrega_ate?: string;
-  efetiva_de?: string;
-  efetiva_ate?: string;
-  vendedor?: string;
-  estado?: string;
-  fiscal?: string;
-  pagamento?: string;
-  cliente?: string;
-  produto?: string;
-  cp4?: string;
-  origem?: string;
+  de?: string | undefined;
+  ate?: string | undefined;
+  entrega_de?: string | undefined;
+  entrega_ate?: string | undefined;
+  efetiva_de?: string | undefined;
+  efetiva_ate?: string | undefined;
+  vendedor?: string | undefined;
+  estado?: string | undefined;
+  fiscal?: string | undefined;
+  pagamento?: string | undefined;
+  cliente?: string | undefined;
+  produto?: string | undefined;
+  cp4?: string | undefined;
+  origem?: string | undefined;
 }
 
 export const CAMPOS_PESQUISA_PEDIDO = [

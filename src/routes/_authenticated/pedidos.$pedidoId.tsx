@@ -23,6 +23,7 @@ import {
   ProgressoFornecimento,
   type ContextoFornecimento,
 } from "@/components/erp/fornecimento";
+import { PainelEntrega } from "@/components/erp/painel-entrega";
 import { PainelPagamentos } from "@/components/erp/painel-pagamentos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -251,6 +252,7 @@ function EcraVenda() {
           <Totais pedido={p} />
           <Descontos pedido={p} editavel={editavel} onGuardar={(c) => guardar.mutate(c)} />
           {p.tipo === "pedido" ? <PainelPagamentos pedido={p} /> : null}
+          {p.tipo === "pedido" ? <PainelEntrega pedido={p} /> : null}
 
           <Card>
             <CardHeader className="pb-2">
