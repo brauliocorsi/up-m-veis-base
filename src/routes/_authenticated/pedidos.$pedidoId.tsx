@@ -23,6 +23,7 @@ import {
   ProgressoFornecimento,
   type ContextoFornecimento,
 } from "@/components/erp/fornecimento";
+import { PainelEntrega } from "@/components/erp/painel-entrega";
 import { PainelPagamentos } from "@/components/erp/painel-pagamentos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
