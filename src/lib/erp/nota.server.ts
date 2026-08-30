@@ -170,7 +170,7 @@ export async function construirNotaPdf(dados: DadosNota): Promise<Uint8Array> {
       y: yTopo - h,
       width: w,
       height: h,
-      color: fundo,
+      ...(fundo ? { color: fundo } : {}),
       borderColor: BORDA,
       borderWidth: 0.6,
     });
