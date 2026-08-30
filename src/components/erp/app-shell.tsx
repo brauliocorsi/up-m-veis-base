@@ -163,6 +163,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const caminho = useRouterState({ select: (s) => s.location.pathname });
   const [menuAberto, setMenuAberto] = useState(false);
+  const [categoriaAberta, setCategoriaAberta] = useState<string | null>(null);
 
   async function sair() {
     await queryClient.cancelQueries();
