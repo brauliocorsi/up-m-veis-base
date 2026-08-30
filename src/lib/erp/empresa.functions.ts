@@ -20,7 +20,7 @@ export const carregarLogotipo = createServerFn({ method: "POST" })
     const { data: perfil } = await db
       .from("v_utilizadores")
       .select("perfil")
-      .eq("auth_user_id", context.userId)
+      .eq("user_id", context.userId)
       .maybeSingle();
     if (perfil?.perfil !== "adm") throw new Error("Apenas a administração pode alterar o logótipo.");
 
