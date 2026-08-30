@@ -339,10 +339,59 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur">
-            <div className="md:hidden">
-              <Marca />
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="md:hidden">
+                <Marca />
+              </div>
+              <nav aria-label="Caminho de navegação" className="min-w-0">
+                <ol className="flex min-w-0 flex-wrap items-center gap-1 text-xs text-muted-foreground">
+                  <li className="flex items-center gap-1">
+                    <Link
+                      to="/painel"
+                      className="rounded px-1 py-0.5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      Início
+                    </Link>
+                  </li>
+                  {grupoAtual && (
+                    <li className="flex items-center gap-1">
+                      <ChevronRight className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      <button
+                        type="button"
+                        onClick={() => setCategoriaAberta(grupoAtual.etiqueta)}
+                        className="rounded px-1 py-0.5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {grupoAtual.etiqueta}
+                      </button>
+                    </li>
+                  )}
+                  {itemAtual && (
+                    <li className="flex min-w-0 items-center gap-1">
+                      <ChevronRight className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      <Link
+                        to={itemAtual.para}
+                        aria-current={subNivel ? undefined : "page"}
+                        className={cn(
+                          "truncate rounded px-1 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          subNivel ? "hover:text-foreground" : "font-medium text-foreground",
+                        )}
+                      >
+                        {itemAtual.etiqueta}
+                      </Link>
+                    </li>
+                  )}
+                  {subNivel && (
+                    <li className="flex items-center gap-1">
+                      <ChevronRight className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      <span aria-current="page" className="px-1 py-0.5 font-medium text-foreground">
+                        Detalhe
+                      </span>
+                    </li>
+                  )}
+                </ol>
+              </nav>
             </div>
-            <div className="ml-auto flex items-center gap-3">
+            <div className="ml-auto flex shrink-0 items-center gap-3">
               <IndicadorSync podeGerir={utilizador.perfil === "adm"} />
               <div className="text-right leading-tight">
                 <p className="text-sm font-medium">{utilizador.nome}</p>
