@@ -28,6 +28,7 @@ import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedPedidosCompraRouteImport } from './routes/_authenticated/pedidos-compra'
 import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
 import { Route as AuthenticatedRecepcaoRouteImport } from './routes/_authenticated/recepcao'
+import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedReservasRouteImport } from './routes/_authenticated/reservas'
 import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
 import { Route as AuthenticatedAdmCaixasRouteImport } from './routes/_authenticated/_adm/caixas'
@@ -148,6 +149,11 @@ const AuthenticatedProdutosRoute = AuthenticatedProdutosRouteImport.update({
 const AuthenticatedRecepcaoRoute = AuthenticatedRecepcaoRouteImport.update({
   id: '/recepcao',
   path: '/recepcao',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedReservasRoute = AuthenticatedReservasRouteImport.update({
@@ -294,6 +300,7 @@ export interface FileRoutesByFullPath {
   '/pedidos-compra': typeof AuthenticatedPedidosCompraRoute
   '/produtos': typeof AuthenticatedProdutosRoute
   '/recepcao': typeof AuthenticatedRecepcaoRoute
+  '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/caixas': typeof AuthenticatedAdmCaixasRoute
@@ -335,6 +342,7 @@ export interface FileRoutesByTo {
   '/pedidos-compra': typeof AuthenticatedPedidosCompraRoute
   '/produtos': typeof AuthenticatedProdutosRoute
   '/recepcao': typeof AuthenticatedRecepcaoRoute
+  '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/caixas': typeof AuthenticatedAdmCaixasRoute
@@ -379,6 +387,7 @@ export interface FileRoutesById {
   '/_authenticated/pedidos-compra': typeof AuthenticatedPedidosCompraRoute
   '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
   '/_authenticated/recepcao': typeof AuthenticatedRecepcaoRoute
+  '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/reservas': typeof AuthenticatedReservasRoute
   '/_authenticated/servicos': typeof AuthenticatedServicosRoute
   '/_authenticated/_adm/caixas': typeof AuthenticatedAdmCaixasRoute
@@ -422,6 +431,7 @@ export interface FileRouteTypes {
     | '/pedidos-compra'
     | '/produtos'
     | '/recepcao'
+    | '/relatorios'
     | '/reservas'
     | '/servicos'
     | '/caixas'
@@ -463,6 +473,7 @@ export interface FileRouteTypes {
     | '/pedidos-compra'
     | '/produtos'
     | '/recepcao'
+    | '/relatorios'
     | '/reservas'
     | '/servicos'
     | '/caixas'
@@ -506,6 +517,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pedidos-compra'
     | '/_authenticated/produtos'
     | '/_authenticated/recepcao'
+    | '/_authenticated/relatorios'
     | '/_authenticated/reservas'
     | '/_authenticated/servicos'
     | '/_authenticated/_adm/caixas'
@@ -670,6 +682,13 @@ declare module '@tanstack/react-router' {
       path: '/recepcao'
       fullPath: '/recepcao'
       preLoaderRoute: typeof AuthenticatedRecepcaoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/relatorios': {
+      id: '/_authenticated/relatorios'
+      path: '/relatorios'
+      fullPath: '/relatorios'
+      preLoaderRoute: typeof AuthenticatedRelatoriosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/reservas': {
@@ -883,6 +902,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPedidosCompraRoute: typeof AuthenticatedPedidosCompraRoute
   AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
   AuthenticatedRecepcaoRoute: typeof AuthenticatedRecepcaoRoute
+  AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedReservasRoute: typeof AuthenticatedReservasRoute
   AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
   AuthenticatedOrdensCompraOcIdRoute: typeof AuthenticatedOrdensCompraOcIdRoute
@@ -910,6 +930,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPedidosCompraRoute: AuthenticatedPedidosCompraRoute,
   AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,
   AuthenticatedRecepcaoRoute: AuthenticatedRecepcaoRoute,
+  AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
   AuthenticatedReservasRoute: AuthenticatedReservasRoute,
   AuthenticatedServicosRoute: AuthenticatedServicosRoute,
   AuthenticatedOrdensCompraOcIdRoute: AuthenticatedOrdensCompraOcIdRoute,

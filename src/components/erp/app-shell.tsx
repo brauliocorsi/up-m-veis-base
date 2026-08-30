@@ -163,7 +163,7 @@ const NAVEGACAO: GrupoNav[] = [
         para: "/contas-pagar",
         etiqueta: "Contas a pagar",
         icone: Receipt,
-        perfis: ["adm", "financeiro"],
+        perfis: ["adm", "financeiro", "compras"],
       },
       { para: "/fornecedores", etiqueta: "Fornecedores", icone: Factory },
     ],
