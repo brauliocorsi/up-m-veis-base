@@ -123,7 +123,7 @@ const VAZIO: Formulario = {
 };
 
 function PaginaProdutos() {
-  const { editarCatalogo, adm } = usePermissoes();
+  const { editarCatalogo, adm, editarCustos } = usePermissoes();
   const estado = useListagem("nome_cliente", true);
   const queryClient = useQueryClient();
 
@@ -199,6 +199,18 @@ function PaginaProdutos() {
     };
   }
 
+  async function guardarCustos(produtoId: string) {
+    if (!editarCustos) return;
+    const custo = form.custo_ultimo.trim().replace(",", ".");
+    const margem = form.margem_minima_pct.trim().replace(",", ".");
+    const { error } = await erp().rpc("definir_custos", {
+      p_produto_id: produtoId,
+      p_custo: custo === "" ? null : Number(custo),
+      p_margem_minima_pct: margem === "" ? null : Number(margem),
+    });
+    if (error) throw error;
+  }
+
   const mGuardar = useMutation({
     mutationFn: async () => {
       const linha = paraLinha(form);
@@ -206,11 +218,14 @@ function PaginaProdutos() {
         const payload = adm ? linha : { ...linha, cod_barras: emEdicao.cod_barras };
         const { error } = await erp().from("produtos").update(payload).eq("id", emEdicao.id);
         if (error) throw error;
+        await guardarCustos(emEdicao.id);
       } else {
-        const { error } = await erp().from("produtos").insert(linha);
+        const { data, error } = await erp().from("produtos").insert(linha).select("id").single();
         if (error) throw error;
+        if (data?.id) await guardarCustos(data.id as string);
       }
     },
+
     onSuccess: () => {
       toast.success(emEdicao ? "Produto guardado." : "Produto criado.");
       setAberto(false);
@@ -233,7 +248,7 @@ function PaginaProdutos() {
     onError: (erro) => toast.error(primeiraMensagem(erro)),
   });
 
-  function abrirEdicao(l: Produto) {
+  async function abrirEdicao(l: Produto) {
     setEmEdicao(l);
     setForm({
       cod_barras: l.cod_barras,
@@ -252,20 +267,36 @@ function PaginaProdutos() {
       peso_kg: l.peso_kg === null ? "" : String(l.peso_kg),
       preco_base: l.preco_base === null ? "" : String(l.preco_base),
       preco_promocional: l.preco_promocional === null ? "" : String(l.preco_promocional),
-      custo_ultimo: l.custo_ultimo === null ? "" : String(l.custo_ultimo),
+      custo_ultimo: "",
       iva_pct: String(l.iva_pct ?? 23),
       valor_montagem: String(l.valor_montagem ?? 0),
       montagem_obrigatoria: l.montagem_obrigatoria,
       tempo_montagem_min: l.tempo_montagem_min === null ? "" : String(l.tempo_montagem_min),
       permite_desconto: l.permite_desconto,
-      margem_minima_pct: l.margem_minima_pct === null ? "" : String(l.margem_minima_pct),
+      margem_minima_pct: "",
       ponto_reposicao: l.ponto_reposicao === null ? "" : String(l.ponto_reposicao),
       imagem_url: l.imagem_url ?? "",
       vendavel: l.vendavel,
       ativo: l.ativo,
     });
     setAberto(true);
+    if (editarCustos) {
+      const { data: custos } = await erp()
+        .from("v_produto_custos")
+        .select("custo_ultimo, margem_minima_pct")
+        .eq("produto_id", l.id)
+        .maybeSingle();
+      if (custos) {
+        setForm((atual) => ({
+          ...atual,
+          custo_ultimo: custos.custo_ultimo === null ? "" : String(custos.custo_ultimo),
+          margem_minima_pct:
+            custos.margem_minima_pct === null ? "" : String(custos.margem_minima_pct),
+        }));
+      }
+    }
   }
+
 
   const familiasDaCategoria = (familias?.linhas ?? []).filter(
     (f) => f.categoria_id === form.categoria_id,
@@ -654,15 +685,17 @@ function PaginaProdutos() {
               onChange={(e) => setForm({ ...form, preco_promocional: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="p-custo">Último custo (€)</Label>
-            <Input
-              id="p-custo"
-              inputMode="decimal"
-              value={form.custo_ultimo}
-              onChange={(e) => setForm({ ...form, custo_ultimo: e.target.value })}
-            />
-          </div>
+          {editarCustos ? (
+            <div className="space-y-2">
+              <Label htmlFor="p-custo">Último custo (€)</Label>
+              <Input
+                id="p-custo"
+                inputMode="decimal"
+                value={form.custo_ultimo}
+                onChange={(e) => setForm({ ...form, custo_ultimo: e.target.value })}
+              />
+            </div>
+          ) : null}
           <div className="space-y-2">
             <Label htmlFor="p-iva">IVA (%)</Label>
             <Input
@@ -690,15 +723,17 @@ function PaginaProdutos() {
               onChange={(e) => setForm({ ...form, tempo_montagem_min: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="p-margem">Margem mínima (%)</Label>
-            <Input
-              id="p-margem"
-              inputMode="decimal"
-              value={form.margem_minima_pct}
-              onChange={(e) => setForm({ ...form, margem_minima_pct: e.target.value })}
-            />
-          </div>
+          {editarCustos ? (
+            <div className="space-y-2">
+              <Label htmlFor="p-margem">Margem mínima (%)</Label>
+              <Input
+                id="p-margem"
+                inputMode="decimal"
+                value={form.margem_minima_pct}
+                onChange={(e) => setForm({ ...form, margem_minima_pct: e.target.value })}
+              />
+            </div>
+          ) : null}
           <div className="space-y-2">
             <Label htmlFor="p-reposicao">Ponto de reposição</Label>
             <Input

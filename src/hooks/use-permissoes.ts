@@ -24,6 +24,10 @@ export function usePermissoes() {
     verFinanceiro: ativo && perfil !== "vendedora",
     /** Custos e margens: só Financeiro e Administração. */
     verCustos: ativo && (perfil === "adm" || perfil === "financeiro"),
+    /** Quem pode ler e gravar custos e margens mínimas de produto. */
+    editarCustos:
+      ativo && (perfil === "adm" || perfil === "financeiro" || perfil === "compras"),
+
     /** Confirmar e devolver recebimentos. */
     receber: ativo && (perfil === "adm" || perfil === "financeiro" || perfil === "escritorio"),
   };
