@@ -4,7 +4,7 @@ import {
   BadgeEuro,
   CalendarDays,
   ChevronDown,
-  ChevronRight,
+  
   ClipboardCheck,
   ClipboardList,
   Boxes,
@@ -36,7 +36,7 @@ import {
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { IndicadorSync } from "@/components/erp/indicador-sync";
@@ -157,6 +157,12 @@ function Marca() {
   );
 }
 
+const CHAVE_CATEGORIA = "up-vendas:categoria-aberta";
+
+function rotaAtiva(caminho: string, para: string) {
+  return caminho === para || caminho.startsWith(`${para}/`);
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const { data: sessao, isLoading } = useSessao();
   const navigate = useNavigate();
@@ -164,6 +170,22 @@ export function AppShell({ children }: { children: ReactNode }) {
   const caminho = useRouterState({ select: (s) => s.location.pathname });
   const [menuAberto, setMenuAberto] = useState(false);
   const [categoriaAberta, setCategoriaAberta] = useState<string | null>(null);
+  const refLateral = useRef<HTMLElement | null>(null);
+  const restaurado = useRef(false);
+
+  // Restaurar a categoria guardada (persistente entre navegações e recargas).
+  useEffect(() => {
+    if (restaurado.current) return;
+    restaurado.current = true;
+    const guardada = window.localStorage.getItem(CHAVE_CATEGORIA);
+    if (guardada) setCategoriaAberta(guardada);
+  }, []);
+
+  useEffect(() => {
+    if (!restaurado.current) return;
+    if (categoriaAberta) window.localStorage.setItem(CHAVE_CATEGORIA, categoriaAberta);
+    else window.localStorage.removeItem(CHAVE_CATEGORIA);
+  }, [categoriaAberta]);
 
   useEffect(() => {
     const utilizador = sessao?.utilizador;
@@ -171,11 +193,24 @@ export function AppShell({ children }: { children: ReactNode }) {
     const ativa = NAVEGACAO.find((grupo) =>
       grupo.itens.some((item) => {
         if (item.perfis && !item.perfis.includes(utilizador.perfil)) return false;
-        return caminho === item.para;
+        return rotaAtiva(caminho, item.para);
       }),
     );
     if (ativa) setCategoriaAberta(ativa.etiqueta);
   }, [caminho, sessao?.utilizador?.perfil]);
+
+  // Fechar o dropdown ao clicar fora do menu lateral.
+  useEffect(() => {
+    function aoClicarFora(evento: MouseEvent) {
+      const alvo = evento.target as HTMLElement | null;
+      if (!alvo || !refLateral.current) return;
+      if (refLateral.current.contains(alvo)) return;
+      if (alvo.closest?.("[data-menu]")) return;
+      setCategoriaAberta(null);
+    }
+    document.addEventListener("mousedown", aoClicarFora);
+    return () => document.removeEventListener("mousedown", aoClicarFora);
+  }, []);
 
   async function sair() {
     await queryClient.cancelQueries();
@@ -229,12 +264,13 @@ export function AppShell({ children }: { children: ReactNode }) {
     .filter((grupo) => grupo.itens.length > 0);
 
   const linhaNav = (item: ItemNav, aoClicar?: () => void) => {
-    const ativo = caminho === item.para;
+    const ativo = rotaAtiva(caminho, item.para);
     return (
       <Link
         key={item.para}
         to={item.para}
         onClick={aoClicar}
+        aria-current={ativo ? "page" : undefined}
         className={cn(
           "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
           ativo
@@ -248,40 +284,58 @@ export function AppShell({ children }: { children: ReactNode }) {
     );
   };
 
+  const grupoNav = (grupo: GrupoNav, aoClicar?: () => void, classeBotao?: string) => {
+    const aberto = categoriaAberta === grupo.etiqueta;
+    const temAtivo = grupo.itens.some((item) => rotaAtiva(caminho, item.para));
+    return (
+      <div key={grupo.etiqueta}>
+        <button
+          type="button"
+          aria-expanded={aberto}
+          onClick={() => setCategoriaAberta(aberto ? null : grupo.etiqueta)}
+          className={cn(
+            "flex w-full items-center justify-between rounded-md px-3 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors",
+            temAtivo ? "text-foreground" : "text-muted-foreground",
+            classeBotao ?? "hover:bg-sidebar-accent/40",
+          )}
+        >
+          {grupo.etiqueta}
+          <ChevronDown
+            className={cn(
+              "h-3.5 w-3.5 transition-transform duration-300 ease-out",
+              aberto ? "rotate-0" : "-rotate-90",
+            )}
+          />
+        </button>
+        <div
+          className={cn(
+            "grid transition-all duration-300 ease-out",
+            aberto ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+          )}
+        >
+          <div className="overflow-hidden">
+            <div className="mt-1 space-y-1 px-1">
+              {grupo.itens.map((item) => linhaNav(item, aoClicar))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <TooltipProvider delayDuration={200}>
       <div className="min-h-screen bg-background md:flex">
-        <aside className="hidden w-64 shrink-0 border-r bg-sidebar p-4 md:block">
+        <aside
+          ref={refLateral}
+          className="hidden w-64 shrink-0 border-r bg-sidebar p-4 md:block"
+        >
           <div className="mb-6">
             <Marca />
           </div>
-          <nav className="space-y-2">
-            {grupos.map((grupo) => {
-              const aberto = categoriaAberta === grupo.etiqueta;
-              return (
-                <div key={grupo.etiqueta}>
-                  <button
-                    type="button"
-                    onClick={() => setCategoriaAberta(aberto ? null : grupo.etiqueta)}
-                    className="flex w-full items-center justify-between rounded-md px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-sidebar-accent/40"
-                  >
-                    {grupo.etiqueta}
-                    {aberto ? (
-                      <ChevronDown className="h-3.5 w-3.5" />
-                    ) : (
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    )}
-                  </button>
-                  {aberto && (
-                    <div className="mt-1 space-y-1 px-1">
-                      {grupo.itens.map((item) => linhaNav(item))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </nav>
+          <nav className="space-y-2">{grupos.map((grupo) => grupoNav(grupo))}</nav>
         </aside>
+
 
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur">
@@ -305,16 +359,20 @@ export function AppShell({ children }: { children: ReactNode }) {
           <main className="flex-1 px-4 pb-24 pt-4 md:px-6 md:pb-8">{children}</main>
         </div>
 
-        <nav className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t bg-background/95 px-2 py-2 backdrop-blur md:hidden">
+        <nav
+          data-menu
+          className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t bg-background/95 px-2 py-2 backdrop-blur md:hidden"
+        >
           {itensMobile.map((item) => {
-            const ativo = caminho === item.para;
+            const ativo = rotaAtiva(caminho, item.para);
             return (
               <Link
                 key={item.para}
                 to={item.para}
+                aria-current={ativo ? "page" : undefined}
                 className={cn(
-                  "flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-1 text-[11px]",
-                  ativo ? "text-primary" : "text-muted-foreground",
+                  "flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-1 text-[11px] transition-colors",
+                  ativo ? "font-medium text-primary" : "text-muted-foreground",
                 )}
               >
                 <item.icone className="h-5 w-5" />
@@ -330,40 +388,18 @@ export function AppShell({ children }: { children: ReactNode }) {
                   Mais
                 </button>
               </SheetTrigger>
-              <SheetContent side="bottom" className="space-y-2 pb-8">
+              <SheetContent side="bottom" data-menu className="space-y-2 pb-8">
                 <SheetTitle>Menu</SheetTitle>
                 <nav className="space-y-2">
-                  {gruposRestantes.map((grupo) => {
-                    const aberto = categoriaAberta === grupo.etiqueta;
-                    return (
-                      <div key={grupo.etiqueta}>
-                        <button
-                          type="button"
-                          onClick={() => setCategoriaAberta(aberto ? null : grupo.etiqueta)}
-                          className="flex w-full items-center justify-between rounded-md px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted"
-                        >
-                          {grupo.etiqueta}
-                          {aberto ? (
-                            <ChevronDown className="h-3.5 w-3.5" />
-                          ) : (
-                            <ChevronRight className="h-3.5 w-3.5" />
-                          )}
-                        </button>
-                        {aberto && (
-                          <div className="mt-1 space-y-1 px-1">
-                            {grupo.itens.map((item) =>
-                              linhaNav(item, () => setMenuAberto(false)),
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {gruposRestantes.map((grupo) =>
+                    grupoNav(grupo, () => setMenuAberto(false), "hover:bg-muted"),
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>
           )}
         </nav>
+
       </div>
     </TooltipProvider>
   );
