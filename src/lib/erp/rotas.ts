@@ -2,6 +2,7 @@ import { erp } from "./db";
 import type {
   Assistencia,
   Desfecho,
+  EnvelopeRota,
   EstadoAssistencia,
   Motivo,
   Rota,
