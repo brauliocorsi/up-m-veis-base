@@ -54,19 +54,30 @@ begin
   select id into v_forma_dinheiro from erp.formas_pagamento
    where entra_caixa and eliminado_em is null limit 1;
 
-  insert into erp.clientes (nome, telefone, tipo)
-  values ('Cliente Financeiro 7', '911000777', 'particular') returning id into v_cliente;
+  insert into erp.clientes (nome, telefone_e164, tipo)
+  values ('Cliente Financeiro 7', '+351911000777', 'particular') returning id into v_cliente;
 
-  insert into erp.produtos (sku, nome, preco_venda, custo_ultimo, tipo_fornecimento)
-  values ('AUD-FIN7', 'Produto Financeiro 7', 100.00, 40.00, 'stock') returning id into v_produto;
+  insert into erp.categorias (codigo, nome) values ('AUDF7', 'Auditoria Financeiro')
+    on conflict (codigo) do nothing;
+  insert into erp.produtos (cod_barras, categoria_id, nome_cliente, tipo_fornecimento,
+                            preco_base, custo_ultimo, n_colis)
+  select 'AUD-FIN7', id, '[AUD] Produto Financeiro', 'stock', 100.00, 40.00, 1
+    from erp.categorias where codigo = 'AUDF7'
+  returning id into v_produto;
 
-  insert into erp.pedidos (cliente_id, vendedor_id, estado, total, origem)
-  values (v_cliente, (select id from erp.utilizadores where user_id = v_vend),
-          'confirmado', 200.00, 'loja')
+  insert into erp.pedidos (numero, cliente_id, vendedor_id, estado, total, origem)
+  values ('AUD-FIN7-1', v_cliente, (select id from erp.utilizadores where user_id = v_vend),
+          'orcamento', 0, 'loja')
   returning id into v_pedido;
 
+  insert into erp.pedido_itens (pedido_id, linha, produto_id, descricao, quantidade,
+                                preco_unitario, preco_tabela)
+  values (v_pedido, 1, v_produto, '[AUD] Produto Financeiro', 2, 100.00, 100.00);
+
+  update erp.pedidos set estado = 'confirmado' where id = v_pedido;
+
   insert into erp.pagamentos (pedido_id, forma_id, valor, estado)
-  values (v_pedido, v_forma_transf, 200.00, 'pendente_confirmacao')
+  values (v_pedido, v_forma_transf, 246.00, 'pendente_confirmacao')
   returning id into v_pag;
 
   -- A — o prazo-limite de confirmação é preenchido automaticamente
@@ -98,7 +109,7 @@ begin
 
   -- E — o total pago do pedido reflete o recebimento
   select total_pago into v_num from erp.pedidos where id = v_pedido;
-  perform pg_temp.verificar('E · total pago do pedido', '200.00', to_char(v_num, 'FM999990.00'));
+  perform pg_temp.verificar('E · total pago do pedido', '246.00', to_char(v_num, 'FM999990.00'));
 
   -- F — devolução retira do total pago e o pedido volta a parcial/por pagar
   perform erp.devolver_pagamento(v_pag, 'Cliente desistiu');
@@ -108,18 +119,18 @@ begin
 
   -- G — a devolução não altera o valor confirmado do pagamento
   select to_char(valor, 'FM999990.00') into v_txt from erp.pagamentos where id = v_pag;
-  perform pg_temp.verificar('G · valor preservado na devolução', '200.00', v_txt);
+  perform pg_temp.verificar('G · valor preservado na devolução', '246.00', v_txt);
 
   -- H — conciliação identifica o pedido divergente
   insert into erp.pagamentos (pedido_id, forma_id, valor, estado)
   values (v_pedido, v_forma_transf, 120.00, 'pendente_confirmacao') returning id into v_pag2;
   select to_char(divergencia, 'FM999990.00') into v_txt
     from erp.v_conciliacao_vendas where pedido_id = v_pedido;
-  perform pg_temp.verificar('H · divergência identifica pedido', '80.00', v_txt);
+  perform pg_temp.verificar('H · divergência identifica pedido', '126.00', v_txt);
 
   -- I — coberto na totalidade dá zero divergência
   insert into erp.pagamentos (pedido_id, forma_id, valor, estado)
-  values (v_pedido, v_forma_transf, 80.00, 'pendente_confirmacao');
+  values (v_pedido, v_forma_transf, 126.00, 'pendente_confirmacao');
   select to_char(divergencia, 'FM999990.00') into v_txt
     from erp.v_conciliacao_vendas where pedido_id = v_pedido;
   perform pg_temp.verificar('I · sem divergências dá zero', '0.00', v_txt);
@@ -149,7 +160,7 @@ begin
   perform pg_temp.verificar('M · recorrência gera conta seguinte', '1', v_n::text);
 
   -- N — a recorrência não se repete se a conta for atualizada de novo
-  update erp.contas_pagar set observacoes = 'toque' where id = v_conta;
+  update erp.contas_pagar set doc_fornecedor = 'toque' where id = v_conta;
   select count(*) into v_n from erp.despesas
    where coalesce(origem_id, id) = v_despesa
      and data_vencimento = (current_date + interval '1 month')::date;
