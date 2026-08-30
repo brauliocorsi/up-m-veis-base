@@ -202,9 +202,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   // Fechar o dropdown ao clicar fora do menu lateral.
   useEffect(() => {
     function aoClicarFora(evento: MouseEvent) {
-      const alvo = evento.target as Node | null;
+      const alvo = evento.target as HTMLElement | null;
       if (!alvo || !refLateral.current) return;
-      if (!refLateral.current.contains(alvo)) setCategoriaAberta(null);
+      if (refLateral.current.contains(alvo)) return;
+      if (alvo.closest?.("[data-menu]")) return;
+      setCategoriaAberta(null);
     }
     document.addEventListener("mousedown", aoClicarFora);
     return () => document.removeEventListener("mousedown", aoClicarFora);
