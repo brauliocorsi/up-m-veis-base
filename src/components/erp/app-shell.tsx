@@ -4,6 +4,7 @@ import {
   BadgeEuro,
   CalendarDays,
   ChevronDown,
+  ChevronRight,
   
   ClipboardCheck,
   ClipboardList,
@@ -36,7 +37,13 @@ import {
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
+} from "react";
 
 import { Button } from "@/components/ui/button";
 import { IndicadorSync } from "@/components/erp/indicador-sync";
@@ -263,16 +270,49 @@ export function AppShell({ children }: { children: ReactNode }) {
     .map((grupo) => ({ ...grupo, itens: grupo.itens.filter((i) => restantes.includes(i)) }))
     .filter((grupo) => grupo.itens.length > 0);
 
-  const linhaNav = (item: ItemNav, aoClicar?: () => void) => {
+  const grupoAtual = grupos.find((g) => g.itens.some((i) => rotaAtiva(caminho, i.para))) ?? null;
+  const itemAtual = grupoAtual?.itens.find((i) => rotaAtiva(caminho, i.para)) ?? null;
+  const subNivel = Boolean(itemAtual && caminho !== itemAtual.para);
+
+  // Navegação por teclado dentro do menu: setas, Home/End e Escape.
+  function aoTeclaMenu(evento: ReactKeyboardEvent<HTMLElement>) {
+    const contentor = evento.currentTarget;
+    const focaveis = Array.from(
+      contentor.querySelectorAll<HTMLElement>("[data-nav-foco]"),
+    ).filter((el) => el.offsetParent !== null || el.tagName === "BUTTON");
+    const atual = document.activeElement as HTMLElement | null;
+    const indice = atual ? focaveis.indexOf(atual) : -1;
+
+    if (evento.key === "Escape") {
+      setCategoriaAberta(null);
+      return;
+    }
+    if (evento.key === "ArrowDown" || evento.key === "ArrowUp") {
+      evento.preventDefault();
+      if (focaveis.length === 0) return;
+      const passo = evento.key === "ArrowDown" ? 1 : -1;
+      const proximo = focaveis[(indice + passo + focaveis.length) % focaveis.length];
+      proximo?.focus();
+      return;
+    }
+    if (evento.key === "Home" || evento.key === "End") {
+      evento.preventDefault();
+      const alvo = evento.key === "Home" ? focaveis[0] : focaveis[focaveis.length - 1];
+      alvo?.focus();
+    }
+  }
+
+  const linhaNav = (item: ItemNav, aoClicar?: () => void, focavel = true) => {
     const ativo = rotaAtiva(caminho, item.para);
     return (
       <Link
         key={item.para}
         to={item.para}
         onClick={aoClicar}
+        {...(focavel ? { "data-nav-foco": true } : { tabIndex: -1 })}
         aria-current={ativo ? "page" : undefined}
         className={cn(
-          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
           ativo
             ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
             : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
@@ -287,14 +327,27 @@ export function AppShell({ children }: { children: ReactNode }) {
   const grupoNav = (grupo: GrupoNav, aoClicar?: () => void, classeBotao?: string) => {
     const aberto = categoriaAberta === grupo.etiqueta;
     const temAtivo = grupo.itens.some((item) => rotaAtiva(caminho, item.para));
+    const idPainel = `nav-grupo-${grupo.etiqueta.replace(/\s+/g, "-").toLowerCase()}`;
     return (
       <div key={grupo.etiqueta}>
         <button
           type="button"
+          data-nav-foco
           aria-expanded={aberto}
+          aria-controls={idPainel}
           onClick={() => setCategoriaAberta(aberto ? null : grupo.etiqueta)}
+          onKeyDown={(evento) => {
+            if (evento.key === "ArrowRight" && !aberto) {
+              evento.preventDefault();
+              setCategoriaAberta(grupo.etiqueta);
+            }
+            if (evento.key === "ArrowLeft" && aberto) {
+              evento.preventDefault();
+              setCategoriaAberta(null);
+            }
+          }}
           className={cn(
-            "flex w-full items-center justify-between rounded-md px-3 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors",
+            "flex w-full items-center justify-between rounded-md px-3 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
             temAtivo ? "text-foreground" : "text-muted-foreground",
             classeBotao ?? "hover:bg-sidebar-accent/40",
           )}
@@ -308,6 +361,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           />
         </button>
         <div
+          id={idPainel}
+          role="group"
+          aria-label={grupo.etiqueta}
+          aria-hidden={!aberto}
           className={cn(
             "grid transition-all duration-300 ease-out",
             aberto ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
@@ -315,13 +372,14 @@ export function AppShell({ children }: { children: ReactNode }) {
         >
           <div className="overflow-hidden">
             <div className="mt-1 space-y-1 px-1">
-              {grupo.itens.map((item) => linhaNav(item, aoClicar))}
+              {grupo.itens.map((item) => linhaNav(item, aoClicar, aberto))}
             </div>
           </div>
         </div>
       </div>
     );
   };
+
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -333,16 +391,67 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="mb-6">
             <Marca />
           </div>
-          <nav className="space-y-2">{grupos.map((grupo) => grupoNav(grupo))}</nav>
+          <nav aria-label="Menu principal" className="space-y-2" onKeyDown={aoTeclaMenu}>
+            {grupos.map((grupo) => grupoNav(grupo))}
+          </nav>
         </aside>
 
 
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur">
-            <div className="md:hidden">
-              <Marca />
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="md:hidden">
+                <Marca />
+              </div>
+              <nav aria-label="Caminho de navegação" className="min-w-0">
+                <ol className="flex min-w-0 flex-wrap items-center gap-1 text-xs text-muted-foreground">
+                  <li className="flex items-center gap-1">
+                    <Link
+                      to="/painel"
+                      className="rounded px-1 py-0.5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      Início
+                    </Link>
+                  </li>
+                  {grupoAtual && (
+                    <li className="flex items-center gap-1">
+                      <ChevronRight className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      <button
+                        type="button"
+                        onClick={() => setCategoriaAberta(grupoAtual.etiqueta)}
+                        className="rounded px-1 py-0.5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {grupoAtual.etiqueta}
+                      </button>
+                    </li>
+                  )}
+                  {itemAtual && (
+                    <li className="flex min-w-0 items-center gap-1">
+                      <ChevronRight className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      <Link
+                        to={itemAtual.para}
+                        aria-current={subNivel ? undefined : "page"}
+                        className={cn(
+                          "truncate rounded px-1 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          subNivel ? "hover:text-foreground" : "font-medium text-foreground",
+                        )}
+                      >
+                        {itemAtual.etiqueta}
+                      </Link>
+                    </li>
+                  )}
+                  {subNivel && (
+                    <li className="flex items-center gap-1">
+                      <ChevronRight className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      <span aria-current="page" className="px-1 py-0.5 font-medium text-foreground">
+                        Detalhe
+                      </span>
+                    </li>
+                  )}
+                </ol>
+              </nav>
             </div>
-            <div className="ml-auto flex items-center gap-3">
+            <div className="ml-auto flex shrink-0 items-center gap-3">
               <IndicadorSync podeGerir={utilizador.perfil === "adm"} />
               <div className="text-right leading-tight">
                 <p className="text-sm font-medium">{utilizador.nome}</p>
@@ -371,7 +480,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 to={item.para}
                 aria-current={ativo ? "page" : undefined}
                 className={cn(
-                  "flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-1 text-[11px] transition-colors",
+                  "flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-1 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   ativo ? "font-medium text-primary" : "text-muted-foreground",
                 )}
               >
@@ -383,14 +492,14 @@ export function AppShell({ children }: { children: ReactNode }) {
           {restantes.length > 0 && (
             <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
               <SheetTrigger asChild>
-                <button className="flex flex-1 flex-col items-center gap-1 px-1 py-1 text-[11px] text-muted-foreground">
+                <button className="flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-1 text-[11px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <Menu className="h-5 w-5" />
                   Mais
                 </button>
               </SheetTrigger>
               <SheetContent side="bottom" data-menu className="space-y-2 pb-8">
                 <SheetTitle>Menu</SheetTitle>
-                <nav className="space-y-2">
+                <nav aria-label="Menu" className="space-y-2" onKeyDown={aoTeclaMenu}>
                   {gruposRestantes.map((grupo) =>
                     grupoNav(grupo, () => setMenuAberto(false), "hover:bg-muted"),
                   )}
