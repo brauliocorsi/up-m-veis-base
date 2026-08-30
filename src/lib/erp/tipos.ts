@@ -812,14 +812,42 @@ export interface Caixa extends CamposComuns {
   n_movimentos?: number;
 }
 
-export type TipoMovimentoCaixa = "recebimento" | "saida" | "sangria" | "abertura";
+export type TipoMovimentoCaixa =
+  | "recebimento"
+  | "saida"
+  | "sangria"
+  | "abertura"
+  | "entrada"
+  | "envelope_rota";
 
 export const ETIQUETA_MOVIMENTO_CAIXA: Record<TipoMovimentoCaixa, string> = {
   recebimento: "Recebimento",
   saida: "Saída",
   sangria: "Sangria",
   abertura: "Abertura",
+  entrada: "Entrada",
+  envelope_rota: "Envelope de rota",
 };
+
+/** Envelope de uma rota fechada e o seu estado de conciliação no caixa da loja. */
+export interface EnvelopeRota {
+  rota_id: string;
+  data: string;
+  nome: string;
+  estado: EstadoRota;
+  responsavel_id: string;
+  responsavel: string | null;
+  valor_envelope: number | null;
+  valor_conferido: number | null;
+  diferenca: number | null;
+  justificacao_diferenca: string | null;
+  fechada_em: string | null;
+  conferida_em: string | null;
+  envelope_recebido_em: string | null;
+  envelope_caixa_id: string | null;
+  por_receber: boolean;
+}
+
 
 export interface CaixaMovimento extends CamposComuns {
   caixa_id: string;
