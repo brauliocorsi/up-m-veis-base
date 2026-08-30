@@ -16,7 +16,12 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((dados: unknown) => entrada.parse(dados))
   .handler(async ({ data, context }) => {
-    const db = context.supabase.schema("erp");
+    type ClienteSchema = {
+      schema: (nome: string) => {
+        from: (tabela: string) => any;
+      };
+    };
+    const db = (context.supabase as unknown as ClienteSchema).schema("erp");
 
     const { data: pedido, error: erroPedido } = await db
       .from("v_pedidos")
@@ -64,7 +69,7 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
           .maybeSingle(),
       ]);
 
-    const mapaDefs = new Map((definicoes ?? []).map((d) => [d.chave as string, d.valor]));
+    const mapaDefs = new Map<string, unknown>((definicoes ?? []).map((d: { chave: string; valor: unknown }) => [d.chave, d.valor] as const));
     const empresa = (mapaDefs.get("empresa") ?? {}) as Record<string, string>;
 
     const moradaEntrega = pedido.entrega_domicilio
@@ -107,7 +112,7 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
         telefone: cliente?.telefone_e164 ?? pedido.cliente_telefone ?? null,
         morada: moradaEntrega || null,
       },
-      linhas: (itens ?? []).map((i) => ({
+      linhas: (itens ?? []).map((i: Record<string, unknown>) => ({
         descricao: i.descricao as string,
         quantidade: Number(i.quantidade),
         preco_unitario: Number(i.preco_unitario),
@@ -122,7 +127,7 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
       total: Number(pedido.total ?? 0),
       pago,
       falta: Math.max(Number(pedido.total ?? 0) - pago, 0),
-      pagamentos: (pagamentos ?? []).map((p) => ({
+      pagamentos: (pagamentos ?? []).map((p: Record<string, unknown>) => ({
         forma: (p.forma_nome as string) ?? "—",
         valor: Number(p.valor),
         estado: p.estado as string,
@@ -138,7 +143,7 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
       .upload(caminho, bytes, { contentType: "application/pdf", upsert: true });
     if (erroUpload) throw new Error(`Não foi possível guardar o PDF: ${erroUpload.message}`);
 
-    await supabaseAdmin
+    await (supabaseAdmin as unknown as ClienteSchema)
       .schema("erp")
       .from("pedidos")
       .update({ nota_pdf_path: caminho, nota_pdf_em: new Date().toISOString() })
