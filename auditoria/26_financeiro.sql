@@ -160,7 +160,7 @@ begin
   perform pg_temp.verificar('M · recorrência gera conta seguinte', '1', v_n::text);
 
   -- N — a recorrência não se repete se a conta for atualizada de novo
-  update erp.contas_pagar set observacoes = 'toque' where id = v_conta;
+  update erp.contas_pagar set doc_fornecedor = 'toque' where id = v_conta;
   select count(*) into v_n from erp.despesas
    where coalesce(origem_id, id) = v_despesa
      and data_vencimento = (current_date + interval '1 month')::date;
