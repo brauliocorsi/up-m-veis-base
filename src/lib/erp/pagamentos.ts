@@ -46,13 +46,19 @@ export async function registarPagamento(params: {
   return data as string;
 }
 
-export async function confirmarPagamento(id: string, comprovativoUrl?: string | null) {
+export async function confirmarPagamento(
+  id: string,
+  comprovativoUrl?: string | null,
+  referencia?: string | null,
+) {
   const { error } = await erp().rpc("confirmar_pagamento", {
     p_pagamento_id: id,
+    p_referencia: referencia ?? null,
     p_comprovativo_url: comprovativoUrl ?? null,
   });
   if (error) throw error;
 }
+
 
 export async function rejeitarPagamento(id: string, motivo: string) {
   const { error } = await erp().rpc("rejeitar_pagamento", {
