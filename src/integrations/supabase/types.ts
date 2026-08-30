@@ -14,21 +14,7 @@ export type Database = {
   }
   public: {
     Tables: {
-      zz_teste: {
-        Row: {
-          dados: Json | null
-          etapa: string | null
-        }
-        Insert: {
-          dados?: Json | null
-          etapa?: string | null
-        }
-        Update: {
-          dados?: Json | null
-          etapa?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
