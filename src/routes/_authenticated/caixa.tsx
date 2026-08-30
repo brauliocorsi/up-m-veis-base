@@ -224,9 +224,10 @@ function PaginaCaixa() {
   return (
     <div>
       <CabecalhoPagina
-        titulo="Caixa do dia"
-        descricao="Só o dinheiro conta para o saldo. Multibanco, MB Way e transferências ficam registados para relatório."
+        titulo="Caixa da loja"
+        descricao="Entradas e saídas de dinheiro no escritório. Multibanco, MB Way e transferências ficam registados para relatório, mas não contam para o saldo em dinheiro."
       />
+
 
       {!atual ? (
         <Card>
