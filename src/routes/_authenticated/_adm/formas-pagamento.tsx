@@ -59,6 +59,7 @@ interface Formulario {
   prazo_confirmacao_horas: string;
   taxa_pct: string;
   entra_caixa: boolean;
+  e_numerario: boolean;
   ordem: string;
   ativo: boolean;
 }
@@ -72,6 +73,7 @@ const VAZIO: Formulario = {
   prazo_confirmacao_horas: "",
   taxa_pct: "0",
   entra_caixa: true,
+  e_numerario: false,
   ordem: "0",
   ativo: true,
 };
