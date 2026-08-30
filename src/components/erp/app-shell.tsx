@@ -52,62 +52,95 @@ interface ItemNav {
   perfis?: Perfil[];
 }
 
-const NAVEGACAO: ItemNav[] = [
-  { para: "/painel", etiqueta: "Painel", icone: LayoutDashboard },
-  { para: "/pedidos", etiqueta: "Vendas", icone: ShoppingCart },
-  { para: "/caixa", etiqueta: "Caixa", icone: Wallet },
+interface GrupoNav {
+  etiqueta: string;
+  itens: ItemNav[];
+}
+
+const NAVEGACAO: GrupoNav[] = [
   {
-    para: "/pagamentos",
-    etiqueta: "Pagamentos",
-    icone: BadgeEuro,
-    perfis: ["adm", "financeiro", "escritorio"],
-  },
-  { para: "/caixas", etiqueta: "Caixas da equipa", icone: Wallet, perfis: ["adm"] },
-  { para: "/cupoes", etiqueta: "Cupões", icone: Ticket, perfis: ["adm"] },
-  { para: "/clientes", etiqueta: "Clientes", icone: Contact, perfis: ["adm", "vendedora", "escritorio"] },
-  { para: "/produtos", etiqueta: "Produtos", icone: Package },
-  { para: "/stock", etiqueta: "Stock", icone: Warehouse },
-  { para: "/reservas", etiqueta: "Reservas", icone: Boxes },
-  { para: "/movimentos", etiqueta: "Movimentos", icone: ClipboardList },
-  {
-    para: "/necessidades",
-    etiqueta: "Necessidades",
-    icone: ClipboardCheck,
-    perfis: ["adm", "compras", "escritorio", "financeiro"],
+    etiqueta: "Geral",
+    itens: [{ para: "/painel", etiqueta: "Painel", icone: LayoutDashboard }],
   },
   {
-    para: "/ordens-compra",
-    etiqueta: "Ordens de compra",
-    icone: PackageSearch,
-    perfis: ["adm", "compras", "escritorio", "financeiro"],
+    etiqueta: "Vendas",
+    itens: [
+      { para: "/pedidos", etiqueta: "Vendas", icone: ShoppingCart },
+      { para: "/clientes", etiqueta: "Clientes", icone: Contact, perfis: ["adm", "vendedora", "escritorio"] },
+      { para: "/cupoes", etiqueta: "Cupões", icone: Ticket, perfis: ["adm"] },
+    ],
   },
   {
-    para: "/recepcao",
-    etiqueta: "Receção",
-    icone: PackageCheck,
-    perfis: ["adm", "compras"],
+    etiqueta: "Caixa e pagamentos",
+    itens: [
+      { para: "/caixa", etiqueta: "Caixa", icone: Wallet },
+      {
+        para: "/pagamentos",
+        etiqueta: "Pagamentos",
+        icone: BadgeEuro,
+        perfis: ["adm", "financeiro", "escritorio"],
+      },
+      { para: "/caixas", etiqueta: "Caixas da equipa", icone: Wallet, perfis: ["adm"] },
+    ],
   },
-  { para: "/pedidos-compra", etiqueta: "Pedidos de compra", icone: FileQuestion },
   {
-    para: "/contas-pagar",
-    etiqueta: "Contas a pagar",
-    icone: Receipt,
-    perfis: ["adm", "financeiro"],
+    etiqueta: "Inventário",
+    itens: [
+      { para: "/produtos", etiqueta: "Produtos", icone: Package },
+      { para: "/stock", etiqueta: "Stock", icone: Warehouse },
+      { para: "/reservas", etiqueta: "Reservas", icone: Boxes },
+      { para: "/movimentos", etiqueta: "Movimentos", icone: ClipboardList },
+      { para: "/categorias", etiqueta: "Categorias", icone: FolderTree },
+      { para: "/servicos", etiqueta: "Serviços", icone: Wrench },
+    ],
   },
-  { para: "/categorias", etiqueta: "Categorias", icone: FolderTree },
-  { para: "/servicos", etiqueta: "Serviços", icone: Wrench },
-  { para: "/fornecedores", etiqueta: "Fornecedores", icone: Factory },
-  { para: "/utilizadores", etiqueta: "Utilizadores", icone: Users, perfis: ["adm"] },
-  { para: "/regras-desconto", etiqueta: "Regras de desconto", icone: Percent, perfis: ["adm"] },
-  { para: "/formas-pagamento", etiqueta: "Formas de pagamento", icone: BadgeEuro, perfis: ["adm"] },
-  { para: "/zonas-entrega", etiqueta: "Zonas de entrega", icone: Truck, perfis: ["adm"] },
-  { para: "/calendario", etiqueta: "Calendário", icone: CalendarDays, perfis: ["adm"] },
-  { para: "/motivos", etiqueta: "Motivos", icone: ListChecks, perfis: ["adm"] },
-  { para: "/sincronizacao", etiqueta: "Sincronização", icone: RefreshCw, perfis: ["adm"] },
-  { para: "/reconciliacao", etiqueta: "Reconciliação", icone: ScanSearch, perfis: ["adm"] },
-  { para: "/definicoes", etiqueta: "Definições", icone: Settings, perfis: ["adm"] },
-  { para: "/lixeira", etiqueta: "Lixeira", icone: Trash2, perfis: ["adm"] },
-  { para: "/historico", etiqueta: "Histórico", icone: History, perfis: ["adm"] },
+  {
+    etiqueta: "Compras",
+    itens: [
+      {
+        para: "/necessidades",
+        etiqueta: "Necessidades",
+        icone: ClipboardCheck,
+        perfis: ["adm", "compras", "escritorio", "financeiro"],
+      },
+      {
+        para: "/ordens-compra",
+        etiqueta: "Ordens de compra",
+        icone: PackageSearch,
+        perfis: ["adm", "compras", "escritorio", "financeiro"],
+      },
+      {
+        para: "/recepcao",
+        etiqueta: "Receção",
+        icone: PackageCheck,
+        perfis: ["adm", "compras"],
+      },
+      { para: "/pedidos-compra", etiqueta: "Pedidos de compra", icone: FileQuestion },
+      {
+        para: "/contas-pagar",
+        etiqueta: "Contas a pagar",
+        icone: Receipt,
+        perfis: ["adm", "financeiro"],
+      },
+      { para: "/fornecedores", etiqueta: "Fornecedores", icone: Factory },
+    ],
+  },
+  {
+    etiqueta: "Administração",
+    itens: [
+      { para: "/utilizadores", etiqueta: "Utilizadores", icone: Users, perfis: ["adm"] },
+      { para: "/regras-desconto", etiqueta: "Regras de desconto", icone: Percent, perfis: ["adm"] },
+      { para: "/formas-pagamento", etiqueta: "Formas de pagamento", icone: BadgeEuro, perfis: ["adm"] },
+      { para: "/zonas-entrega", etiqueta: "Zonas de entrega", icone: Truck, perfis: ["adm"] },
+      { para: "/calendario", etiqueta: "Calendário", icone: CalendarDays, perfis: ["adm"] },
+      { para: "/motivos", etiqueta: "Motivos", icone: ListChecks, perfis: ["adm"] },
+      { para: "/sincronizacao", etiqueta: "Sincronização", icone: RefreshCw, perfis: ["adm"] },
+      { para: "/reconciliacao", etiqueta: "Reconciliação", icone: ScanSearch, perfis: ["adm"] },
+      { para: "/definicoes", etiqueta: "Definições", icone: Settings, perfis: ["adm"] },
+      { para: "/lixeira", etiqueta: "Lixeira", icone: Trash2, perfis: ["adm"] },
+      { para: "/historico", etiqueta: "Histórico", icone: History, perfis: ["adm"] },
+    ],
+  },
 ];
 
 
