@@ -201,8 +201,8 @@ function Par({
 }: {
   titulo: string;
   previsto: number;
-  realizado?: number | null;
-  dinheiro?: boolean;
+  realizado?: number | null | undefined;
+  dinheiro?: boolean | undefined;
 }) {
   const fmt = (v: number) => (dinheiro ? formatarDinheiro(v) : String(v));
   return (

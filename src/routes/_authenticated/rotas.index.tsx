@@ -197,8 +197,14 @@ function DialogoNovaRota({ onFechar }: { onFechar: () => void }) {
       descricao="Escolha o entregador e as vendas que vão na carrinha."
       aGuardar={guardar.isPending}
       onGuardar={() => {
-        if (!responsavel) return toast.error("Escolha o entregador.");
-        if (escolhidos.length === 0) return toast.error("Escolha pelo menos uma venda.");
+        if (!responsavel) {
+          toast.error("Escolha o entregador.");
+          return;
+        }
+        if (escolhidos.length === 0) {
+          toast.error("Escolha pelo menos uma venda.");
+          return;
+        }
         guardar.mutate();
       }}
     >

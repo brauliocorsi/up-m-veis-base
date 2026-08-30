@@ -265,7 +265,15 @@ function Pagina() {
   );
 }
 
-function Resumo({ titulo, valor, nota }: { titulo: string; valor: string; nota?: string }) {
+function Resumo({
+  titulo,
+  valor,
+  nota,
+}: {
+  titulo: string;
+  valor: string;
+  nota?: string | undefined;
+}) {
   return (
     <Card>
       <CardContent className="p-3">
