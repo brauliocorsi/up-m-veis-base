@@ -163,6 +163,38 @@ function PaginaCaixa() {
     onError: (erro) => toast.error(mensagemErro(erro)),
   });
 
+  const entrada = useMutation({
+    mutationFn: async () => {
+      const numero = Number(valorEntrada.replace(",", "."));
+      if (!Number.isFinite(numero) || numero <= 0) throw new Error("Indique um valor válido.");
+      if (!motivoEntrada && !descricaoEntrada.trim())
+        throw new Error("Indique o motivo ou uma descrição da entrada.");
+      await registarEntradaCaixa({
+        valor: Number(numero.toFixed(2)),
+        motivo_id: motivoEntrada || null,
+        descricao: descricaoEntrada.trim() || null,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Entrada registada.");
+      setEntradaAberta(false);
+      setValorEntrada("");
+      setDescricaoEntrada("");
+      atualizar();
+    },
+    onError: (erro) => toast.error(mensagemErro(erro)),
+  });
+
+  const receberEnvelope = useMutation({
+    mutationFn: (rotaId: string) => receberEnvelopeRota(rotaId),
+    onSuccess: () => {
+      toast.success("Envelope conciliado no caixa da loja.");
+      atualizar();
+    },
+    onError: (erro) => toast.error(mensagemErro(erro)),
+  });
+
+
   const fechar = useMutation({
     mutationFn: async () => {
       const numero = Number(contado.replace(",", "."));
