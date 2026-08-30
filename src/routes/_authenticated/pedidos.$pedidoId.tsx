@@ -636,6 +636,35 @@ function Entrega({
       }),
   });
 
+  const zonas = useQuery({
+    queryKey: ["zonas-entrega-venda"],
+    queryFn: () =>
+      listar<{ id: string; nome: string; ativo: boolean }>({
+        tabela: "v_zonas_entrega",
+        ordenarPor: "nome",
+        ascendente: true,
+        tamanho: 200,
+      }),
+  });
+
+  function guardarCodigoPostal(bruto: string) {
+    const digitos = bruto.replace(/\D/g, "");
+    if (!digitos) {
+      onGuardar({ cp4_entrega: null, cp3_entrega: null, zona_entrega_id: null });
+      return;
+    }
+    if (digitos.length !== 4 && digitos.length !== 7) {
+      toast.error("O código postal tem de ter 4 ou 7 números (ex.: 4620-269).");
+      return;
+    }
+    onGuardar({
+      cp4_entrega: digitos.slice(0, 4),
+      cp3_entrega: digitos.length === 7 ? digitos.slice(4, 7) : null,
+      zona_entrega_id: null,
+    });
+  }
+
+
   return (
     <Card>
       <CardHeader className="pb-2">
