@@ -1003,3 +1003,168 @@ export interface PedidoCompraItem extends CamposComuns {
   produto_nome: string | null;
   fornecedor_sugerido_nome: string | null;
 }
+
+// ------------------------------------------------------------- Fase 7 · financeiro
+export interface CategoriaDespesa extends CamposComuns {
+  codigo: string;
+  nome: string;
+  ordem: number;
+  ativo: boolean;
+}
+
+export type Periodicidade = "mensal" | "trimestral" | "anual";
+
+export interface Despesa extends CamposComuns {
+  descricao: string;
+  categoria: string;
+  fornecedor_id: string | null;
+  valor: number;
+  data_despesa: string;
+  data_vencimento: string;
+  recorrente: boolean;
+  periodicidade: Periodicidade | null;
+  conta_pagar_id: string | null;
+  origem_id: string | null;
+  comprovativo_url: string | null;
+  fornecedor_nome: string | null;
+  conta_estado: string | null;
+  conta_valor_pago: number | null;
+}
+
+export interface ContaReceber {
+  id: string;
+  pedido_id: string;
+  forma_id: string;
+  valor: number;
+  taxa_pct: number | null;
+  valor_liquido: number | null;
+  estado: EstadoPagamento;
+  data_prevista: string | null;
+  criado_em: string;
+  data_limite_confirmacao: string | null;
+  referencia: string | null;
+  comprovativo_url: string | null;
+  recebido_por: string | null;
+  observacoes: string | null;
+  forma_nome: string;
+  forma_codigo: string;
+  forma_momento: Momento;
+  exige_comprovativo: boolean;
+  entra_caixa: boolean;
+  prazo_confirmacao_horas: number | null;
+  pedido_numero: string;
+  pedido_total: number;
+  pedido_estado: string;
+  data_entrega_prevista: string | null;
+  cliente_nome: string;
+  recebido_por_nome: string | null;
+  vendedor_nome: string | null;
+  em_atraso: boolean;
+}
+
+export interface ConciliacaoCaixa {
+  caixa_id: string;
+  data: string;
+  utilizador_id: string;
+  utilizador_nome: string | null;
+  estado: string;
+  saldo_abertura: number;
+  total_dinheiro: number;
+  total_saidas: number;
+  total_sangrias: number;
+  esperado: number;
+  contado: number | null;
+  diferenca: number | null;
+  justificacao_diferenca: string | null;
+}
+
+export interface ConciliacaoVenda {
+  pedido_id: string;
+  numero: string;
+  estado: string;
+  confirmado_em: string | null;
+  data_entrega_prevista: string | null;
+  vendedor_nome: string | null;
+  cliente_nome: string | null;
+  total: number;
+  recebido_confirmado: number;
+  pendente_confirmacao: number;
+  a_receber_entrega: number;
+  divergencia: number;
+}
+
+export interface FluxoSemana {
+  semana: string;
+  fim_semana: string;
+  a_receber: number;
+  a_pagar: number;
+}
+
+export interface FechoFinanceiro extends CamposComuns {
+  data: string;
+  recebido_dinheiro: number;
+  recebido_outras: number;
+  pago: number;
+  por_receber: number;
+  por_pagar: number;
+  fechado_por: string | null;
+  observacoes: string | null;
+}
+
+export interface MargemPedido {
+  pedido_id: string;
+  pedido_numero: string;
+  confirmado_em: string | null;
+  vendedor_nome: string | null;
+  vendido: number;
+  custo: number;
+  margem: number;
+  margem_pct: number | null;
+}
+
+export interface RelVenda {
+  pedido_id: string;
+  numero: string;
+  estado: string;
+  origem: string | null;
+  data: string;
+  vendedor_nome: string | null;
+  cliente_nome: string | null;
+  total: number;
+  total_pago: number;
+  estado_pagamento: string;
+  formas: string | null;
+}
+
+export interface RelRecebimento {
+  data: string;
+  forma_nome: string;
+  forma_codigo: string;
+  estado: string;
+  n_pagamentos: number;
+  valor: number;
+}
+
+export interface RelAtrasoFornecedor {
+  fornecedor_nome: string;
+  numero: string;
+  prometido: string | null;
+  recebido: string | null;
+  dias_atraso: number | null;
+  estado: string;
+}
+
+export interface RelCupao {
+  cupao_id: string;
+  codigo: string;
+  tipo: string;
+  valor_regra: number;
+  usos: number;
+  desconto_total: number;
+}
+
+export const ETIQUETA_PERIODICIDADE: Record<Periodicidade, string> = {
+  mensal: "Mensal",
+  trimestral: "Trimestral",
+  anual: "Anual",
+};
