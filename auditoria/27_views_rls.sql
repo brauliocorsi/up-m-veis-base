@@ -27,14 +27,32 @@ select pg_temp.ok('V3 Custos não estão em erp.produtos',
               where table_schema='erp' and table_name='produtos'
                 and (column_name ilike '%custo%' or column_name ilike '%margem%')));
 
+-- Identidade a usar: uma vendedora REAL e ativa. Sem esta guarda, um
+-- user_id inexistente faz o perfil ser nulo, as políticas negarem tudo,
+-- e os testes passarem sem terem testado nada.
+-- descobrir a vendedora ANTES de mudar de papel (senão o RLS já bloqueia a consulta)
+select set_config('erp.teste_vendedora',
+  coalesce((select u.user_id::text from erp.utilizadores u
+             where u.perfil = 'vendedora' and u.ativo and u.eliminado_em is null limit 1),
+           '00000000-0000-0000-0000-000000000000'), false);
+
 begin;
 
+select set_config('request.jwt.claim.sub', current_setting('erp.teste_vendedora'), true);
+
 set local role authenticated;
-select set_config('request.jwt.claim.sub','bbbb0000-0000-0000-0000-00000000000b',true);
 
 do $$
-declare n int;
+declare n int; v_perfil text;
 begin
+  select erp.perfil_atual()::text into v_perfil;
+  if v_perfil is distinct from 'vendedora' then
+    perform pg_temp.ok('V0 GUARDA: identidade é mesmo uma vendedora (perfil='||coalesce(v_perfil,'NENHUM')||
+                       ') — os testes seguintes NÃO são válidos', false);
+    return;
+  end if;
+  perform pg_temp.ok('V0 Identidade confirmada: vendedora ativa', true);
+
   select count(*) into n from erp.v_contas_pagar;
   perform pg_temp.ok('V4 Vendedora não lê contas a pagar ('||n||')', n=0);
   select count(*) into n from erp.v_oc_itens;
