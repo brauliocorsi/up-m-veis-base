@@ -220,10 +220,14 @@ export async function construirNotaPdf(dados: DadosNota): Promise<Uint8Array> {
     }
   }
 
-  let yEsq = y - 14;
-  texto(dados.empresa.nome || "UP Móveis", xTextoEsq, yEsq, { forte: true, tamanho: 11 });
+  let yEsq = y - 15;
+  texto(dados.empresa.nome || "UP Móveis", xTextoEsq, yEsq, {
+    forte: true,
+    tamanho: 12,
+    cor: VERMELHO,
+  });
   yEsq -= 13;
-  for (const parte of embrulhar(dados.empresa.mensagem_documento ?? "", 300, 8)) {
+  for (const parte of embrulhar(dados.empresa.mensagem_documento ?? "", fim - 170 - xTextoEsq, 8)) {
     if (parte === "—") break;
     texto(parte, xTextoEsq, yEsq, { tamanho: 8, cor: CINZA });
     yEsq -= 9.5;
