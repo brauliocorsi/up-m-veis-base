@@ -2,9 +2,13 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   BadgeEuro,
+  BarChart3,
   CalendarDays,
   ChevronDown,
   ChevronRight,
+  HandCoins,
+  Scale,
+
   
   ClipboardCheck,
   ClipboardList,
