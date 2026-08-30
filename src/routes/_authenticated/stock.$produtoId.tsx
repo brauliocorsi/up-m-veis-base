@@ -11,13 +11,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { comprasDoProduto, vendasDoProduto } from "@/lib/erp/compras";
 import { erp } from "@/lib/erp/db";
 import { primeiraMensagem } from "@/lib/erp/erros";
 import { libertarReserva } from "@/lib/erp/stock";
 import {
+  ETIQUETA_ITEM,
   ETIQUETA_MOVIMENTO,
+  ETIQUETA_OC,
   ETIQUETA_RESERVA,
   formatarData,
+  formatarDataCurta,
+  formatarDinheiro,
   type LinhaStock,
   type Movimento,
   type Reserva,
@@ -108,6 +114,21 @@ function FichaStock() {
     },
   });
 
+  const { data: compras } = useQuery({
+    queryKey: ["produto-compras", produtoId],
+    queryFn: () => comprasDoProduto(produtoId),
+  });
+
+  const { data: vendas } = useQuery({
+    queryKey: ["produto-vendas", produtoId],
+    queryFn: () => vendasDoProduto(produtoId),
+  });
+
+  const emFalta = (compras ?? []).filter(
+    (c) => c.oc_estado !== "cancelada" && Number(c.quantidade_recebida) < Number(c.quantidade),
+  );
+  const aChegar = emFalta[0] ?? null;
+
   const mLibertar = useMutation({
     mutationFn: async () => {
       if (!aLibertar) return;
@@ -154,6 +175,21 @@ function FichaStock() {
         descricao={`${stock.cod_barras} · atualizado em ${formatarData(stock.atualizado_em)}`}
       />
 
+      <p className="mb-4 text-sm">
+        <span className="font-medium">Em stock: {stock.fisico}</span>
+        <span className="text-muted-foreground">
+          {" · "}Reservado: {stock.reservado} · Vendável: {stock.vendavel} · A chegar:{" "}
+          {stock.em_transito_compra}
+          {aChegar
+            ? ` (${aChegar.oc_numero}${
+                aChegar.data_prevista_item ?? aChegar.oc_data_prevista
+                  ? `, ${formatarDataCurta(aChegar.data_prevista_item ?? aChegar.oc_data_prevista)}`
+                  : ""
+              })`
+            : ""}
+        </span>
+      </p>
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <Cartao titulo="Físico" valor={stock.fisico} nota="Soma de todos os movimentos do livro." />
         <Cartao titulo="Reservado" valor={stock.reservado} nota="Preso a documentos ainda abertos." />
@@ -176,8 +212,15 @@ function FichaStock() {
         />
       </div>
 
-      <section className="mt-8">
-        <h2 className="mb-3 text-base font-semibold">Reservas</h2>
+      <Tabs defaultValue="reservas" className="mt-8">
+        <TabsList className="w-full justify-start overflow-x-auto">
+          <TabsTrigger value="reservas">Reservas</TabsTrigger>
+          <TabsTrigger value="movimentos">Movimentos</TabsTrigger>
+          <TabsTrigger value="compras">Compras</TabsTrigger>
+          <TabsTrigger value="vendas">Vendas</TabsTrigger>
+        </TabsList>
+
+      <TabsContent value="reservas">
         <div className="overflow-hidden rounded-lg border bg-card">
           <table className="w-full text-sm">
             <thead className="bg-muted/60 text-left">
@@ -236,10 +279,9 @@ function FichaStock() {
             </tbody>
           </table>
         </div>
-      </section>
+      </TabsContent>
 
-      <section className="mt-8">
-        <h2 className="mb-3 text-base font-semibold">Movimentos</h2>
+      <TabsContent value="movimentos">
         <div className="overflow-hidden rounded-lg border bg-card">
           <table className="w-full text-sm">
             <thead className="bg-muted/60 text-left">
@@ -289,7 +331,116 @@ function FichaStock() {
             </tbody>
           </table>
         </div>
-      </section>
+      </TabsContent>
+
+      <TabsContent value="compras">
+        <div className="overflow-hidden rounded-lg border bg-card">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/60 text-left">
+              <tr>
+                <th className="px-3 py-2 font-medium text-muted-foreground">Ordem</th>
+                <th className="px-3 py-2 font-medium text-muted-foreground">Fornecedor</th>
+                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Qtd.</th>
+                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Recebida</th>
+                <th className="px-3 py-2 font-medium text-muted-foreground">Estado</th>
+                <th className="hidden px-3 py-2 font-medium text-muted-foreground md:table-cell">
+                  Prevista
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {(compras ?? []).length === 0 && (
+                <tr className="border-t">
+                  <td colSpan={6} className="px-3 py-8 text-center text-muted-foreground">
+                    Este produto ainda não foi comprado.
+                  </td>
+                </tr>
+              )}
+              {(compras ?? []).map((linha) => {
+                const falta =
+                  linha.oc_estado !== "cancelada" &&
+                  Number(linha.quantidade_recebida) < Number(linha.quantidade);
+                return (
+                  <tr key={linha.id} className={falta ? "border-t bg-primary/5" : "border-t"}>
+                    <td className="px-3 py-2">
+                      <Link
+                        to="/ordens-compra/$ocId"
+                        params={{ ocId: linha.oc_id }}
+                        className="underline"
+                      >
+                        {linha.oc_numero}
+                      </Link>
+                      <div className="text-xs text-muted-foreground">
+                        {formatarDinheiro(linha.custo_unitario)} / un.
+                      </div>
+                    </td>
+                    <td className="px-3 py-2">{linha.fornecedor_nome ?? "—"}</td>
+                    <td className="px-3 py-2 text-right">{linha.quantidade}</td>
+                    <td className="px-3 py-2 text-right">{linha.quantidade_recebida}</td>
+                    <td className="px-3 py-2">
+                      <Badge variant={falta ? "default" : "secondary"}>
+                        {ETIQUETA_OC[linha.oc_estado] ?? linha.oc_estado}
+                      </Badge>
+                    </td>
+                    <td className="hidden px-3 py-2 text-muted-foreground md:table-cell">
+                      {formatarDataCurta(linha.data_prevista_item ?? linha.oc_data_prevista)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </TabsContent>
+
+      <TabsContent value="vendas">
+        <div className="overflow-hidden rounded-lg border bg-card">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/60 text-left">
+              <tr>
+                <th className="px-3 py-2 font-medium text-muted-foreground">Venda</th>
+                <th className="px-3 py-2 font-medium text-muted-foreground">Cliente</th>
+                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Qtd.</th>
+                <th className="px-3 py-2 font-medium text-muted-foreground">Linha</th>
+                <th className="hidden px-3 py-2 font-medium text-muted-foreground md:table-cell">
+                  Entrega
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {(vendas ?? []).length === 0 && (
+                <tr className="border-t">
+                  <td colSpan={5} className="px-3 py-8 text-center text-muted-foreground">
+                    Este produto ainda não foi vendido.
+                  </td>
+                </tr>
+              )}
+              {(vendas ?? []).map((linha) => (
+                <tr key={linha.id} className="border-t">
+                  <td className="px-3 py-2">
+                    <Link
+                      to="/pedidos/$pedidoId"
+                      params={{ pedidoId: linha.pedido_id }}
+                      className="underline"
+                    >
+                      {linha.pedido_numero ?? "—"}
+                    </Link>
+                  </td>
+                  <td className="px-3 py-2">{linha.cliente_nome ?? "—"}</td>
+                  <td className="px-3 py-2 text-right">{linha.quantidade}</td>
+                  <td className="px-3 py-2">
+                    <Badge variant="secondary">{ETIQUETA_ITEM[linha.estado]}</Badge>
+                  </td>
+                  <td className="hidden px-3 py-2 text-muted-foreground md:table-cell">
+                    {formatarDataCurta(linha.data_entrega_prevista ?? linha.data_prevista)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </TabsContent>
+      </Tabs>
 
       <DialogoForm
         aberto={Boolean(aLibertar)}

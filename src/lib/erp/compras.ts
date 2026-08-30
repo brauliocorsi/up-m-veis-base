@@ -7,6 +7,7 @@ import type {
   OrdemCompra,
   PedidoCompra,
   PedidoCompraItem,
+  PedidoItem,
 } from "./tipos";
 
 // ---------------- necessidades ----------------
@@ -15,10 +16,71 @@ export async function listarNecessidadesAbertas(): Promise<Necessidade[]> {
   const { data, error } = await erp()
     .from("v_necessidades_compra")
     .select("*")
-    .eq("estado", "aberta")
+    .in("estado", ["aberta", "encomendada"])
+    .gt("falta", 0)
     .order("criado_em", { ascending: true });
   if (error) throw error;
   return (data ?? []) as Necessidade[];
+}
+
+/** Cria uma ordem de compra com várias linhas do mesmo fornecedor, com quantidade escolhida. */
+export async function criarOcLinhas(
+  fornecedorId: string,
+  linhas: Array<{ necessidade_id: string; quantidade: number }>,
+): Promise<string> {
+  const { data, error } = await erp().rpc("criar_oc_linhas", {
+    p_fornecedor_id: fornecedorId,
+    p_linhas: linhas,
+  });
+  if (error) throw error;
+  return data as string;
+}
+
+/** Linhas de ordens de compra ligadas às linhas de uma venda. */
+export async function fornecimentoDoPedido(pedidoId: string): Promise<OcItem[]> {
+  const { data, error } = await erp()
+    .from("v_oc_itens")
+    .select("*")
+    .eq("pedido_id", pedidoId)
+    .neq("oc_estado", "cancelada")
+    .order("criado_em", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as OcItem[];
+}
+
+/** Necessidades ligadas a uma venda (mesmo as que ainda não têm ordem de compra). */
+export async function necessidadesDoPedido(pedidoId: string): Promise<Necessidade[]> {
+  const { data, error } = await erp()
+    .from("v_necessidades_compra")
+    .select("*")
+    .eq("pedido_id", pedidoId)
+    .order("criado_em", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as Necessidade[];
+}
+
+/** Histórico de compras de um produto. */
+export async function comprasDoProduto(produtoId: string): Promise<OcItem[]> {
+  const { data, error } = await erp()
+    .from("v_oc_itens")
+    .select("*")
+    .eq("produto_id", produtoId)
+    .order("criado_em", { ascending: false })
+    .limit(100);
+  if (error) throw error;
+  return (data ?? []) as OcItem[];
+}
+
+/** Vendas que contêm um produto. */
+export async function vendasDoProduto(produtoId: string): Promise<PedidoItem[]> {
+  const { data, error } = await erp()
+    .from("v_pedido_itens")
+    .select("*")
+    .eq("produto_id", produtoId)
+    .order("criado_em", { ascending: false })
+    .limit(100);
+  if (error) throw error;
+  return (data ?? []) as PedidoItem[];
 }
 
 // ---------------- ordens de compra ----------------

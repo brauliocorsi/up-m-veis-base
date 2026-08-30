@@ -625,6 +625,8 @@ export interface Pedido extends CamposComuns {
   vendedor_nome?: string | null;
   zona_nome?: string | null;
   n_itens?: number;
+  falta_pagar?: number;
+
 }
 
 export interface PedidoItem extends CamposComuns {
@@ -651,6 +653,11 @@ export interface PedidoItem extends CamposComuns {
   produto_nome?: string | null;
   servico_nome?: string | null;
   imagem_url?: string | null;
+  pedido_numero?: string | null;
+  pedido_tipo?: "orcamento" | "pedido";
+  pedido_estado?: EstadoPedido;
+  data_entrega_prevista?: string | null;
+  cliente_nome?: string | null;
 }
 
 export interface Cupao extends CamposComuns {
@@ -880,6 +887,10 @@ export interface OcItem extends CamposComuns {
   pedido_numero: string | null;
   pedido_id: string | null;
   cliente_nome: string | null;
+  fornecedor_nome: string | null;
+  oc_data_prevista: string | null;
+  oc_data_confirmada: string | null;
+  oc_data_emissao: string | null;
 }
 
 export interface OcRecebimento extends CamposComuns {
@@ -907,6 +918,9 @@ export interface Necessidade extends CamposComuns {
   cod_barras: string | null;
   fornecedor_nome: string | null;
   oc_numero: string | null;
+  encomendado: number;
+  recebido: number;
+  falta: number;
 }
 
 export const ETIQUETA_NECESSIDADE: Record<string, string> = {
