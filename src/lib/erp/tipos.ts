@@ -632,6 +632,12 @@ export interface Pedido extends CamposComuns {
   zona_nome?: string | null;
   n_itens?: number;
   falta_pagar?: number;
+  /** Fase 8 — estado fiscal e entrega (vem de v_pedidos) */
+  estado_fiscal?: "sem_documento" | "guia_emitida" | "faturado" | "nota_credito";
+  data_entrega_efetiva?: string | null;
+  unidades_por_entregar?: number;
+  pendente_confirmacao?: number;
+  a_receber_entrega?: number;
 
 }
 
