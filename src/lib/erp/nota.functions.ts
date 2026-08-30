@@ -91,7 +91,7 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
     const pago = Number(pedido.total_pago ?? 0);
 
     let logotipo: Uint8Array | null = null;
-    const urlLogo = empresa.logotipo_url;
+    const urlLogo = empresa["logotipo_url"];
     if (urlLogo && /^https:\/\//.test(urlLogo)) {
       try {
         const resposta = await fetch(urlLogo);
@@ -113,11 +113,11 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
         morada: moradaEntrega || null,
       },
       linhas: (itens ?? []).map((i: Record<string, unknown>) => ({
-        descricao: i.descricao as string,
-        quantidade: Number(i.quantidade),
-        preco_unitario: Number(i.preco_unitario),
-        desconto: Number(i.desconto_valor ?? 0),
-        total: Number(i.total_linha),
+        descricao: i["descricao"] as string,
+        quantidade: Number(i["quantidade"]),
+        preco_unitario: Number(i["preco_unitario"]),
+        desconto: Number(i["desconto_valor"] ?? 0),
+        total: Number(i["total_linha"]),
       })),
       montagem: Number(pedido.valor_montagem ?? 0),
       entrega: Number(pedido.valor_entrega ?? 0),
@@ -128,10 +128,10 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
       pago,
       falta: Math.max(Number(pedido.total ?? 0) - pago, 0),
       pagamentos: (pagamentos ?? []).map((p: Record<string, unknown>) => ({
-        forma: (p.forma_nome as string) ?? "—",
-        valor: Number(p.valor),
-        estado: p.estado as string,
-        data: (p.data_confirmacao as string | null) ?? (p.criado_em as string | null),
+        forma: (p["forma_nome"] as string) ?? "—",
+        valor: Number(p["valor"]),
+        estado: p["estado"] as string,
+        data: (p["data_confirmacao"] as string | null) ?? (p["criado_em"] as string | null),
       })),
       data_entrega: pedido.data_entrega_prometida ?? pedido.data_entrega_prevista,
       empresa,
