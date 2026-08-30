@@ -199,6 +199,18 @@ function PaginaProdutos() {
     };
   }
 
+  async function guardarCustos(produtoId: string) {
+    if (!editarCustos) return;
+    const custo = form.custo_ultimo.trim().replace(",", ".");
+    const margem = form.margem_minima_pct.trim().replace(",", ".");
+    const { error } = await erp().rpc("definir_custos", {
+      p_produto_id: produtoId,
+      p_custo: custo === "" ? null : Number(custo),
+      p_margem_minima_pct: margem === "" ? null : Number(margem),
+    });
+    if (error) throw error;
+  }
+
   const mGuardar = useMutation({
     mutationFn: async () => {
       const linha = paraLinha(form);
@@ -206,11 +218,14 @@ function PaginaProdutos() {
         const payload = adm ? linha : { ...linha, cod_barras: emEdicao.cod_barras };
         const { error } = await erp().from("produtos").update(payload).eq("id", emEdicao.id);
         if (error) throw error;
+        await guardarCustos(emEdicao.id);
       } else {
-        const { error } = await erp().from("produtos").insert(linha);
+        const { data, error } = await erp().from("produtos").insert(linha).select("id").single();
         if (error) throw error;
+        if (data?.id) await guardarCustos(data.id as string);
       }
     },
+
     onSuccess: () => {
       toast.success(emEdicao ? "Produto guardado." : "Produto criado.");
       setAberto(false);
