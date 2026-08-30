@@ -703,33 +703,26 @@ function Entrega({
                 }
               />
             </div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <Label className="text-xs" htmlFor="cp4">
-                  Cód. postal
+                <Label className="text-xs" htmlFor="cp">
+                  Código postal
                 </Label>
                 <Input
-                  id="cp4"
-                  defaultValue={pedido.cp4_entrega ?? ""}
-                  disabled={!editavel}
-                  onBlur={(e) =>
-                    e.target.value !== (pedido.cp4_entrega ?? "") &&
-                    onGuardar({ cp4_entrega: e.target.value || null, zona_entrega_id: null })
+                  id="cp"
+                  defaultValue={
+                    pedido.cp4_entrega
+                      ? `${pedido.cp4_entrega}${pedido.cp3_entrega ? `-${pedido.cp3_entrega}` : ""}`
+                      : ""
                   }
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs" htmlFor="cp3">
-                  Ext.
-                </Label>
-                <Input
-                  id="cp3"
-                  defaultValue={pedido.cp3_entrega ?? ""}
+                  placeholder="4620-269"
                   disabled={!editavel}
-                  onBlur={(e) =>
-                    e.target.value !== (pedido.cp3_entrega ?? "") &&
-                    onGuardar({ cp3_entrega: e.target.value || null })
-                  }
+                  onBlur={(e) => {
+                    const atual = pedido.cp4_entrega
+                      ? `${pedido.cp4_entrega}${pedido.cp3_entrega ? `-${pedido.cp3_entrega}` : ""}`
+                      : "";
+                    if (e.target.value.trim() !== atual) guardarCodigoPostal(e.target.value);
+                  }}
                 />
               </div>
               <div className="space-y-1">
@@ -747,9 +740,38 @@ function Entrega({
                 />
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Zona: {pedido.zona_nome ?? "por definir (verifique o código postal)"}
-            </p>
+            <div className="space-y-1">
+              <Label className="text-xs">Zona de entrega</Label>
+              <Select
+                value={pedido.zona_entrega_id ?? ""}
+                disabled={!editavel}
+                onValueChange={(v) => onGuardar({ zona_entrega_id: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Escolher zona" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(zonas.data?.linhas ?? [])
+                    .filter((z) => z.ativo)
+                    .map((z) => (
+                      <SelectItem key={z.id} value={z.id}>
+                        {z.nome}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              {pedido.zona_entrega_id ? (
+                <p className="text-xs text-muted-foreground">
+                  Zona: {pedido.zona_nome ?? "definida"}
+                </p>
+              ) : (
+                <p className="text-xs font-medium text-destructive">
+                  Este código postal não pertence a nenhuma zona. Escolha a zona acima (ou desligue a
+                  entrega ao domicílio) antes de finalizar.
+                </p>
+              )}
+            </div>
+
           </>
         )}
 
