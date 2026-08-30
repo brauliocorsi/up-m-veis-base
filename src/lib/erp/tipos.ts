@@ -632,6 +632,12 @@ export interface Pedido extends CamposComuns {
   zona_nome?: string | null;
   n_itens?: number;
   falta_pagar?: number;
+  /** Fase 8 — estado fiscal e entrega (vem de v_pedidos) */
+  estado_fiscal?: "sem_documento" | "guia_emitida" | "faturado" | "nota_credito";
+  data_entrega_efetiva?: string | null;
+  unidades_por_entregar?: number;
+  pendente_confirmacao?: number;
+  a_receber_entrega?: number;
 
 }
 
@@ -1194,3 +1200,162 @@ export const ETIQUETA_PERIODICIDADE: Record<Periodicidade, string> = {
   trimestral: "Trimestral",
   anual: "Anual",
 };
+
+// --------------------------------------------------- Fase 8: entrega e faturação
+export type EstadoFiscal = "sem_documento" | "guia_emitida" | "faturado" | "nota_credito";
+
+export const ETIQUETA_FISCAL: Record<EstadoFiscal, string> = {
+  sem_documento: "Sem documento",
+  guia_emitida: "Guia emitida",
+  faturado: "Faturado",
+  nota_credito: "Nota de crédito",
+};
+
+export const ESTADOS_FISCAIS: Array<{ valor: EstadoFiscal; etiqueta: string }> = (
+  Object.keys(ETIQUETA_FISCAL) as EstadoFiscal[]
+).map((valor) => ({ valor, etiqueta: ETIQUETA_FISCAL[valor] }));
+
+export type TipoDocumentoFiscal =
+  | "guia_transporte"
+  | "fatura"
+  | "fatura_recibo"
+  | "recibo"
+  | "nota_credito";
+
+export const ETIQUETA_DOCUMENTO: Record<TipoDocumentoFiscal, string> = {
+  guia_transporte: "Guia de transporte",
+  fatura: "Fatura",
+  fatura_recibo: "Fatura-recibo",
+  recibo: "Recibo",
+  nota_credito: "Nota de crédito",
+};
+
+export const TIPOS_DOCUMENTO: Array<{ valor: TipoDocumentoFiscal; etiqueta: string }> = (
+  Object.keys(ETIQUETA_DOCUMENTO) as TipoDocumentoFiscal[]
+).map((valor) => ({ valor, etiqueta: ETIQUETA_DOCUMENTO[valor] }));
+
+export type EstadoDocumentoFiscal =
+  | "pendente"
+  | "emitido"
+  | "comunicado_at"
+  | "anulado"
+  | "erro";
+
+export const ETIQUETA_ESTADO_DOCUMENTO: Record<EstadoDocumentoFiscal, string> = {
+  pendente: "Por emitir",
+  emitido: "Emitido",
+  comunicado_at: "Comunicado à AT",
+  anulado: "Anulado",
+  erro: "Erro",
+};
+
+export interface Entrega extends CamposComuns {
+  pedido_id: string;
+  data_entrega: string;
+  tipo: "total" | "parcial";
+  entregue_por: string | null;
+  recebido_por_nome: string | null;
+  observacoes: string | null;
+  assinatura_url: string | null;
+  estado: "registada" | "revertida";
+  revertida_em: string | null;
+  revertida_por: string | null;
+  motivo_reversao: string | null;
+  pedido_numero?: string | null;
+  pedido_estado?: EstadoPedido;
+  pedido_total?: number;
+  pedido_total_pago?: number;
+  pedido_origem?: string | null;
+  vendedor_id?: string | null;
+  vendedor_nome?: string | null;
+  cp4_entrega?: string | null;
+  zona_entrega_id?: string | null;
+  zona_nome?: string | null;
+  data_entrega_prevista?: string | null;
+  cliente_nome?: string | null;
+  cliente_telefone?: string | null;
+  cliente_nif?: string | null;
+  entregue_por_nome?: string | null;
+  n_linhas?: number;
+  unidades?: number;
+}
+
+export interface EntregaItem extends CamposComuns {
+  entrega_id: string;
+  pedido_item_id: string;
+  quantidade: number;
+  motivo_nao_entrega: string | null;
+  estado_anterior: EstadoItem | null;
+  reserva_id: string | null;
+  pedido_id?: string;
+  linha?: number;
+  descricao?: string;
+  produto_id?: string | null;
+  servico_id?: string | null;
+  quantidade_pedida?: number;
+  estado_item?: EstadoItem;
+  data_entrega?: string;
+  entrega_estado?: "registada" | "revertida";
+}
+
+/** Linha de um pedido com o que já saiu e o que falta entregar. */
+export interface LinhaEntrega {
+  pedido_item_id: string;
+  pedido_id: string;
+  linha: number;
+  descricao: string;
+  produto_id: string | null;
+  servico_id: string | null;
+  quantidade: number;
+  estado: EstadoItem;
+  reserva_id: string | null;
+  total_linha: number;
+  qt_entregue: number;
+  qt_por_entregar: number;
+  pedido_numero: string | null;
+  pedido_estado: EstadoPedido;
+}
+
+export interface DocumentoFiscal extends CamposComuns {
+  pedido_id: string;
+  entrega_id: string | null;
+  tipo: TipoDocumentoFiscal;
+  estado: EstadoDocumentoFiscal;
+  numero: string | null;
+  serie: string | null;
+  codigo_at: string | null;
+  atcud: string | null;
+  valor: number | null;
+  data_emissao: string | null;
+  data_comunicacao: string | null;
+  chave_idempotencia: string;
+  url_pdf: string | null;
+  erro: string | null;
+  tentativas: number;
+  emitido_por: string | null;
+  pedido_numero?: string | null;
+  pedido_total?: number;
+  pedido_estado?: EstadoPedido;
+  cliente_nome?: string | null;
+  cliente_nif?: string | null;
+  data_entrega?: string | null;
+  valor_divergente?: boolean;
+}
+
+export interface EntreguePorReceber {
+  pedido_id: string;
+  numero: string;
+  estado: EstadoPedido;
+  total: number;
+  total_pago: number;
+  falta_pagar: number;
+  vendedor_id: string | null;
+  vendedor_nome: string | null;
+  criado_em: string;
+  confirmado_em: string | null;
+  cliente_nome: string | null;
+  cliente_telefone: string | null;
+  cliente_nif: string | null;
+  data_entrega_efetiva: string | null;
+  dias_desde_entrega: number | null;
+}

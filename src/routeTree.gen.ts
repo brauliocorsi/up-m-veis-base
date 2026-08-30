@@ -20,6 +20,8 @@ import { Route as AuthenticatedConciliacaoRouteImport } from './routes/_authenti
 import { Route as AuthenticatedContasPagarRouteImport } from './routes/_authenticated/contas-pagar'
 import { Route as AuthenticatedContasReceberRouteImport } from './routes/_authenticated/contas-receber'
 import { Route as AuthenticatedDespesasRouteImport } from './routes/_authenticated/despesas'
+import { Route as AuthenticatedEntregasRouteImport } from './routes/_authenticated/entregas'
+import { Route as AuthenticatedEntreguePorReceberRouteImport } from './routes/_authenticated/entregue-por-receber'
 import { Route as AuthenticatedFornecedoresRouteImport } from './routes/_authenticated/fornecedores'
 import { Route as AuthenticatedMovimentosRouteImport } from './routes/_authenticated/movimentos'
 import { Route as AuthenticatedNecessidadesRouteImport } from './routes/_authenticated/necessidades'
@@ -108,6 +110,17 @@ const AuthenticatedDespesasRoute = AuthenticatedDespesasRouteImport.update({
   path: '/despesas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEntregasRoute = AuthenticatedEntregasRouteImport.update({
+  id: '/entregas',
+  path: '/entregas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEntreguePorReceberRoute =
+  AuthenticatedEntreguePorReceberRouteImport.update({
+    id: '/entregue-por-receber',
+    path: '/entregue-por-receber',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedFornecedoresRoute =
   AuthenticatedFornecedoresRouteImport.update({
     id: '/fornecedores',
@@ -292,6 +305,8 @@ export interface FileRoutesByFullPath {
   '/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/contas-receber': typeof AuthenticatedContasReceberRoute
   '/despesas': typeof AuthenticatedDespesasRoute
+  '/entregas': typeof AuthenticatedEntregasRoute
+  '/entregue-por-receber': typeof AuthenticatedEntreguePorReceberRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/movimentos': typeof AuthenticatedMovimentosRoute
   '/necessidades': typeof AuthenticatedNecessidadesRoute
@@ -334,6 +349,8 @@ export interface FileRoutesByTo {
   '/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/contas-receber': typeof AuthenticatedContasReceberRoute
   '/despesas': typeof AuthenticatedDespesasRoute
+  '/entregas': typeof AuthenticatedEntregasRoute
+  '/entregue-por-receber': typeof AuthenticatedEntreguePorReceberRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/movimentos': typeof AuthenticatedMovimentosRoute
   '/necessidades': typeof AuthenticatedNecessidadesRoute
@@ -379,6 +396,8 @@ export interface FileRoutesById {
   '/_authenticated/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/_authenticated/contas-receber': typeof AuthenticatedContasReceberRoute
   '/_authenticated/despesas': typeof AuthenticatedDespesasRoute
+  '/_authenticated/entregas': typeof AuthenticatedEntregasRoute
+  '/_authenticated/entregue-por-receber': typeof AuthenticatedEntreguePorReceberRoute
   '/_authenticated/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/_authenticated/movimentos': typeof AuthenticatedMovimentosRoute
   '/_authenticated/necessidades': typeof AuthenticatedNecessidadesRoute
@@ -423,6 +442,8 @@ export interface FileRouteTypes {
     | '/contas-pagar'
     | '/contas-receber'
     | '/despesas'
+    | '/entregas'
+    | '/entregue-por-receber'
     | '/fornecedores'
     | '/movimentos'
     | '/necessidades'
@@ -465,6 +486,8 @@ export interface FileRouteTypes {
     | '/contas-pagar'
     | '/contas-receber'
     | '/despesas'
+    | '/entregas'
+    | '/entregue-por-receber'
     | '/fornecedores'
     | '/movimentos'
     | '/necessidades'
@@ -509,6 +532,8 @@ export interface FileRouteTypes {
     | '/_authenticated/contas-pagar'
     | '/_authenticated/contas-receber'
     | '/_authenticated/despesas'
+    | '/_authenticated/entregas'
+    | '/_authenticated/entregue-por-receber'
     | '/_authenticated/fornecedores'
     | '/_authenticated/movimentos'
     | '/_authenticated/necessidades'
@@ -626,6 +651,20 @@ declare module '@tanstack/react-router' {
       path: '/despesas'
       fullPath: '/despesas'
       preLoaderRoute: typeof AuthenticatedDespesasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/entregas': {
+      id: '/_authenticated/entregas'
+      path: '/entregas'
+      fullPath: '/entregas'
+      preLoaderRoute: typeof AuthenticatedEntregasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/entregue-por-receber': {
+      id: '/_authenticated/entregue-por-receber'
+      path: '/entregue-por-receber'
+      fullPath: '/entregue-por-receber'
+      preLoaderRoute: typeof AuthenticatedEntreguePorReceberRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/fornecedores': {
@@ -894,6 +933,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedContasPagarRoute: typeof AuthenticatedContasPagarRoute
   AuthenticatedContasReceberRoute: typeof AuthenticatedContasReceberRoute
   AuthenticatedDespesasRoute: typeof AuthenticatedDespesasRoute
+  AuthenticatedEntregasRoute: typeof AuthenticatedEntregasRoute
+  AuthenticatedEntreguePorReceberRoute: typeof AuthenticatedEntreguePorReceberRoute
   AuthenticatedFornecedoresRoute: typeof AuthenticatedFornecedoresRoute
   AuthenticatedMovimentosRoute: typeof AuthenticatedMovimentosRoute
   AuthenticatedNecessidadesRoute: typeof AuthenticatedNecessidadesRoute
@@ -922,6 +963,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedContasPagarRoute: AuthenticatedContasPagarRoute,
   AuthenticatedContasReceberRoute: AuthenticatedContasReceberRoute,
   AuthenticatedDespesasRoute: AuthenticatedDespesasRoute,
+  AuthenticatedEntregasRoute: AuthenticatedEntregasRoute,
+  AuthenticatedEntreguePorReceberRoute: AuthenticatedEntreguePorReceberRoute,
   AuthenticatedFornecedoresRoute: AuthenticatedFornecedoresRoute,
   AuthenticatedMovimentosRoute: AuthenticatedMovimentosRoute,
   AuthenticatedNecessidadesRoute: AuthenticatedNecessidadesRoute,
