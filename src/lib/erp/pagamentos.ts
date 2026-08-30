@@ -175,7 +175,6 @@ export async function lerMotivosSaida(): Promise<Motivo[]> {
     .from("motivos")
     .select("*")
     .eq("contexto", "saida_caixa")
-    .eq("ativo", true)
     .is("eliminado_em", null)
     .order("ordem", { ascending: true });
   if (error) throw error;
