@@ -118,7 +118,7 @@ function PaginaDespesas() {
       <CabecalhoPagina
         titulo="Despesas"
         descricao="Despesas que não vêm de ordens de compra. Cada despesa cria a sua conta a pagar."
-        acoes={
+        acao={
           pagar ? (
             <Button
               onClick={() => {
