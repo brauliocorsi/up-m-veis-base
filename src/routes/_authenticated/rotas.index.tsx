@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { MapPinned, Plus } from "lucide-react";
+import { MapPinned, Plus, Truck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -61,10 +61,31 @@ interface PedidoEntregavel {
   total: number;
 }
 
+function useEntregadores() {
+  return useQuery({
+    queryKey: ["entregadores"],
+    queryFn: async () => {
+      const { data, error } = await erp()
+        .from("utilizadores")
+        .select("*")
+        .eq("perfil", "entregador")
+        .eq("ativo", true)
+        .is("eliminado_em", null)
+        .order("nome", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as Utilizador[];
+    },
+  });
+}
+
 function Pagina() {
   const perms = usePermissoes();
   const [novaAberta, setNovaAberta] = useState(false);
+  const [entregadorInicial, setEntregadorInicial] = useState("");
   const rotasQ = useQuery({ queryKey: ["rotas"], queryFn: () => lerRotas() });
+  const entregadoresQ = useEntregadores();
+  const dia = hoje();
+  const rotasDeHoje = (rotasQ.data ?? []).filter((r) => r.data === dia);
 
   return (
     <div>
@@ -73,12 +94,81 @@ function Pagina() {
         descricao="Cada dia de rota tem um previsto e um realizado, e no fecho os dois têm de bater."
         acao={
           perms.montarRotas ? (
-            <Button onClick={() => setNovaAberta(true)}>
+            <Button
+              onClick={() => {
+                setEntregadorInicial("");
+                setNovaAberta(true);
+              }}
+            >
               <Plus className="mr-2 h-4 w-4" /> Nova rota
             </Button>
           ) : undefined
         }
       />
+
+      <Card className="mb-4">
+        <CardContent className="p-4">
+          <p className="mb-3 flex items-center gap-2 text-sm font-medium">
+            <Truck className="h-4 w-4 text-primary" /> Entregadores hoje
+          </p>
+          {entregadoresQ.isLoading ? (
+            <p className="text-sm text-muted-foreground">A carregar…</p>
+          ) : (entregadoresQ.data ?? []).length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Ainda não há entregadores ativos. Crie os utilizadores com o perfil Entregador.
+            </p>
+          ) : (
+            <ul className="grid gap-2 sm:grid-cols-2">
+              {(entregadoresQ.data ?? []).map((u) => {
+                const rota = rotasDeHoje.find((r) => r.responsavel_id === u.id);
+                return (
+                  <li
+                    key={u.id}
+                    className="flex flex-wrap items-center gap-2 rounded-md border p-3 text-sm"
+                  >
+                    <span className="min-w-0 truncate font-medium">{u.nome}</span>
+                    {rota ? (
+                      <>
+                        <Badge variant="outline">{ETIQUETA_ROTA[rota.estado]}</Badge>
+                        <span className="text-xs tabular-nums text-muted-foreground">
+                          {rota.paragens_fechadas ?? 0}/{rota.paragens ?? 0} paragens ·{" "}
+                          {formatarDinheiro(rota.realizado_recebido ?? 0)} /{" "}
+                          {formatarDinheiro(rota.previsto_receber)}
+                        </span>
+                        <Button asChild size="sm" variant="outline" className="ml-auto">
+                          <Link to="/rotas/$rotaId" params={{ rotaId: rota.id }}>
+                            Abrir
+                          </Link>
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-xs text-muted-foreground">Sem rota hoje</span>
+                        {perms.montarRotas ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="ml-auto"
+                            onClick={() => {
+                              setEntregadorInicial(u.id);
+                              setNovaAberta(true);
+                            }}
+                          >
+                            <Plus className="mr-1 h-4 w-4" /> Abrir rota
+                          </Button>
+                        ) : null}
+                      </>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+          <p className="mt-3 text-xs text-muted-foreground">
+            Cada entregador só vê a rota que lhe foi atribuída, em “A minha rota”.
+          </p>
+        </CardContent>
+      </Card>
 
       <div className="space-y-3">
         {(rotasQ.data ?? []).map((r) => (
@@ -121,33 +211,31 @@ function Pagina() {
         )}
       </div>
 
-      {novaAberta && <DialogoNovaRota onFechar={() => setNovaAberta(false)} />}
+      {novaAberta && (
+        <DialogoNovaRota
+          entregadorInicial={entregadorInicial}
+          onFechar={() => setNovaAberta(false)}
+        />
+      )}
     </div>
   );
 }
 
-function DialogoNovaRota({ onFechar }: { onFechar: () => void }) {
+function DialogoNovaRota({
+  entregadorInicial,
+  onFechar,
+}: {
+  entregadorInicial?: string;
+  onFechar: () => void;
+}) {
   const clientQuery = useQueryClient();
   const [data, setData] = useState(hoje());
   const [nome, setNome] = useState("");
   const [viatura, setViatura] = useState("");
-  const [responsavel, setResponsavel] = useState("");
+  const [responsavel, setResponsavel] = useState(entregadorInicial ?? "");
   const [escolhidos, setEscolhidos] = useState<string[]>([]);
 
-  const entregadoresQ = useQuery({
-    queryKey: ["entregadores"],
-    queryFn: async () => {
-      const { data, error } = await erp()
-        .from("utilizadores")
-        .select("*")
-        .eq("perfil", "entregador")
-        .eq("ativo", true)
-        .is("eliminado_em", null)
-        .order("nome", { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as Utilizador[];
-    },
-  });
+  const entregadoresQ = useEntregadores();
 
   const pedidosQ = useQuery({
     queryKey: ["pedidos-entregaveis", data],
