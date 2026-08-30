@@ -375,6 +375,14 @@ function PaginaFormas() {
             onChange={(v) => setForm({ ...form, entra_caixa: v })}
           />
           <Interruptor
+            id="numerario"
+            titulo="É dinheiro físico"
+            descricao="Só o numerário vai no envelope da rota e é contado no fecho."
+            valor={form.e_numerario}
+            onChange={(v) => setForm({ ...form, e_numerario: v })}
+          />
+
+          <Interruptor
             id="ativo"
             titulo="Ativa"
             descricao="Só as formas ativas aparecem nas vendas."
