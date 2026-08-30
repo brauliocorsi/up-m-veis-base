@@ -71,8 +71,11 @@ export async function guardarItem(id: string, campos: Record<string, unknown>) {
   if (error) throw error;
 }
 
-export async function removerItem(id: string) {
-  const { error } = await erp().from("pedido_itens").delete().eq("id", id);
+export async function removerItem(id: string, motivo?: string) {
+  const { error } = await erp().rpc("remover_item", {
+    p_item_id: id,
+    p_motivo: motivo ?? null,
+  });
   if (error) throw error;
 }
 
