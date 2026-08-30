@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -8,7 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { erp } from "@/lib/erp/db";
+import { carregarLogotipo, urlDocumento } from "@/lib/erp/empresa.functions";
 import { primeiraMensagem } from "@/lib/erp/erros";
 import { esquemaDefinicoesGerais, esquemaEmpresa } from "@/lib/erp/esquemas";
 import { PERFIS, type Perfil } from "@/lib/erp/tipos";
