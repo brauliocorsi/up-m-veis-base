@@ -4,6 +4,7 @@ import {
   BadgeEuro,
   CalendarDays,
   ChevronDown,
+  ChevronRight,
   
   ClipboardCheck,
   ClipboardList,
@@ -36,7 +37,13 @@ import {
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
+} from "react";
 
 import { Button } from "@/components/ui/button";
 import { IndicadorSync } from "@/components/erp/indicador-sync";
@@ -295,14 +302,14 @@ export function AppShell({ children }: { children: ReactNode }) {
     }
   }
 
-  const linhaNav = (item: ItemNav, aoClicar?: () => void) => {
+  const linhaNav = (item: ItemNav, aoClicar?: () => void, focavel = true) => {
     const ativo = rotaAtiva(caminho, item.para);
     return (
       <Link
         key={item.para}
         to={item.para}
         onClick={aoClicar}
-        data-nav-foco
+        {...(focavel ? { "data-nav-foco": true } : { tabIndex: -1 })}
         aria-current={ativo ? "page" : undefined}
         className={cn(
           "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
@@ -357,7 +364,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           id={idPainel}
           role="group"
           aria-label={grupo.etiqueta}
-          hidden={!aberto}
+          aria-hidden={!aberto}
           className={cn(
             "grid transition-all duration-300 ease-out",
             aberto ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
@@ -365,7 +372,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         >
           <div className="overflow-hidden">
             <div className="mt-1 space-y-1 px-1">
-              {grupo.itens.map((item) => linhaNav(item, aoClicar))}
+              {grupo.itens.map((item) => linhaNav(item, aoClicar, aberto))}
             </div>
           </div>
         </div>
@@ -384,7 +391,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="mb-6">
             <Marca />
           </div>
-          <nav className="space-y-2">{grupos.map((grupo) => grupoNav(grupo))}</nav>
+          <nav aria-label="Menu principal" className="space-y-2" onKeyDown={aoTeclaMenu}>
+            {grupos.map((grupo) => grupoNav(grupo))}
+          </nav>
         </aside>
 
 
@@ -471,7 +480,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 to={item.para}
                 aria-current={ativo ? "page" : undefined}
                 className={cn(
-                  "flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-1 text-[11px] transition-colors",
+                  "flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-1 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   ativo ? "font-medium text-primary" : "text-muted-foreground",
                 )}
               >
@@ -483,14 +492,14 @@ export function AppShell({ children }: { children: ReactNode }) {
           {restantes.length > 0 && (
             <Sheet open={menuAberto} onOpenChange={setMenuAberto}>
               <SheetTrigger asChild>
-                <button className="flex flex-1 flex-col items-center gap-1 px-1 py-1 text-[11px] text-muted-foreground">
+                <button className="flex flex-1 flex-col items-center gap-1 rounded-md px-1 py-1 text-[11px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <Menu className="h-5 w-5" />
                   Mais
                 </button>
               </SheetTrigger>
               <SheetContent side="bottom" data-menu className="space-y-2 pb-8">
                 <SheetTitle>Menu</SheetTitle>
-                <nav className="space-y-2">
+                <nav aria-label="Menu" className="space-y-2" onKeyDown={aoTeclaMenu}>
                   {gruposRestantes.map((grupo) =>
                     grupoNav(grupo, () => setMenuAberto(false), "hover:bg-muted"),
                   )}
