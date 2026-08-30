@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticated/_adm/route'
+import { Route as AuthenticatedAssistenciasRouteImport } from './routes/_authenticated/assistencias'
 import { Route as AuthenticatedCaixaRouteImport } from './routes/_authenticated/caixa'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
@@ -75,6 +76,12 @@ const AuthenticatedAdmRouteRoute = AuthenticatedAdmRouteRouteImport.update({
   id: '/_adm',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAssistenciasRoute =
+  AuthenticatedAssistenciasRouteImport.update({
+    id: '/assistencias',
+    path: '/assistencias',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCaixaRoute = AuthenticatedCaixaRouteImport.update({
   id: '/caixa',
   path: '/caixa',
@@ -317,6 +324,7 @@ const ApiPublicHooksSyncContagemRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/assistencias': typeof AuthenticatedAssistenciasRoute
   '/caixa': typeof AuthenticatedCaixaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/clientes': typeof AuthenticatedClientesRoute
@@ -364,6 +372,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/assistencias': typeof AuthenticatedAssistenciasRoute
   '/caixa': typeof AuthenticatedCaixaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/clientes': typeof AuthenticatedClientesRoute
@@ -414,6 +423,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/_adm': typeof AuthenticatedAdmRouteRouteWithChildren
+  '/_authenticated/assistencias': typeof AuthenticatedAssistenciasRoute
   '/_authenticated/caixa': typeof AuthenticatedCaixaRoute
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/clientes': typeof AuthenticatedClientesRoute
@@ -463,6 +473,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/assistencias'
     | '/caixa'
     | '/categorias'
     | '/clientes'
@@ -510,6 +521,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/assistencias'
     | '/caixa'
     | '/categorias'
     | '/clientes'
@@ -559,6 +571,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/_adm'
+    | '/_authenticated/assistencias'
     | '/_authenticated/caixa'
     | '/_authenticated/categorias'
     | '/_authenticated/clientes'
@@ -639,6 +652,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedAdmRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/assistencias': {
+      id: '/_authenticated/assistencias'
+      path: '/assistencias'
+      fullPath: '/assistencias'
+      preLoaderRoute: typeof AuthenticatedAssistenciasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/caixa': {
@@ -984,6 +1004,7 @@ const AuthenticatedAdmRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdmRouteRoute: typeof AuthenticatedAdmRouteRouteWithChildren
+  AuthenticatedAssistenciasRoute: typeof AuthenticatedAssistenciasRoute
   AuthenticatedCaixaRoute: typeof AuthenticatedCaixaRoute
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
@@ -1017,6 +1038,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdmRouteRoute: AuthenticatedAdmRouteRouteWithChildren,
+  AuthenticatedAssistenciasRoute: AuthenticatedAssistenciasRoute,
   AuthenticatedCaixaRoute: AuthenticatedCaixaRoute,
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedClientesRoute: AuthenticatedClientesRoute,
