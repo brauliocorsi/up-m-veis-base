@@ -93,6 +93,36 @@ const NAVEGACAO: GrupoNav[] = [
     ],
   },
   {
+    etiqueta: "Financeiro",
+    itens: [
+      {
+        para: "/contas-receber",
+        etiqueta: "Contas a receber",
+        icone: HandCoins,
+        perfis: ["adm", "financeiro", "escritorio"],
+      },
+      {
+        para: "/despesas",
+        etiqueta: "Despesas",
+        icone: Receipt,
+        perfis: ["adm", "financeiro"],
+      },
+      {
+        para: "/conciliacao",
+        etiqueta: "Conciliação",
+        icone: Scale,
+        perfis: ["adm", "financeiro"],
+      },
+      {
+        para: "/relatorios",
+        etiqueta: "Relatórios",
+        icone: BarChart3,
+        perfis: ["adm", "financeiro", "escritorio", "compras"],
+      },
+    ],
+  },
+  {
+
     etiqueta: "Inventário",
     itens: [
       { para: "/produtos", etiqueta: "Produtos", icone: Package },
