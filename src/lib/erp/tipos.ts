@@ -241,7 +241,7 @@ export interface Produto extends CamposComuns {
   peso_kg: number | null;
   preco_base: number | null;
   preco_promocional: number | null;
-  custo_ultimo: number | null;
+  iva_pct: number;
   iva_pct: number;
   valor_montagem: number;
   montagem_obrigatoria: boolean;
