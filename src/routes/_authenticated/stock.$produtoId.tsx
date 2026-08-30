@@ -405,6 +405,7 @@ function FichaStock() {
           </table>
         </div>
       </TabsContent>
+      )}
 
       <TabsContent value="vendas">
         <div className="overflow-hidden rounded-lg border bg-card">
