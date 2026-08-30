@@ -51,6 +51,7 @@ import { Route as AuthenticatedOrdensCompraIndexRouteImport } from './routes/_au
 import { Route as AuthenticatedOrdensCompraOcIdRouteImport } from './routes/_authenticated/ordens-compra.$ocId'
 import { Route as AuthenticatedPedidosIndexRouteImport } from './routes/_authenticated/pedidos.index'
 import { Route as AuthenticatedPedidosPedidoIdRouteImport } from './routes/_authenticated/pedidos.$pedidoId'
+import { Route as AuthenticatedRotasIndexRouteImport } from './routes/_authenticated/rotas.index'
 import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
 import { Route as AuthenticatedStockProdutoIdRouteImport } from './routes/_authenticated/stock.$produtoId'
 import { Route as ApiPublicHooksSyncContagemRouteImport } from './routes/api/public/hooks/sync-contagem'
@@ -283,6 +284,11 @@ const AuthenticatedPedidosPedidoIdRoute =
     path: '/pedidos/$pedidoId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRotasIndexRoute = AuthenticatedRotasIndexRouteImport.update({
+  id: '/rotas/',
+  path: '/rotas/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedStockIndexRoute = AuthenticatedStockIndexRouteImport.update({
   id: '/stock/',
   path: '/stock/',
@@ -343,6 +349,7 @@ export interface FileRoutesByFullPath {
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/ordens-compra/': typeof AuthenticatedOrdensCompraIndexRoute
   '/pedidos/': typeof AuthenticatedPedidosIndexRoute
+  '/rotas/': typeof AuthenticatedRotasIndexRoute
   '/stock/': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -388,6 +395,7 @@ export interface FileRoutesByTo {
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/ordens-compra': typeof AuthenticatedOrdensCompraIndexRoute
   '/pedidos': typeof AuthenticatedPedidosIndexRoute
+  '/rotas': typeof AuthenticatedRotasIndexRoute
   '/stock': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -436,6 +444,7 @@ export interface FileRoutesById {
   '/_authenticated/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/_authenticated/ordens-compra/': typeof AuthenticatedOrdensCompraIndexRoute
   '/_authenticated/pedidos/': typeof AuthenticatedPedidosIndexRoute
+  '/_authenticated/rotas/': typeof AuthenticatedRotasIndexRoute
   '/_authenticated/stock/': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
@@ -483,6 +492,7 @@ export interface FileRouteTypes {
     | '/stock/$produtoId'
     | '/ordens-compra/'
     | '/pedidos/'
+    | '/rotas/'
     | '/stock/'
     | '/api/public/hooks/sync-contagem'
   fileRoutesByTo: FileRoutesByTo
@@ -528,6 +538,7 @@ export interface FileRouteTypes {
     | '/stock/$produtoId'
     | '/ordens-compra'
     | '/pedidos'
+    | '/rotas'
     | '/stock'
     | '/api/public/hooks/sync-contagem'
   id:
@@ -575,6 +586,7 @@ export interface FileRouteTypes {
     | '/_authenticated/stock/$produtoId'
     | '/_authenticated/ordens-compra/'
     | '/_authenticated/pedidos/'
+    | '/_authenticated/rotas/'
     | '/_authenticated/stock/'
     | '/api/public/hooks/sync-contagem'
   fileRoutesById: FileRoutesById
@@ -882,6 +894,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPedidosPedidoIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/rotas/': {
+      id: '/_authenticated/rotas/'
+      path: '/rotas'
+      fullPath: '/rotas/'
+      preLoaderRoute: typeof AuthenticatedRotasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/stock/': {
       id: '/_authenticated/stock/'
       path: '/stock'
@@ -971,6 +990,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedStockProdutoIdRoute: typeof AuthenticatedStockProdutoIdRoute
   AuthenticatedOrdensCompraIndexRoute: typeof AuthenticatedOrdensCompraIndexRoute
   AuthenticatedPedidosIndexRoute: typeof AuthenticatedPedidosIndexRoute
+  AuthenticatedRotasIndexRoute: typeof AuthenticatedRotasIndexRoute
   AuthenticatedStockIndexRoute: typeof AuthenticatedStockIndexRoute
 }
 
@@ -1002,6 +1022,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedStockProdutoIdRoute: AuthenticatedStockProdutoIdRoute,
   AuthenticatedOrdensCompraIndexRoute: AuthenticatedOrdensCompraIndexRoute,
   AuthenticatedPedidosIndexRoute: AuthenticatedPedidosIndexRoute,
+  AuthenticatedRotasIndexRoute: AuthenticatedRotasIndexRoute,
   AuthenticatedStockIndexRoute: AuthenticatedStockIndexRoute,
 }
 
