@@ -1,6 +1,7 @@
 import { erp } from "./db";
 import type {
   ContaPagar,
+  FornecimentoLinha,
   Necessidade,
   OcItem,
   OcRecebimento,
