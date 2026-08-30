@@ -67,11 +67,11 @@ const TEXTOS: Record<Idioma, Textos> = {
 };
 
 export interface DadosEmpresa {
-  nome?: string;
-  morada?: string;
-  nif?: string;
-  telefone?: string;
-  email?: string;
+  nome?: string | undefined;
+  morada?: string | undefined;
+  nif?: string | undefined;
+  telefone?: string | undefined;
+  email?: string | undefined;
 }
 
 /** Compõe o assunto e o texto do email da ordem de compra, no idioma do fornecedor. */
