@@ -267,10 +267,16 @@ function PaginaCaixa() {
                   Aberto
                 </Badge>
               </CardTitle>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
+                {registarEntradas ? (
+                  <Button size="sm" variant="outline" onClick={() => setEntradaAberta(true)}>
+                    <ArrowDownCircle className="mr-1 h-4 w-4" /> Entrada
+                  </Button>
+                ) : null}
                 <Button size="sm" variant="outline" onClick={() => setSaidaAberta(true)}>
                   <ArrowUpCircle className="mr-1 h-4 w-4" /> Saída
                 </Button>
+
                 <Button
                   size="sm"
                   onClick={() => {
