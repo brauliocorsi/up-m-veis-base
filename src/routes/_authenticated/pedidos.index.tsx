@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { CabecalhoPagina } from "@/components/erp/app-shell";
+import { FiltrosVendasPainel } from "@/components/erp/filtros-vendas";
 import { Lista, type Coluna } from "@/components/erp/lista";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,33 +28,43 @@ import {
 } from "@/components/ui/select";
 import { useListagem } from "@/hooks/use-listagem";
 import { erp, mensagemErro } from "@/lib/erp/db";
+import {
+  CAMPOS_PESQUISA_PEDIDO,
+  exportarPedidosCsv,
+  filtrosParaPedidos,
+  idsPedidosComProduto,
+  lerFiltros,
+  type FiltrosVendas,
+} from "@/lib/erp/filtros";
 import { listar } from "@/lib/erp/listar";
 import { normalizarTelefone } from "@/lib/erp/nif";
 
 import {
-  ESTADOS_PEDIDO,
+  ETIQUETA_FISCAL,
   ETIQUETA_PEDIDO,
   formatarDataCurta,
   formatarDinheiro,
   type Cliente,
+  type EstadoFiscal,
   type EstadoPedido,
   type Pedido,
 } from "@/lib/erp/tipos";
 import { criarOrcamento } from "@/lib/erp/vendas";
 
 export const Route = createFileRoute("/_authenticated/pedidos/")({
+  validateSearch: (busca: Record<string, unknown>): FiltrosVendas => lerFiltros(busca),
   head: () => ({
     meta: [
       { title: "Vendas — UP Vendas" },
       {
         name: "description",
         content:
-          "Orçamentos e pedidos da UP Móveis: criar uma venda nova, acompanhar estados e datas de entrega.",
+          "Orçamentos e pedidos da UP Móveis: criar uma venda nova, filtrar por estado, entrega e faturação, e ver total, recebido e pendente.",
       },
       { property: "og:title", content: "Vendas — UP Vendas" },
       {
         property: "og:description",
-        content: "Orçamentos e pedidos da UP Móveis num só sítio.",
+        content: "Total, recebido e pendente de cada venda, com filtros partilháveis.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -71,34 +82,86 @@ const COR_ESTADO: Record<EstadoPedido, string> = {
   cancelado: "bg-destructive/10 text-destructive",
 };
 
+const COR_FISCAL: Record<EstadoFiscal, string> = {
+  sem_documento: "bg-muted text-muted-foreground",
+  guia_emitida: "bg-amber-100 text-amber-900",
+  faturado: "bg-emerald-100 text-emerald-900",
+  nota_credito: "bg-destructive/10 text-destructive",
+};
+
 function Pedidos() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const lista = useListagem("criado_em", false, 20);
-  const [estado, setEstado] = useState<string>("todos");
+  const filtros = Route.useSearch();
   const [novaVenda, setNovaVenda] = useState(false);
+  const [aExportar, setAExportar] = useState(false);
+
+  const aplicar = (novos: FiltrosVendas) => {
+    lista.onPagina(1);
+    navigate({ to: "/pedidos", search: novos });
+  };
+
+  const { data: idsProduto } = useQuery({
+    queryKey: ["pedidos-produto", filtros.produto],
+    enabled: Boolean(filtros.produto),
+    queryFn: () => idsPedidosComProduto(filtros.produto ?? ""),
+  });
+
+  const condicoes = filtrosParaPedidos(filtros, filtros.produto ? (idsProduto ?? []) : null);
+  const prontoParaListar = !filtros.produto || idsProduto !== undefined;
+  const pesquisa = filtros.cliente ?? lista.pesquisa;
 
   const { data, isLoading } = useQuery({
-    queryKey: [
-      "pedidos",
-      lista.pesquisa,
-      lista.pagina,
-      lista.ordenarPor,
-      lista.ascendente,
-      estado,
-    ],
+    queryKey: ["pedidos", pesquisa, lista.pagina, lista.ordenarPor, lista.ascendente, condicoes],
+    enabled: prontoParaListar,
     queryFn: () =>
       listar<Pedido>({
         tabela: "v_pedidos",
-        camposPesquisa: ["numero", "cliente_nome", "cliente_telefone"],
-        pesquisa: lista.pesquisa,
+        camposPesquisa: CAMPOS_PESQUISA_PEDIDO,
+        pesquisa,
         ordenarPor: lista.ordenarPor,
         ascendente: lista.ascendente,
         pagina: lista.pagina,
         tamanho: lista.tamanho,
         temEliminacao: false,
-        filtros: estado === "todos" ? [] : [{ campo: "estado", valor: estado }],
+        filtros: condicoes,
       }),
+  });
+
+  // Resumo do período: os mesmos números que a lista, somados.
+  const { data: resumo } = useQuery({
+    queryKey: ["pedidos-resumo", pesquisa, condicoes],
+    enabled: prontoParaListar,
+    queryFn: async () => {
+      const { linhas } = await listar<Pedido>({
+        tabela: "v_pedidos",
+        camposPesquisa: CAMPOS_PESQUISA_PEDIDO,
+        pesquisa,
+        ordenarPor: "criado_em",
+        ascendente: false,
+        pagina: 1,
+        tamanho: 2000,
+        temEliminacao: false,
+        filtros: condicoes,
+      });
+      const hoje = new Date().toISOString().slice(0, 10);
+      let vendido = 0;
+      let recebido = 0;
+      let porConfirmar = 0;
+      let naEntrega = 0;
+      let vencido = 0;
+      for (const p of linhas) {
+        if (p.estado === "cancelado") continue;
+        vendido += Number(p.total);
+        recebido += Number(p.total_pago);
+        porConfirmar += Number(p.pendente_confirmacao ?? 0);
+        naEntrega += Number(p.a_receber_entrega ?? 0);
+        const falta = Number(p.total) - Number(p.total_pago);
+        if (falta > 0 && p.data_entrega_efetiva && p.data_entrega_efetiva < hoje) vencido += falta;
+      }
+      return { vendido, recebido, porConfirmar, naEntrega, vencido };
+    },
   });
 
   const colunas: Array<Coluna<Pedido>> = [
@@ -132,9 +195,17 @@ function Pedidos() {
       chave: "estado",
       cabecalho: "Estado",
       celula: (p) => (
-        <Badge variant="secondary" className={COR_ESTADO[p.estado]}>
-          {ETIQUETA_PEDIDO[p.estado]}
-        </Badge>
+        <div className="space-y-1">
+          <Badge variant="secondary" className={COR_ESTADO[p.estado]}>
+            {ETIQUETA_PEDIDO[p.estado]}
+          </Badge>
+          <Badge
+            variant="secondary"
+            className={`block w-fit ${COR_FISCAL[(p.estado_fiscal ?? "sem_documento") as EstadoFiscal]}`}
+          >
+            {ETIQUETA_FISCAL[(p.estado_fiscal ?? "sem_documento") as EstadoFiscal]}
+          </Badge>
+        </div>
       ),
     },
     {
@@ -142,7 +213,21 @@ function Pedidos() {
       cabecalho: "Entrega",
       ordenavel: true,
       esconderMobile: true,
-      celula: (p) => formatarDataCurta(p.data_entrega_prometida ?? p.data_entrega_prevista),
+      celula: (p) => (
+        <div className="leading-tight">
+          <p>{formatarDataCurta(p.data_entrega_prometida ?? p.data_entrega_prevista)}</p>
+          {p.data_entrega_efetiva && (
+            <p className="text-xs text-emerald-700">
+              Entregue {formatarDataCurta(p.data_entrega_efetiva)}
+            </p>
+          )}
+          {!p.data_entrega_efetiva && Number(p.unidades_por_entregar ?? 0) > 0 && p.estado !== "orcamento" && (
+            <p className="text-xs text-muted-foreground">
+              {p.unidades_por_entregar} por entregar
+            </p>
+          )}
+        </div>
+      ),
     },
     {
       chave: "vendedor_nome",
@@ -156,6 +241,38 @@ function Pedidos() {
       ordenavel: true,
       alinharDireita: true,
       celula: (p) => <span className="font-medium">{formatarDinheiro(p.total)}</span>,
+    },
+    {
+      chave: "total_pago",
+      cabecalho: "Recebido",
+      ordenavel: true,
+      alinharDireita: true,
+      celula: (p) => formatarDinheiro(p.total_pago),
+    },
+    {
+      chave: "pendente",
+      cabecalho: "Pendente",
+      alinharDireita: true,
+      celula: (p) => {
+        const pendente = Number(p.total) - Number(p.total_pago);
+        return (
+          <div className="leading-tight">
+            <span className={pendente > 0 ? "font-medium text-destructive" : "font-medium"}>
+              {formatarDinheiro(pendente)}
+            </span>
+            {Number(p.pendente_confirmacao ?? 0) > 0 && (
+              <span className="block text-xs text-muted-foreground">
+                {formatarDinheiro(p.pendente_confirmacao)} por confirmar
+              </span>
+            )}
+            {Number(p.a_receber_entrega ?? 0) > 0 && (
+              <span className="block text-xs text-muted-foreground">
+                {formatarDinheiro(p.a_receber_entrega)} na entrega
+              </span>
+            )}
+          </div>
+        );
+      },
     },
   ];
 
@@ -171,25 +288,54 @@ function Pedidos() {
         }
       />
 
-      <div className="mb-3 flex flex-wrap gap-2">
-        <Button
-          variant={estado === "todos" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setEstado("todos")}
-        >
-          Todos
-        </Button>
-        {ESTADOS_PEDIDO.map((e) => (
-          <Button
-            key={e.valor}
-            variant={estado === e.valor ? "default" : "outline"}
-            size="sm"
-            onClick={() => setEstado(e.valor)}
-          >
-            {e.etiqueta}
-          </Button>
+      <div className="mb-3 grid gap-2 sm:grid-cols-3 lg:grid-cols-5">
+        {[
+          { etiqueta: "Vendido", valor: resumo?.vendido },
+          { etiqueta: "Recebido", valor: resumo?.recebido },
+          { etiqueta: "Por confirmar", valor: resumo?.porConfirmar },
+          { etiqueta: "A receber na entrega", valor: resumo?.naEntrega },
+          { etiqueta: "Vencido", valor: resumo?.vencido },
+        ].map((c) => (
+          <div key={c.etiqueta} className="rounded-lg border bg-card p-3">
+            <p className="text-xs text-muted-foreground">{c.etiqueta}</p>
+            <p className="text-lg font-semibold">{formatarDinheiro(c.valor ?? 0)}</p>
+          </div>
         ))}
       </div>
+
+      <FiltrosVendasPainel
+        filtros={filtros}
+        campos={[
+          "periodo",
+          "entrega_prevista",
+          "entrega_efetiva",
+          "vendedor",
+          "estado",
+          "fiscal",
+          "pagamento",
+          "produto",
+          "cp4",
+          "origem",
+        ]}
+        resultados={data?.total ?? 0}
+        onMudar={aplicar}
+        aExportar={aExportar}
+        onExportar={async () => {
+          setAExportar(true);
+          try {
+            await exportarPedidosCsv({
+              filtros: condicoes,
+              pesquisa,
+              ordenarPor: lista.ordenarPor,
+              ascendente: lista.ascendente,
+            });
+          } catch (erro) {
+            toast.error(mensagemErro(erro));
+          } finally {
+            setAExportar(false);
+          }
+        }}
+      />
 
       <Lista
         colunas={colunas}
@@ -201,7 +347,7 @@ function Pedidos() {
         pesquisa={lista.pesquisa}
         ordenarPor={lista.ordenarPor}
         ascendente={lista.ascendente}
-        vazio="Ainda não há vendas."
+        vazio="Nenhuma venda com estes filtros."
         onPesquisa={lista.onPesquisa}
         onPagina={lista.onPagina}
         onOrdenar={lista.onOrdenar}
@@ -294,7 +440,6 @@ function DialogoNovaVenda({
     onSuccess: (cliente) => criar.mutate(cliente),
     onError: (erro) => toast.error(mensagemErro(erro, (erro as Error).message)),
   });
-
 
   return (
     <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
