@@ -836,24 +836,41 @@ function Entrega({
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1">
             <Label className="text-xs">Data de entrega</Label>
-            <Input
-              type="date"
-              defaultValue={pedido.data_entrega_prevista ?? ""}
-              disabled={!editavel}
-              onBlur={(e) => {
-                if (!e.target.value || e.target.value === pedido.data_entrega_prevista) return;
-                const motivo = motivos.data?.linhas[0]?.id ?? null;
-                if (!motivo) {
-                  toast.error("Falta configurar motivos de alteração de data.");
-                  return;
-                }
-                onGuardar({
-                  data_entrega_origem: "manual",
-                  motivo_data_id: motivo,
-                  data_entrega_prevista: e.target.value,
-                });
-              }}
-            />
+            {editavel ? (
+              <Input
+                type="date"
+                defaultValue={pedido.data_entrega_prevista ?? ""}
+                onBlur={(e) => {
+                  if (!e.target.value || e.target.value === pedido.data_entrega_prevista) return;
+                  const motivo = motivos.data?.linhas[0]?.id ?? null;
+                  if (!motivo) {
+                    toast.error("Falta configurar motivos de alteração de data.");
+                    return;
+                  }
+                  onGuardar({
+                    data_entrega_origem: "manual",
+                    motivo_data_id: motivo,
+                    data_entrega_prevista: e.target.value,
+                  });
+                }}
+              />
+            ) : (
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium">
+                  {formatarDataCurta(pedido.data_entrega_prometida ?? pedido.data_entrega_prevista)}
+                </p>
+                {podeAlterarData && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAlterarData(true)}
+                  >
+                    Alterar
+                  </Button>
+                )}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground">
               {pedido.data_entrega_origem === "manual"
                 ? "Data escolhida à mão."
