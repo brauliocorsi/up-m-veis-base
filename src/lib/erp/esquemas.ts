@@ -33,6 +33,7 @@ export const esquemaFormaPagamento = z.object({
   prazo_confirmacao_horas: z.coerce.number().int().positive().nullable().optional(),
   taxa_pct: z.coerce.number().min(0, "A taxa não pode ser negativa.").max(100, "Máximo 100%."),
   entra_caixa: z.boolean(),
+  e_numerario: z.boolean(),
   ordem: z.coerce.number().int().min(0),
   ativo: z.boolean(),
 });

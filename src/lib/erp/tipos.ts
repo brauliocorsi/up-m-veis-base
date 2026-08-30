@@ -70,6 +70,7 @@ export interface FormaPagamento extends CamposComuns {
   prazo_confirmacao_horas: number | null;
   taxa_pct: number;
   entra_caixa: boolean;
+  e_numerario: boolean;
   ordem: number;
   ativo: boolean;
 }

@@ -59,6 +59,7 @@ interface Formulario {
   prazo_confirmacao_horas: string;
   taxa_pct: string;
   entra_caixa: boolean;
+  e_numerario: boolean;
   ordem: string;
   ativo: boolean;
 }
@@ -72,6 +73,7 @@ const VAZIO: Formulario = {
   prazo_confirmacao_horas: "",
   taxa_pct: "0",
   entra_caixa: true,
+  e_numerario: false,
   ordem: "0",
   ativo: true,
 };
@@ -163,6 +165,7 @@ function PaginaFormas() {
       prazo_confirmacao_horas: linha.prazo_confirmacao_horas?.toString() ?? "",
       taxa_pct: String(linha.taxa_pct ?? 0),
       entra_caixa: linha.entra_caixa,
+      e_numerario: linha.e_numerario ?? false,
       ordem: String(linha.ordem ?? 0),
       ativo: linha.ativo,
     });
@@ -371,6 +374,14 @@ function PaginaFormas() {
             valor={form.entra_caixa}
             onChange={(v) => setForm({ ...form, entra_caixa: v })}
           />
+          <Interruptor
+            id="numerario"
+            titulo="É dinheiro físico"
+            descricao="Só o numerário vai no envelope da rota e é contado no fecho."
+            valor={form.e_numerario}
+            onChange={(v) => setForm({ ...form, e_numerario: v })}
+          />
+
           <Interruptor
             id="ativo"
             titulo="Ativa"
