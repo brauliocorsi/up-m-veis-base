@@ -54,14 +54,14 @@ begin
   select id into v_forma_dinheiro from erp.formas_pagamento
    where entra_caixa and eliminado_em is null limit 1;
 
-  insert into erp.clientes (nome, telefone, tipo)
-  values ('Cliente Financeiro 7', '911000777', 'particular') returning id into v_cliente;
+  insert into erp.clientes (nome, telefone_e164, tipo)
+  values ('Cliente Financeiro 7', '+351911000777', 'particular') returning id into v_cliente;
 
   insert into erp.produtos (sku, nome, preco_venda, custo_ultimo, tipo_fornecimento)
   values ('AUD-FIN7', 'Produto Financeiro 7', 100.00, 40.00, 'stock') returning id into v_produto;
 
-  insert into erp.pedidos (cliente_id, vendedor_id, estado, total, origem)
-  values (v_cliente, (select id from erp.utilizadores where user_id = v_vend),
+  insert into erp.pedidos (numero, cliente_id, vendedor_id, estado, total, origem)
+  values ('AUD-FIN7-1', v_cliente, (select id from erp.utilizadores where user_id = v_vend),
           'confirmado', 200.00, 'loja')
   returning id into v_pedido;
 
