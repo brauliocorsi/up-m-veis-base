@@ -609,6 +609,8 @@ export interface Pedido extends CamposComuns {
   total_iva: number;
   total: number;
   total_pago: number;
+  estado_pagamento: EstadoPagamentoPedido;
+
   observacoes: string | null;
   observacoes_internas: string | null;
   confirmado_em: string | null;
@@ -689,4 +691,117 @@ export function formatarDataCurta(valor?: string | null): string {
     month: "2-digit",
     year: "numeric",
   });
+}
+
+// -------------------------------------------------- Fase 5: pagamentos e caixa
+export type EstadoPagamento =
+  | "pendente"
+  | "pendente_confirmacao"
+  | "confirmado"
+  | "rejeitado"
+  | "devolvido";
+
+export const ETIQUETA_PAGAMENTO: Record<EstadoPagamento, string> = {
+  pendente: "Pendente",
+  pendente_confirmacao: "A confirmar",
+  confirmado: "Confirmado",
+  rejeitado: "Rejeitado",
+  devolvido: "Devolvido",
+};
+
+export type EstadoPagamentoPedido = "por_pagar" | "parcial" | "pago" | "em_divergencia";
+
+export const ETIQUETA_PAGAMENTO_PEDIDO: Record<EstadoPagamentoPedido, string> = {
+  por_pagar: "Por pagar",
+  parcial: "Pago em parte",
+  pago: "Pago",
+  em_divergencia: "Em divergência",
+};
+
+export interface Pagamento extends CamposComuns {
+  pedido_id: string;
+  forma_id: string;
+  valor: number;
+  taxa_pct: number;
+  valor_liquido: number;
+  estado: EstadoPagamento;
+  data_prevista: string | null;
+  data_confirmacao: string | null;
+  confirmado_por: string | null;
+  motivo_rejeicao: string | null;
+  referencia: string | null;
+  comprovativo_url: string | null;
+  recebido_por: string | null;
+  caixa_id: string | null;
+  observacoes: string | null;
+  forma_nome?: string;
+  forma_codigo?: string;
+  forma_momento?: Momento;
+  exige_comprovativo?: boolean;
+  entra_caixa?: boolean;
+  prazo_confirmacao_horas?: number | null;
+  pedido_numero?: string;
+  pedido_total?: number;
+  pedido_estado?: EstadoPedido;
+  cliente_nome?: string;
+  recebido_por_nome?: string | null;
+  em_atraso?: boolean;
+}
+
+export type EstadoCaixa = "aberto" | "fechado";
+
+export interface Caixa extends CamposComuns {
+  utilizador_id: string;
+  data: string;
+  estado: EstadoCaixa;
+  saldo_abertura: number;
+  saldo_esperado: number;
+  saldo_contado: number | null;
+  diferenca: number | null;
+  justificacao_diferenca: string | null;
+  aberto_em: string;
+  fechado_em: string | null;
+  fechado_por: string | null;
+  reaberto_em: string | null;
+  reaberto_por: string | null;
+  motivo_reabertura: string | null;
+  utilizador_nome?: string | null;
+  total_dinheiro?: number;
+  total_multibanco?: number;
+  total_mbway?: number;
+  total_transferencia?: number;
+  total_saidas?: number;
+  total_sangrias?: number;
+  n_movimentos?: number;
+}
+
+export type TipoMovimentoCaixa = "recebimento" | "saida" | "sangria" | "abertura";
+
+export const ETIQUETA_MOVIMENTO_CAIXA: Record<TipoMovimentoCaixa, string> = {
+  recebimento: "Recebimento",
+  saida: "Saída",
+  sangria: "Sangria",
+  abertura: "Abertura",
+};
+
+export interface CaixaMovimento extends CamposComuns {
+  caixa_id: string;
+  tipo: TipoMovimentoCaixa;
+  forma_id: string | null;
+  valor: number;
+  sentido: number;
+  pagamento_id: string | null;
+  pedido_id: string | null;
+  motivo_id: string | null;
+  descricao: string | null;
+  comprovativo_url: string | null;
+  forma_nome?: string | null;
+  forma_codigo?: string | null;
+  pedido_numero?: string | null;
+  cliente_nome?: string | null;
+  motivo_descricao?: string | null;
+  caixa_data?: string;
+  utilizador_id?: string;
+  utilizador_nome?: string | null;
+  de_dia_anterior?: boolean;
 }

@@ -23,6 +23,7 @@ import {
   Trash2,
   Truck,
   Users,
+  Wallet,
   Warehouse,
   Wrench,
 } from "lucide-react";
@@ -49,6 +50,14 @@ interface ItemNav {
 const NAVEGACAO: ItemNav[] = [
   { para: "/painel", etiqueta: "Painel", icone: LayoutDashboard },
   { para: "/pedidos", etiqueta: "Vendas", icone: ShoppingCart },
+  { para: "/caixa", etiqueta: "Caixa", icone: Wallet },
+  {
+    para: "/pagamentos",
+    etiqueta: "Pagamentos",
+    icone: BadgeEuro,
+    perfis: ["adm", "financeiro", "escritorio"],
+  },
+  { para: "/caixas", etiqueta: "Caixas da equipa", icone: Wallet, perfis: ["adm"] },
   { para: "/cupoes", etiqueta: "Cupões", icone: Ticket, perfis: ["adm"] },
   { para: "/clientes", etiqueta: "Clientes", icone: Contact, perfis: ["adm", "vendedora", "escritorio"] },
   { para: "/produtos", etiqueta: "Produtos", icone: Package },

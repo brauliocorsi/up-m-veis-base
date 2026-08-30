@@ -13,14 +13,17 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticated/_adm/route'
+import { Route as AuthenticatedCaixaRouteImport } from './routes/_authenticated/caixa'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
 import { Route as AuthenticatedFornecedoresRouteImport } from './routes/_authenticated/fornecedores'
 import { Route as AuthenticatedMovimentosRouteImport } from './routes/_authenticated/movimentos'
+import { Route as AuthenticatedPagamentosRouteImport } from './routes/_authenticated/pagamentos'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
 import { Route as AuthenticatedReservasRouteImport } from './routes/_authenticated/reservas'
 import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
+import { Route as AuthenticatedAdmCaixasRouteImport } from './routes/_authenticated/_adm/caixas'
 import { Route as AuthenticatedAdmCalendarioRouteImport } from './routes/_authenticated/_adm/calendario'
 import { Route as AuthenticatedAdmCupoesRouteImport } from './routes/_authenticated/_adm/cupoes'
 import { Route as AuthenticatedAdmDefinicoesRouteImport } from './routes/_authenticated/_adm/definicoes'
@@ -57,6 +60,11 @@ const AuthenticatedAdmRouteRoute = AuthenticatedAdmRouteRouteImport.update({
   id: '/_adm',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCaixaRoute = AuthenticatedCaixaRouteImport.update({
+  id: '/caixa',
+  path: '/caixa',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
   id: '/categorias',
   path: '/categorias',
@@ -78,6 +86,11 @@ const AuthenticatedMovimentosRoute = AuthenticatedMovimentosRouteImport.update({
   path: '/movimentos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPagamentosRoute = AuthenticatedPagamentosRouteImport.update({
+  id: '/pagamentos',
+  path: '/pagamentos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   id: '/painel',
   path: '/painel',
@@ -97,6 +110,11 @@ const AuthenticatedServicosRoute = AuthenticatedServicosRouteImport.update({
   id: '/servicos',
   path: '/servicos',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdmCaixasRoute = AuthenticatedAdmCaixasRouteImport.update({
+  id: '/caixas',
+  path: '/caixas',
+  getParentRoute: () => AuthenticatedAdmRouteRoute,
 } as any)
 const AuthenticatedAdmCalendarioRoute =
   AuthenticatedAdmCalendarioRouteImport.update({
@@ -200,14 +218,17 @@ const ApiPublicHooksSyncContagemRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/caixa': typeof AuthenticatedCaixaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/movimentos': typeof AuthenticatedMovimentosRoute
+  '/pagamentos': typeof AuthenticatedPagamentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/produtos': typeof AuthenticatedProdutosRoute
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
+  '/caixas': typeof AuthenticatedAdmCaixasRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -229,14 +250,17 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/caixa': typeof AuthenticatedCaixaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/movimentos': typeof AuthenticatedMovimentosRoute
+  '/pagamentos': typeof AuthenticatedPagamentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/produtos': typeof AuthenticatedProdutosRoute
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
+  '/caixas': typeof AuthenticatedAdmCaixasRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -261,14 +285,17 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/_adm': typeof AuthenticatedAdmRouteRouteWithChildren
+  '/_authenticated/caixa': typeof AuthenticatedCaixaRoute
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/clientes': typeof AuthenticatedClientesRoute
   '/_authenticated/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/_authenticated/movimentos': typeof AuthenticatedMovimentosRoute
+  '/_authenticated/pagamentos': typeof AuthenticatedPagamentosRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
   '/_authenticated/reservas': typeof AuthenticatedReservasRoute
   '/_authenticated/servicos': typeof AuthenticatedServicosRoute
+  '/_authenticated/_adm/caixas': typeof AuthenticatedAdmCaixasRoute
   '/_authenticated/_adm/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/_authenticated/_adm/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/_authenticated/_adm/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -292,14 +319,17 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/caixa'
     | '/categorias'
     | '/clientes'
     | '/fornecedores'
     | '/movimentos'
+    | '/pagamentos'
     | '/painel'
     | '/produtos'
     | '/reservas'
     | '/servicos'
+    | '/caixas'
     | '/calendario'
     | '/cupoes'
     | '/definicoes'
@@ -321,14 +351,17 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/caixa'
     | '/categorias'
     | '/clientes'
     | '/fornecedores'
     | '/movimentos'
+    | '/pagamentos'
     | '/painel'
     | '/produtos'
     | '/reservas'
     | '/servicos'
+    | '/caixas'
     | '/calendario'
     | '/cupoes'
     | '/definicoes'
@@ -352,14 +385,17 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/_adm'
+    | '/_authenticated/caixa'
     | '/_authenticated/categorias'
     | '/_authenticated/clientes'
     | '/_authenticated/fornecedores'
     | '/_authenticated/movimentos'
+    | '/_authenticated/pagamentos'
     | '/_authenticated/painel'
     | '/_authenticated/produtos'
     | '/_authenticated/reservas'
     | '/_authenticated/servicos'
+    | '/_authenticated/_adm/caixas'
     | '/_authenticated/_adm/calendario'
     | '/_authenticated/_adm/cupoes'
     | '/_authenticated/_adm/definicoes'
@@ -416,6 +452,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/caixa': {
+      id: '/_authenticated/caixa'
+      path: '/caixa'
+      fullPath: '/caixa'
+      preLoaderRoute: typeof AuthenticatedCaixaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/categorias': {
       id: '/_authenticated/categorias'
       path: '/categorias'
@@ -442,6 +485,13 @@ declare module '@tanstack/react-router' {
       path: '/movimentos'
       fullPath: '/movimentos'
       preLoaderRoute: typeof AuthenticatedMovimentosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pagamentos': {
+      id: '/_authenticated/pagamentos'
+      path: '/pagamentos'
+      fullPath: '/pagamentos'
+      preLoaderRoute: typeof AuthenticatedPagamentosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/painel': {
@@ -471,6 +521,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/servicos'
       preLoaderRoute: typeof AuthenticatedServicosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_adm/caixas': {
+      id: '/_authenticated/_adm/caixas'
+      path: '/caixas'
+      fullPath: '/caixas'
+      preLoaderRoute: typeof AuthenticatedAdmCaixasRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
     }
     '/_authenticated/_adm/calendario': {
       id: '/_authenticated/_adm/calendario'
@@ -595,6 +652,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdmRouteRouteChildren {
+  AuthenticatedAdmCaixasRoute: typeof AuthenticatedAdmCaixasRoute
   AuthenticatedAdmCalendarioRoute: typeof AuthenticatedAdmCalendarioRoute
   AuthenticatedAdmCupoesRoute: typeof AuthenticatedAdmCupoesRoute
   AuthenticatedAdmDefinicoesRoute: typeof AuthenticatedAdmDefinicoesRoute
@@ -610,6 +668,7 @@ interface AuthenticatedAdmRouteRouteChildren {
 }
 
 const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
+  AuthenticatedAdmCaixasRoute: AuthenticatedAdmCaixasRoute,
   AuthenticatedAdmCalendarioRoute: AuthenticatedAdmCalendarioRoute,
   AuthenticatedAdmCupoesRoute: AuthenticatedAdmCupoesRoute,
   AuthenticatedAdmDefinicoesRoute: AuthenticatedAdmDefinicoesRoute,
@@ -631,10 +690,12 @@ const AuthenticatedAdmRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdmRouteRoute: typeof AuthenticatedAdmRouteRouteWithChildren
+  AuthenticatedCaixaRoute: typeof AuthenticatedCaixaRoute
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
   AuthenticatedFornecedoresRoute: typeof AuthenticatedFornecedoresRoute
   AuthenticatedMovimentosRoute: typeof AuthenticatedMovimentosRoute
+  AuthenticatedPagamentosRoute: typeof AuthenticatedPagamentosRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
   AuthenticatedReservasRoute: typeof AuthenticatedReservasRoute
@@ -647,10 +708,12 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdmRouteRoute: AuthenticatedAdmRouteRouteWithChildren,
+  AuthenticatedCaixaRoute: AuthenticatedCaixaRoute,
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedClientesRoute: AuthenticatedClientesRoute,
   AuthenticatedFornecedoresRoute: AuthenticatedFornecedoresRoute,
   AuthenticatedMovimentosRoute: AuthenticatedMovimentosRoute,
+  AuthenticatedPagamentosRoute: AuthenticatedPagamentosRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,
   AuthenticatedReservasRoute: AuthenticatedReservasRoute,

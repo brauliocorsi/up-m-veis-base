@@ -17,6 +17,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { CabecalhoPagina } from "@/components/erp/app-shell";
+import { PainelPagamentos } from "@/components/erp/painel-pagamentos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -207,6 +208,8 @@ function EcraVenda() {
         <div className="space-y-4">
           <Totais pedido={p} />
           <Descontos pedido={p} editavel={editavel} onGuardar={(c) => guardar.mutate(c)} />
+          {p.tipo === "pedido" ? <PainelPagamentos pedido={p} /> : null}
+
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base">Observações</CardTitle>
