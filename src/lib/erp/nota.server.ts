@@ -184,15 +184,15 @@ export async function construirNotaPdf(dados: DadosNota): Promise<Uint8Array> {
   }
 
   // ------------------------------------------------------------- cabeçalho
-  const alturaCabecalho = 74;
+  const alturaCabecalho = 58;
   caixa(margem, y, interior, alturaCabecalho);
-  const xTextoEsq = margem + 96;
+  let xTextoEsq = margem + 8;
 
   if (dados.logotipo) {
     try {
       const img = await doc.embedPng(dados.logotipo).catch(() => doc.embedJpg(dados.logotipo!));
-      const maxL = 78;
-      const maxA = 52;
+      const maxL = 76;
+      const maxA = 44;
       const escala = Math.min(maxL / img.width, maxA / img.height);
       pagina.drawImage(img, {
         x: margem + 8 + (maxL - img.width * escala) / 2,
@@ -200,16 +200,12 @@ export async function construirNotaPdf(dados: DadosNota): Promise<Uint8Array> {
         width: img.width * escala,
         height: img.height * escala,
       });
+      xTextoEsq = margem + 8 + maxL + 12;
     } catch {
       // logótipo inválido: segue sem imagem
     }
-  } else {
-    texto(dados.empresa.nome || "UP Móveis", margem + 8, y - alturaCabecalho / 2, {
-      forte: true,
-      tamanho: 11,
-      cor: VERMELHO,
-    });
   }
+
 
   const direitaLinhas = [
     dados.empresa.telefone ?? "",
