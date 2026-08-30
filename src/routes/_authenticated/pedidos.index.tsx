@@ -28,6 +28,8 @@ import {
 import { useListagem } from "@/hooks/use-listagem";
 import { erp, mensagemErro } from "@/lib/erp/db";
 import { listar } from "@/lib/erp/listar";
+import { normalizarTelefone } from "@/lib/erp/nif";
+
 import {
   ESTADOS_PEDIDO,
   ETIQUETA_PEDIDO,
@@ -230,7 +232,7 @@ function DialogoNovaVenda({
   const [termo, setTermo] = useState("");
   const [novo, setNovo] = useState(false);
   const [origem, setOrigem] = useState("loja");
-  const [form, setForm] = useState({ nome: "", telefone_e164: "", email: "", morada: "", cp4: "", cp3: "" });
+  const [form, setForm] = useState({ nome: "", telefone_e164: "", email: "", morada: "", cp: "" });
 
   const { data: clientes } = useQuery({
     queryKey: ["clientes-venda", termo],
@@ -267,17 +269,22 @@ function DialogoNovaVenda({
   const criarCliente = useMutation({
     mutationFn: async () => {
       if (form.nome.trim().length < 3) throw new Error("Escreva o nome do cliente.");
-      if (form.telefone_e164.trim().length < 9) throw new Error("Escreva o telefone do cliente.");
+      const telefone = normalizarTelefone(form.telefone_e164);
+      if (!telefone) throw new Error("Escreva o telefone do cliente.");
+      const digitos = form.cp.replace(/\D/g, "");
+      if (digitos && digitos.length !== 4 && digitos.length !== 7) {
+        throw new Error("O código postal tem de ter 4 ou 7 números (ex.: 4620-269).");
+      }
       const { data, error } = await erp()
         .from("clientes")
         .insert({
           tipo: "particular",
           nome: form.nome.trim(),
-          telefone_e164: form.telefone_e164.trim(),
+          telefone_e164: telefone,
           email: form.email.trim() || null,
           morada: form.morada.trim() || null,
-          cp4: form.cp4.trim() || null,
-          cp3: form.cp3.trim() || null,
+          cp4: digitos ? digitos.slice(0, 4) : null,
+          cp3: digitos.length === 7 ? digitos.slice(4, 7) : null,
         })
         .select("*")
         .single();
@@ -287,6 +294,7 @@ function DialogoNovaVenda({
     onSuccess: (cliente) => criar.mutate(cliente),
     onError: (erro) => toast.error(mensagemErro(erro, (erro as Error).message)),
   });
+
 
   return (
     <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
@@ -389,26 +397,17 @@ function DialogoNovaVenda({
                   onChange={(e) => setForm({ ...form, morada: e.target.value })}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="nc-cp4">Código postal</Label>
-                  <Input
-                    id="nc-cp4"
-                    value={form.cp4}
-                    onChange={(e) => setForm({ ...form, cp4: e.target.value })}
-                    placeholder="4590"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="nc-cp3">Extensão</Label>
-                  <Input
-                    id="nc-cp3"
-                    value={form.cp3}
-                    onChange={(e) => setForm({ ...form, cp3: e.target.value })}
-                    placeholder="000"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="nc-cp">Código postal</Label>
+                <Input
+                  id="nc-cp"
+                  value={form.cp}
+                  onChange={(e) => setForm({ ...form, cp: e.target.value })}
+                  placeholder="4620-269"
+                  inputMode="numeric"
+                />
               </div>
+
               <Button variant="ghost" size="sm" onClick={() => setNovo(false)}>
                 Voltar à procura
               </Button>
