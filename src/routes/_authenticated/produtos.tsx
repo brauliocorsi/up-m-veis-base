@@ -280,7 +280,23 @@ function PaginaProdutos() {
       ativo: l.ativo,
     });
     setAberto(true);
+    if (editarCustos) {
+      const { data: custos } = await erp()
+        .from("v_produto_custos")
+        .select("custo_ultimo, margem_minima_pct")
+        .eq("produto_id", l.id)
+        .maybeSingle();
+      if (custos) {
+        setForm((atual) => ({
+          ...atual,
+          custo_ultimo: custos.custo_ultimo === null ? "" : String(custos.custo_ultimo),
+          margem_minima_pct:
+            custos.margem_minima_pct === null ? "" : String(custos.margem_minima_pct),
+        }));
+      }
+    }
   }
+
 
   const familiasDaCategoria = (familias?.linhas ?? []).filter(
     (f) => f.categoria_id === form.categoria_id,
