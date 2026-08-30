@@ -91,14 +91,57 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
     const pago = Number(pedido.total_pago ?? 0);
 
     let logotipo: Uint8Array | null = null;
+    const caminhoLogo = empresa["logotipo_path"];
+    if (caminhoLogo) {
+      const { data: ficheiro } = await supabaseAdmin.storage.from("documentos").download(caminhoLogo);
+      if (ficheiro) logotipo = new Uint8Array(await ficheiro.arrayBuffer());
+    }
     const urlLogo = empresa["logotipo_url"];
-    if (urlLogo && /^https:\/\//.test(urlLogo)) {
+    if (!logotipo && urlLogo && /^https:\/\//.test(urlLogo)) {
       try {
         const resposta = await fetch(urlLogo);
         if (resposta.ok) logotipo = new Uint8Array(await resposta.arrayBuffer());
       } catch {
         logotipo = null;
       }
+    }
+
+    const mapear = (i: Record<string, unknown>) => ({
+      codigo: (i["cod_barras"] as string | null) ?? null,
+      descricao: (i["descricao"] as string) ?? "—",
+      unidade: "UN",
+      quantidade: Number(i["quantidade"]),
+      preco_unitario: Number(i["preco_unitario"]),
+      desconto: Number(i["desconto_valor"] ?? 0),
+      total: Number(i["total_linha"]),
+    });
+    const todas = (itens ?? []) as Record<string, unknown>[];
+    const produtos = todas.filter((i) => !i["servico_id"]).map(mapear);
+    const servicos = todas.filter((i) => Boolean(i["servico_id"])).map(mapear);
+
+    const montagem = Number(pedido.valor_montagem ?? 0);
+    const entrega = Number(pedido.valor_entrega ?? 0);
+    if (montagem > 0) {
+      servicos.push({
+        codigo: "MONTAGEM",
+        descricao: "Montagem em casa do cliente",
+        unidade: "UN",
+        quantidade: 1,
+        preco_unitario: montagem,
+        desconto: 0,
+        total: montagem,
+      });
+    }
+    if (entrega > 0) {
+      servicos.push({
+        codigo: "ENTREGA",
+        descricao: "Entrega ao domicílio",
+        unidade: "UN",
+        quantidade: 1,
+        preco_unitario: entrega,
+        desconto: 0,
+        total: entrega,
+      });
     }
 
     const { construirNotaPdf } = await import("./nota.server");
@@ -112,15 +155,8 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
         telefone: cliente?.telefone_e164 ?? pedido.cliente_telefone ?? null,
         morada: moradaEntrega || null,
       },
-      linhas: (itens ?? []).map((i: Record<string, unknown>) => ({
-        descricao: i["descricao"] as string,
-        quantidade: Number(i["quantidade"]),
-        preco_unitario: Number(i["preco_unitario"]),
-        desconto: Number(i["desconto_valor"] ?? 0),
-        total: Number(i["total_linha"]),
-      })),
-      montagem: Number(pedido.valor_montagem ?? 0),
-      entrega: Number(pedido.valor_entrega ?? 0),
+      produtos,
+      servicos,
       subtotal: Number(pedido.total_sem_iva ?? pedido.subtotal ?? 0),
       descontos,
       iva: Number(pedido.total_iva ?? 0),
