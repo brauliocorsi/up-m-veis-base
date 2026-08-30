@@ -77,7 +77,7 @@ export const Route = createFileRoute("/_authenticated/caixa")({
 function PaginaCaixa() {
   const queryClient = useQueryClient();
   const { data: sessao } = useSessao();
-  const { adm } = usePermissoes();
+  const { adm, registarEntradas, conferirRotas } = usePermissoes();
   const utilizadorId = sessao?.utilizador?.id ?? "";
 
   const [saldoInicial, setSaldoInicial] = useState("");
@@ -85,6 +85,10 @@ function PaginaCaixa() {
   const [valorSaida, setValorSaida] = useState("");
   const [motivoSaida, setMotivoSaida] = useState("");
   const [descricaoSaida, setDescricaoSaida] = useState("");
+  const [entradaAberta, setEntradaAberta] = useState(false);
+  const [valorEntrada, setValorEntrada] = useState("");
+  const [motivoEntrada, setMotivoEntrada] = useState("");
+  const [descricaoEntrada, setDescricaoEntrada] = useState("");
   const [fechoAberto, setFechoAberto] = useState(false);
   const [contado, setContado] = useState("");
   const [justificacao, setJustificacao] = useState("");
@@ -105,12 +109,25 @@ function PaginaCaixa() {
     queryFn: () => lerCaixas({ utilizadorId }),
   });
   const motivos = useQuery({ queryKey: ["motivos-saida-caixa"], queryFn: lerMotivosSaida });
+  const motivosEntrada = useQuery({
+    queryKey: ["motivos-entrada-caixa"],
+    enabled: registarEntradas,
+    queryFn: lerMotivosEntrada,
+  });
+  const envelopes = useQuery({
+    queryKey: ["envelopes-rota", "por-receber"],
+    enabled: conferirRotas,
+    queryFn: () => lerEnvelopes({ porReceber: true }),
+  });
 
   function atualizar() {
     void queryClient.invalidateQueries({ queryKey: ["caixa"] });
     void queryClient.invalidateQueries({ queryKey: ["caixa-movimentos"] });
     void queryClient.invalidateQueries({ queryKey: ["caixas-meus"] });
+    void queryClient.invalidateQueries({ queryKey: ["envelopes-rota"] });
+    void queryClient.invalidateQueries({ queryKey: ["rotas"] });
   }
+
 
   const abrir = useMutation({
     mutationFn: async () => {
