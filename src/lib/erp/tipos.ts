@@ -242,17 +242,23 @@ export interface Produto extends CamposComuns {
   preco_base: number | null;
   preco_promocional: number | null;
   iva_pct: number;
-  iva_pct: number;
   valor_montagem: number;
   montagem_obrigatoria: boolean;
   tempo_montagem_min: number | null;
   permite_desconto: boolean;
-  margem_minima_pct: number | null;
   ponto_reposicao: number | null;
   imagem_url: string | null;
   vendavel: boolean;
   ativo: boolean;
 }
+
+/** Custos e margens vivem numa tabela própria, legível só a Financeiro, Compras e ADM. */
+export interface ProdutoCusto extends CamposComuns {
+  produto_id: string;
+  custo_ultimo: number | null;
+  margem_minima_pct: number | null;
+}
+
 
 export interface ProdutoColi extends CamposComuns {
   produto_id: string;
