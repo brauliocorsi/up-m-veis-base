@@ -26,13 +26,19 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
     if (erroPedido) throw new Error(erroPedido.message);
     if (!pedido) throw new Error("Pedido não encontrado.");
 
+    const { data: registo } = await db
+      .from("pedidos")
+      .select("nota_pdf_path")
+      .eq("id", data.pedido_id)
+      .maybeSingle();
+
     const caminho = `notas/${pedido.id}.pdf`;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    if (!data.regenerar && pedido.nota_pdf_path) {
+    if (!data.regenerar && registo?.nota_pdf_path) {
       const { data: assinado } = await supabaseAdmin.storage
         .from("documentos")
-        .createSignedUrl(pedido.nota_pdf_path, 3600);
+        .createSignedUrl(registo.nota_pdf_path, 3600);
       if (assinado?.signedUrl) {
         return { url: assinado.signedUrl, numero: pedido.numero as string, reutilizado: true };
       }
@@ -53,7 +59,7 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
         db.from("definicoes").select("chave, valor").in("chave", ["empresa", "iva_pct"]),
         db
           .from("v_clientes")
-          .select("nome, nif, telefone, morada, cp4, cp3, localidade")
+          .select("nome, nif, telefone_e164, morada, cp4, cp3, localidade")
           .eq("id", pedido.cliente_id)
           .maybeSingle(),
       ]);
@@ -98,7 +104,7 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
       cliente: {
         nome: cliente?.nome ?? pedido.cliente_nome ?? "—",
         nif: cliente?.nif ?? pedido.cliente_nif ?? null,
-        telefone: cliente?.telefone ?? pedido.cliente_telefone ?? null,
+        telefone: cliente?.telefone_e164 ?? pedido.cliente_telefone ?? null,
         morada: moradaEntrega || null,
       },
       linhas: (itens ?? []).map((i) => ({
