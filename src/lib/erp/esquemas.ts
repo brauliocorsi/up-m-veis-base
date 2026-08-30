@@ -85,6 +85,10 @@ export const esquemaEmpresa = z.object({
   telefone: z.string().trim().max(30),
   email: z.string().trim().email("Email inválido.").or(z.literal("")),
   logotipo_url: z.string().trim().url("Endereço inválido.").or(z.literal("")),
+  logotipo_path: z.string().trim().max(200).optional().default(""),
+  mensagem_documento: z.string().trim().max(400).optional().default(""),
+  apoio_url: z.string().trim().url("Endereço inválido.").or(z.literal("")).optional().default(""),
+  observacoes_documento: z.string().trim().max(1500).optional().default(""),
 });
 
 export const esquemaDefinicoesGerais = z.object({

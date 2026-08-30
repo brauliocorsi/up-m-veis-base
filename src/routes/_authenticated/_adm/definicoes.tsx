@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -8,7 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { erp } from "@/lib/erp/db";
+import { carregarLogotipo, urlDocumento } from "@/lib/erp/empresa.functions";
 import { primeiraMensagem } from "@/lib/erp/erros";
 import { esquemaDefinicoesGerais, esquemaEmpresa } from "@/lib/erp/esquemas";
 import { PERFIS, type Perfil } from "@/lib/erp/tipos";
@@ -35,6 +38,10 @@ interface Empresa {
   telefone: string;
   email: string;
   logotipo_url: string;
+  logotipo_path: string;
+  mensagem_documento: string;
+  apoio_url: string;
+  observacoes_documento: string;
 }
 
 const EMPRESA_VAZIA: Empresa = {
@@ -44,6 +51,10 @@ const EMPRESA_VAZIA: Empresa = {
   telefone: "",
   email: "",
   logotipo_url: "",
+  logotipo_path: "",
+  mensagem_documento: "",
+  apoio_url: "",
+  observacoes_documento: "",
 };
 
 type Limites = Record<Perfil, number>;
@@ -89,6 +100,55 @@ function PaginaDefinicoes() {
       >,
     );
   }, [definicoes]);
+
+  const enviarLogotipo = useServerFn(carregarLogotipo);
+  const pedirUrl = useServerFn(urlDocumento);
+  const [prevLogo, setPrevLogo] = useState<string | null>(null);
+  const [aEnviar, setAEnviar] = useState(false);
+
+  useEffect(() => {
+    if (!empresa.logotipo_path) {
+      setPrevLogo(null);
+      return;
+    }
+    let vivo = true;
+    pedirUrl({ data: { caminho: empresa.logotipo_path } })
+      .then((r) => {
+        if (vivo) setPrevLogo(r.url);
+      })
+      .catch(() => setPrevLogo(null));
+    return () => {
+      vivo = false;
+    };
+  }, [empresa.logotipo_path, pedirUrl]);
+
+  async function escolherLogotipo(ficheiro: File) {
+    if (!/^image\/(png|jpeg)$/.test(ficheiro.type)) {
+      toast.error("Use uma imagem PNG ou JPG.");
+      return;
+    }
+    setAEnviar(true);
+    try {
+      const buffer = await ficheiro.arrayBuffer();
+      let bin = "";
+      const bytes = new Uint8Array(buffer);
+      for (let i = 0; i < bytes.length; i += 1) bin += String.fromCharCode(bytes[i]!);
+      const resultado = await enviarLogotipo({
+        data: { base64: btoa(bin), tipo: ficheiro.type as "image/png" | "image/jpeg" },
+      });
+      const atualizada = { ...empresa, logotipo_path: resultado.caminho };
+      setEmpresa(atualizada);
+      setPrevLogo(resultado.url);
+      await gravar("empresa", esquemaEmpresa.parse(atualizada));
+      queryClient.invalidateQueries({ queryKey: ["definicoes"] });
+      toast.success("Logótipo atualizado.");
+    } catch (erro) {
+      toast.error(primeiraMensagem(erro));
+    } finally {
+      setAEnviar(false);
+    }
+  }
+
 
   async function gravar(chave: string, valor: unknown) {
     const { error } = await erp().from("definicoes").update({ valor }).eq("chave", chave);
@@ -193,12 +253,70 @@ function PaginaDefinicoes() {
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="emp-logo">Endereço do logótipo (opcional)</Label>
+              <Label htmlFor="emp-logo-ficheiro">Logótipo dos documentos</Label>
+              <div className="flex flex-wrap items-center gap-3">
+                {prevLogo ? (
+                  <img
+                    src={prevLogo}
+                    alt="Logótipo da empresa"
+                    className="h-14 w-auto rounded border bg-white object-contain p-1"
+                  />
+                ) : (
+                  <span className="text-sm text-muted-foreground">Sem imagem carregada.</span>
+                )}
+                <Input
+                  id="emp-logo-ficheiro"
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  disabled={aEnviar}
+                  className="max-w-xs"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) void escolherLogotipo(f);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                PNG ou JPG até 5 MB. Aparece no cabeçalho da nota de encomenda.
+              </p>
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="emp-logo">Endereço do logótipo (alternativa)</Label>
               <Input
                 id="emp-logo"
                 value={empresa.logotipo_url}
                 onChange={(e) => setEmpresa({ ...empresa, logotipo_url: e.target.value })}
                 placeholder="https://…"
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="emp-mensagem">Mensagem no cabeçalho dos documentos</Label>
+              <Textarea
+                id="emp-mensagem"
+                rows={3}
+                value={empresa.mensagem_documento}
+                onChange={(e) => setEmpresa({ ...empresa, mensagem_documento: e.target.value })}
+                placeholder="Entregas de Seg a Sáb das 8:00 às 20:00, com agendamento antecipado."
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="emp-apoio">Endereço de apoio ao cliente</Label>
+              <Input
+                id="emp-apoio"
+                value={empresa.apoio_url}
+                onChange={(e) => setEmpresa({ ...empresa, apoio_url: e.target.value })}
+                placeholder="https://…"
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="emp-observacoes">Observações no fim dos documentos</Label>
+              <Textarea
+                id="emp-observacoes"
+                rows={4}
+                value={empresa.observacoes_documento}
+                onChange={(e) => setEmpresa({ ...empresa, observacoes_documento: e.target.value })}
+                placeholder="Condições de entrega, pagamento e outras notas."
               />
             </div>
           </div>
