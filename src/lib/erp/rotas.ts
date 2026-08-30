@@ -276,3 +276,21 @@ export async function atualizarAssistencia(
   });
   if (error) throw error;
 }
+
+// ------------------------------------------------- envelopes na caixa da loja
+export async function lerEnvelopes(params?: { porReceber?: boolean }) {
+  let consulta = erp().from("v_envelopes_rota").select("*").limit(200);
+  if (params?.porReceber) consulta = consulta.eq("por_receber", true);
+  const { data, error } = await consulta;
+  if (error) throw error;
+  return (data ?? []) as EnvelopeRota[];
+}
+
+/** Dá entrada do dinheiro do envelope de uma rota conferida no caixa da loja. */
+export async function receberEnvelopeRota(rotaId: string, valor?: number | null) {
+  const { error } = await erp().rpc("receber_envelope_rota", {
+    p_rota_id: rotaId,
+    p_valor: valor ?? null,
+  });
+  if (error) throw error;
+}
