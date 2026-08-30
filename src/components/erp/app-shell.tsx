@@ -165,6 +165,18 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuAberto, setMenuAberto] = useState(false);
   const [categoriaAberta, setCategoriaAberta] = useState<string | null>(null);
 
+  useEffect(() => {
+    const utilizador = sessao?.utilizador;
+    if (!utilizador || !utilizador.ativo) return;
+    const ativa = NAVEGACAO.find((grupo) =>
+      grupo.itens.some((item) => {
+        if (item.perfis && !item.perfis.includes(utilizador.perfil)) return false;
+        return caminho === item.para;
+      }),
+    );
+    if (ativa) setCategoriaAberta(ativa.etiqueta);
+  }, [caminho, sessao?.utilizador?.perfil]);
+
   async function sair() {
     await queryClient.cancelQueries();
     queryClient.clear();
@@ -207,11 +219,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       (item) => !item.perfis || item.perfis.includes(utilizador.perfil),
     ),
   })).filter((grupo) => grupo.itens.length > 0);
-
-  useEffect(() => {
-    const ativa = grupos.find((g) => g.itens.some((i) => caminho === i.para));
-    if (ativa) setCategoriaAberta(ativa.etiqueta);
-  }, [caminho, grupos]);
 
   const itens = grupos.flatMap((g) => g.itens);
   const itensMobile = itens.slice(0, 3);
