@@ -36,7 +36,7 @@ import {
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { IndicadorSync } from "@/components/erp/indicador-sync";
@@ -157,6 +157,12 @@ function Marca() {
   );
 }
 
+const CHAVE_CATEGORIA = "up-vendas:categoria-aberta";
+
+function rotaAtiva(caminho: string, para: string) {
+  return caminho === para || caminho.startsWith(`${para}/`);
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const { data: sessao, isLoading } = useSessao();
   const navigate = useNavigate();
@@ -164,6 +170,22 @@ export function AppShell({ children }: { children: ReactNode }) {
   const caminho = useRouterState({ select: (s) => s.location.pathname });
   const [menuAberto, setMenuAberto] = useState(false);
   const [categoriaAberta, setCategoriaAberta] = useState<string | null>(null);
+  const refLateral = useRef<HTMLElement | null>(null);
+  const restaurado = useRef(false);
+
+  // Restaurar a categoria guardada (persistente entre navegações e recargas).
+  useEffect(() => {
+    if (restaurado.current) return;
+    restaurado.current = true;
+    const guardada = window.localStorage.getItem(CHAVE_CATEGORIA);
+    if (guardada) setCategoriaAberta(guardada);
+  }, []);
+
+  useEffect(() => {
+    if (!restaurado.current) return;
+    if (categoriaAberta) window.localStorage.setItem(CHAVE_CATEGORIA, categoriaAberta);
+    else window.localStorage.removeItem(CHAVE_CATEGORIA);
+  }, [categoriaAberta]);
 
   useEffect(() => {
     const utilizador = sessao?.utilizador;
@@ -171,11 +193,22 @@ export function AppShell({ children }: { children: ReactNode }) {
     const ativa = NAVEGACAO.find((grupo) =>
       grupo.itens.some((item) => {
         if (item.perfis && !item.perfis.includes(utilizador.perfil)) return false;
-        return caminho === item.para;
+        return rotaAtiva(caminho, item.para);
       }),
     );
     if (ativa) setCategoriaAberta(ativa.etiqueta);
   }, [caminho, sessao?.utilizador?.perfil]);
+
+  // Fechar o dropdown ao clicar fora do menu lateral.
+  useEffect(() => {
+    function aoClicarFora(evento: MouseEvent) {
+      const alvo = evento.target as Node | null;
+      if (!alvo || !refLateral.current) return;
+      if (!refLateral.current.contains(alvo)) setCategoriaAberta(null);
+    }
+    document.addEventListener("mousedown", aoClicarFora);
+    return () => document.removeEventListener("mousedown", aoClicarFora);
+  }, []);
 
   async function sair() {
     await queryClient.cancelQueries();
