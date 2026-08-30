@@ -61,7 +61,7 @@ function Tabela({
 }: {
   nome: string;
   colunas: Coluna[];
-  linhas: ReadonlyArray<Record<string, unknown>>;
+  linhas: Array<Record<string, unknown>>;
   aCarregar: boolean;
 }) {
   if (aCarregar) return <Skeleton className="h-48 w-full rounded-lg" />;
