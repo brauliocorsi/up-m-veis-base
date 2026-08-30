@@ -79,6 +79,13 @@ const NAVEGACAO: GrupoNav[] = [
     etiqueta: "Vendas",
     itens: [
       { para: "/pedidos", etiqueta: "Vendas", icone: ShoppingCart },
+      { para: "/entregas", etiqueta: "Entregas", icone: Truck },
+      {
+        para: "/entregue-por-receber",
+        etiqueta: "Entregue por receber",
+        icone: HandCoins,
+        perfis: ["adm", "financeiro", "escritorio"],
+      },
       { para: "/clientes", etiqueta: "Clientes", icone: Contact, perfis: ["adm", "vendedora", "escritorio"] },
       { para: "/cupoes", etiqueta: "Cupões", icone: Ticket, perfis: ["adm"] },
     ],
