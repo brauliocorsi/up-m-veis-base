@@ -184,6 +184,16 @@ export function AppShell({ children }: { children: ReactNode }) {
     navigate({ to: "/auth", replace: true });
   }
 
+  const utilizador = sessao?.utilizador ?? null;
+  const grupos = utilizador
+    ? NAVEGACAO.map((grupo) => ({
+        ...grupo,
+        itens: grupo.itens.filter(
+          (item) => !item.perfis || item.perfis.includes(utilizador.perfil),
+        ),
+      })).filter((grupo) => grupo.itens.length > 0)
+    : [];
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
@@ -191,8 +201,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
     );
   }
-
-  const utilizador = sessao?.utilizador ?? null;
 
   if (!utilizador || !utilizador.ativo) {
     return (
@@ -212,13 +220,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
     );
   }
-
-  const grupos = NAVEGACAO.map((grupo) => ({
-    ...grupo,
-    itens: grupo.itens.filter(
-      (item) => !item.perfis || item.perfis.includes(utilizador.perfil),
-    ),
-  })).filter((grupo) => grupo.itens.length > 0);
 
   const itens = grupos.flatMap((g) => g.itens);
   const itensMobile = itens.slice(0, 3);
