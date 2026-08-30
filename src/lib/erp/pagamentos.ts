@@ -186,3 +186,32 @@ export async function lerMotivosSaida(): Promise<Motivo[]> {
   if (error) throw error;
   return (data ?? []) as Motivo[];
 }
+
+/** Motivos configurados para entradas de dinheiro no caixa. */
+export async function lerMotivosEntrada(): Promise<Motivo[]> {
+  const { data, error } = await erp()
+    .from("motivos")
+    .select("*")
+    .eq("contexto", "entrada_caixa")
+    .eq("ativo", true)
+    .is("eliminado_em", null)
+    .order("ordem", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as Motivo[];
+}
+
+/** Entrada manual de dinheiro no caixa da loja (reforço, correção, outro). */
+export async function registarEntradaCaixa(params: {
+  valor: number;
+  motivo_id?: string | null;
+  descricao?: string | null;
+  comprovativo_url?: string | null;
+}) {
+  const { error } = await erp().rpc("registar_entrada_caixa", {
+    p_valor: params.valor,
+    p_motivo_id: params.motivo_id ?? null,
+    p_descricao: params.descricao ?? null,
+    p_comprovativo_url: params.comprovativo_url ?? null,
+  });
+  if (error) throw error;
+}

@@ -31,6 +31,9 @@ export function usePermissoes() {
 
     /** Confirmar e devolver recebimentos. */
     receber: é("adm", "financeiro", "escritorio"),
+    /** Registar entradas de dinheiro no caixa da loja. */
+    registarEntradas: é("adm", "financeiro", "escritorio"),
+
 
     /** Quem registra entregas — inclui vendedoras e entregadores. */
     entregar: ativo,

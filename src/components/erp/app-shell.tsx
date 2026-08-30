@@ -121,7 +121,7 @@ const NAVEGACAO: GrupoNav[] = [
   {
     etiqueta: "Caixa e pagamentos",
     itens: [
-      { para: "/caixa", etiqueta: "Caixa", icone: Wallet },
+      { para: "/caixa", etiqueta: "Caixa da loja", icone: Wallet },
       {
         para: "/pagamentos",
         etiqueta: "Pagamentos",

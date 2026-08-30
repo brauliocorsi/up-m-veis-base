@@ -1,6 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowDownCircle, ArrowUpCircle, Lock, Unlock, Wallet } from "lucide-react";
+import {
+  ArrowDownCircle,
+  ArrowUpCircle,
+  Inbox,
+  Lock,
+  PackageCheck,
+  Unlock,
+  Wallet,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -34,27 +42,35 @@ import {
   fecharCaixa,
   lerCaixaAtual,
   lerCaixas,
+  lerMotivosEntrada,
   lerMotivosSaida,
   lerMovimentos,
+  registarEntradaCaixa,
   registarSaidaCaixa,
 } from "@/lib/erp/pagamentos";
+import { lerEnvelopes, receberEnvelopeRota } from "@/lib/erp/rotas";
 import {
   ETIQUETA_MOVIMENTO_CAIXA,
   formatarDataCurta,
   formatarDinheiro,
 } from "@/lib/erp/tipos";
 
+
 export const Route = createFileRoute("/_authenticated/caixa")({
   head: () => ({
     meta: [
-      { title: "Caixa do dia — UP Vendas" },
+      { title: "Caixa da loja — UP Vendas" },
       {
         name: "description",
         content:
-          "Caixa diário da UP Móveis: abrir o dia, ver recebimentos em dinheiro, registar saídas e fechar com contagem.",
+          "Caixa da loja da UP Móveis: abrir o dia, dar entrada de dinheiro, registar saídas, conciliar envelopes das rotas e fechar com contagem.",
       },
-      { property: "og:title", content: "Caixa do dia — UP Vendas" },
-      { property: "og:description", content: "Caixa diário da UP Móveis." },
+      { property: "og:title", content: "Caixa da loja — UP Vendas" },
+      {
+        property: "og:description",
+        content: "Entradas, saídas e conciliação do dinheiro no escritório da UP Móveis.",
+      },
+
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -65,7 +81,7 @@ export const Route = createFileRoute("/_authenticated/caixa")({
 function PaginaCaixa() {
   const queryClient = useQueryClient();
   const { data: sessao } = useSessao();
-  const { adm } = usePermissoes();
+  const { adm, registarEntradas, conferirRotas } = usePermissoes();
   const utilizadorId = sessao?.utilizador?.id ?? "";
 
   const [saldoInicial, setSaldoInicial] = useState("");
@@ -73,6 +89,10 @@ function PaginaCaixa() {
   const [valorSaida, setValorSaida] = useState("");
   const [motivoSaida, setMotivoSaida] = useState("");
   const [descricaoSaida, setDescricaoSaida] = useState("");
+  const [entradaAberta, setEntradaAberta] = useState(false);
+  const [valorEntrada, setValorEntrada] = useState("");
+  const [motivoEntrada, setMotivoEntrada] = useState("");
+  const [descricaoEntrada, setDescricaoEntrada] = useState("");
   const [fechoAberto, setFechoAberto] = useState(false);
   const [contado, setContado] = useState("");
   const [justificacao, setJustificacao] = useState("");
@@ -93,12 +113,25 @@ function PaginaCaixa() {
     queryFn: () => lerCaixas({ utilizadorId }),
   });
   const motivos = useQuery({ queryKey: ["motivos-saida-caixa"], queryFn: lerMotivosSaida });
+  const motivosEntrada = useQuery({
+    queryKey: ["motivos-entrada-caixa"],
+    enabled: registarEntradas,
+    queryFn: lerMotivosEntrada,
+  });
+  const envelopes = useQuery({
+    queryKey: ["envelopes-rota", "por-receber"],
+    enabled: conferirRotas,
+    queryFn: () => lerEnvelopes({ porReceber: true }),
+  });
 
   function atualizar() {
     void queryClient.invalidateQueries({ queryKey: ["caixa"] });
     void queryClient.invalidateQueries({ queryKey: ["caixa-movimentos"] });
     void queryClient.invalidateQueries({ queryKey: ["caixas-meus"] });
+    void queryClient.invalidateQueries({ queryKey: ["envelopes-rota"] });
+    void queryClient.invalidateQueries({ queryKey: ["rotas"] });
   }
+
 
   const abrir = useMutation({
     mutationFn: async () => {
@@ -134,6 +167,38 @@ function PaginaCaixa() {
     onError: (erro) => toast.error(mensagemErro(erro)),
   });
 
+  const entrada = useMutation({
+    mutationFn: async () => {
+      const numero = Number(valorEntrada.replace(",", "."));
+      if (!Number.isFinite(numero) || numero <= 0) throw new Error("Indique um valor válido.");
+      if (!motivoEntrada && !descricaoEntrada.trim())
+        throw new Error("Indique o motivo ou uma descrição da entrada.");
+      await registarEntradaCaixa({
+        valor: Number(numero.toFixed(2)),
+        motivo_id: motivoEntrada || null,
+        descricao: descricaoEntrada.trim() || null,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Entrada registada.");
+      setEntradaAberta(false);
+      setValorEntrada("");
+      setDescricaoEntrada("");
+      atualizar();
+    },
+    onError: (erro) => toast.error(mensagemErro(erro)),
+  });
+
+  const receberEnvelope = useMutation({
+    mutationFn: (rotaId: string) => receberEnvelopeRota(rotaId),
+    onSuccess: () => {
+      toast.success("Envelope conciliado no caixa da loja.");
+      atualizar();
+    },
+    onError: (erro) => toast.error(mensagemErro(erro)),
+  });
+
+
   const fechar = useMutation({
     mutationFn: async () => {
       const numero = Number(contado.replace(",", "."));
@@ -163,9 +228,10 @@ function PaginaCaixa() {
   return (
     <div>
       <CabecalhoPagina
-        titulo="Caixa do dia"
-        descricao="Só o dinheiro conta para o saldo. Multibanco, MB Way e transferências ficam registados para relatório."
+        titulo="Caixa da loja"
+        descricao="Entradas e saídas de dinheiro no escritório. Multibanco, MB Way e transferências ficam registados para relatório, mas não contam para o saldo em dinheiro."
       />
+
 
       {!atual ? (
         <Card>
@@ -205,10 +271,16 @@ function PaginaCaixa() {
                   Aberto
                 </Badge>
               </CardTitle>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
+                {registarEntradas ? (
+                  <Button size="sm" variant="outline" onClick={() => setEntradaAberta(true)}>
+                    <ArrowDownCircle className="mr-1 h-4 w-4" /> Entrada
+                  </Button>
+                ) : null}
                 <Button size="sm" variant="outline" onClick={() => setSaidaAberta(true)}>
                   <ArrowUpCircle className="mr-1 h-4 w-4" /> Saída
                 </Button>
+
                 <Button
                   size="sm"
                   onClick={() => {
@@ -266,6 +338,57 @@ function PaginaCaixa() {
           </Card>
         </div>
       )}
+
+      {conferirRotas ? (
+        <Card className="mt-4">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Inbox className="h-4 w-4 text-primary" /> Envelopes das rotas por conciliar
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {envelopes.isLoading ? (
+              <p className="text-sm text-muted-foreground">A carregar…</p>
+            ) : (envelopes.data ?? []).length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Não há envelopes conferidos à espera de entrar no caixa da loja.
+              </p>
+            ) : (
+              <ul className="divide-y text-sm">
+                {(envelopes.data ?? []).map((e) => (
+                  <li key={e.rota_id} className="flex flex-wrap items-center gap-2 py-2">
+                    <span className="font-medium">{e.nome}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {formatarDataCurta(e.data)} · {e.responsavel ?? "—"}
+                    </span>
+                    <span className="tabular-nums">
+                      Contado {formatarDinheiro(e.valor_conferido ?? e.valor_envelope)}
+                    </span>
+                    {e.diferenca !== null && Number(e.diferenca) !== 0 ? (
+                      <Badge variant="destructive">{formatarDinheiro(e.diferenca)}</Badge>
+                    ) : null}
+                    <Button
+                      className="ml-auto"
+                      size="sm"
+                      variant="outline"
+                      disabled={!atual || receberEnvelope.isPending}
+                      onClick={() => receberEnvelope.mutate(e.rota_id)}
+                    >
+                      <PackageCheck className="mr-1 h-4 w-4" /> Dar entrada
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {!atual && (envelopes.data ?? []).length > 0 ? (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Abra o caixa do dia para dar entrada dos envelopes.
+              </p>
+            ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
+
 
       <Card className="mt-4">
         <CardHeader className="pb-3">
@@ -347,6 +470,61 @@ function PaginaCaixa() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={entradaAberta} onOpenChange={setEntradaAberta}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Registar entrada de dinheiro</DialogTitle>
+            <DialogDescription>
+              Dinheiro que entra no escritório fora das vendas: reforços, correções ou dinheiro
+              trazido da rua.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label>Valor (€)</Label>
+              <Input
+                inputMode="decimal"
+                value={valorEntrada}
+                onChange={(e) => setValorEntrada(e.target.value)}
+                placeholder="0,00"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Motivo</Label>
+              <Select value={motivoEntrada} onValueChange={setMotivoEntrada}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Escolher…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(motivosEntrada.data ?? []).map((m) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.descricao}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Descrição</Label>
+              <Textarea
+                value={descricaoEntrada}
+                onChange={(e) => setDescricaoEntrada(e.target.value)}
+                rows={2}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEntradaAberta(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={() => entrada.mutate()} disabled={entrada.isPending}>
+              Registar entrada
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
 
       <Dialog open={fechoAberto} onOpenChange={setFechoAberto}>
         <DialogContent>
