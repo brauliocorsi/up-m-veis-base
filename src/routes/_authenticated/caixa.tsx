@@ -467,6 +467,61 @@ function PaginaCaixa() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={entradaAberta} onOpenChange={setEntradaAberta}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Registar entrada de dinheiro</DialogTitle>
+            <DialogDescription>
+              Dinheiro que entra no escritório fora das vendas: reforços, correções ou dinheiro
+              trazido da rua.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label>Valor (€)</Label>
+              <Input
+                inputMode="decimal"
+                value={valorEntrada}
+                onChange={(e) => setValorEntrada(e.target.value)}
+                placeholder="0,00"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Motivo</Label>
+              <Select value={motivoEntrada} onValueChange={setMotivoEntrada}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Escolher…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(motivosEntrada.data ?? []).map((m) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.descricao}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Descrição</Label>
+              <Textarea
+                value={descricaoEntrada}
+                onChange={(e) => setDescricaoEntrada(e.target.value)}
+                rows={2}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEntradaAberta(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={() => entrada.mutate()} disabled={entrada.isPending}>
+              Registar entrada
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
       <Dialog open={fechoAberto} onOpenChange={setFechoAberto}>
         <DialogContent>
           <DialogHeader>
