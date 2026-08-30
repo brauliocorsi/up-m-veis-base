@@ -1568,3 +1568,37 @@ export interface Assistencia extends CamposComuns {
   item_descricao?: string | null;
   aberta_por_nome?: string | null;
 }
+
+// ------------------------------------------------- conciliação de entradas/saídas
+export interface ConciliacaoMovimento {
+  id: string;
+  data: string;
+  ocorrido_em: string;
+  tipo: TipoMovimentoCaixa;
+  valor: number;
+  sentido: number;
+  valor_assinado: number;
+  forma_id: string | null;
+  forma_nome: string | null;
+  forma_codigo: string | null;
+  pagamento_id: string | null;
+  pedido_id: string | null;
+  pedido_numero: string | null;
+  cliente_nome: string | null;
+  caixa_id: string;
+  rota_id: string | null;
+  rota_nome: string | null;
+  utilizador_id: string | null;
+  utilizador_nome: string | null;
+  motivo_descricao: string | null;
+  descricao: string | null;
+  comprovativo_url: string | null;
+}
+
+export interface ConciliacaoDia {
+  data: string;
+  n_movimentos: number;
+  entradas: number;
+  saidas: number;
+  saldo: number;
+}

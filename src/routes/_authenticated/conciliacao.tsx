@@ -1,23 +1,43 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { AlertTriangle, BellRing, CheckCircle2, Scale } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  AlertTriangle,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  BellRing,
+  CheckCircle2,
+  Download,
+  Scale,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { CabecalhoPagina } from "@/components/erp/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { primeiraMensagem } from "@/lib/erp/erros";
 import {
+  descarregarCsv,
   fecharDiaFinanceiro,
   gerarAlertasFinanceiros,
   lerConciliacaoCaixa,
   lerConciliacaoVendas,
+  lerDiasConciliacao,
   lerFechos,
   lerFluxoPrevisto,
+  lerMovimentosConciliacao,
 } from "@/lib/erp/financeiro";
-import { formatarData, formatarDinheiro } from "@/lib/erp/tipos";
+import {
+  ETIQUETA_MOVIMENTO_CAIXA,
+  formatarData,
+  formatarDataCurta,
+  formatarDinheiro,
+  type ConciliacaoMovimento,
+} from "@/lib/erp/tipos";
 
 export const Route = createFileRoute("/_authenticated/conciliacao")({
   head: () => ({
@@ -88,13 +108,18 @@ function PaginaConciliacao() {
         }
       />
 
-      <Tabs defaultValue="caixa">
+      <Tabs defaultValue="dinheiro">
         <TabsList className="mb-4 flex-wrap">
+          <TabsTrigger value="dinheiro">Entradas e saídas</TabsTrigger>
           <TabsTrigger value="caixa">Caixa</TabsTrigger>
           <TabsTrigger value="vendas">Vendas vs recebimentos</TabsTrigger>
           <TabsTrigger value="fluxo">Fluxo de caixa</TabsTrigger>
           <TabsTrigger value="fechos">Fechos</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="dinheiro">
+          <EntradasSaidas />
+        </TabsContent>
 
         <TabsContent value="caixa">
           {caixas.isPending && <Skeleton className="h-48 w-full rounded-lg" />}
@@ -231,6 +256,181 @@ function PaginaConciliacao() {
           </ul>
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+function inicioDoMes() {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10);
+}
+
+function EntradasSaidas() {
+  const [de, setDe] = useState(inicioDoMes);
+  const [ate, setAte] = useState(() => new Date().toISOString().slice(0, 10));
+
+  const movimentos = useQuery({
+    queryKey: ["conc-mov", de, ate],
+    queryFn: () => lerMovimentosConciliacao({ de, ate }),
+  });
+  const dias = useQuery({
+    queryKey: ["conc-dias", de, ate],
+    queryFn: () => lerDiasConciliacao({ de, ate }),
+  });
+
+  const porDia = useMemo(() => {
+    const mapa = new Map<string, ConciliacaoMovimento[]>();
+    for (const m of movimentos.data ?? []) {
+      const lista = mapa.get(m.data) ?? [];
+      lista.push(m);
+      mapa.set(m.data, lista);
+    }
+    return mapa;
+  }, [movimentos.data]);
+
+  const linhasDias = dias.data ?? [];
+  const totalEntradas = linhasDias.reduce((s, d) => s + Number(d.entradas), 0);
+  const totalSaidas = linhasDias.reduce((s, d) => s + Number(d.saidas), 0);
+  const saldo = totalEntradas - totalSaidas;
+
+  function exportar() {
+    descarregarCsv(
+      `entradas-saidas-${de}-a-${ate}`,
+      [
+        { chave: "data", etiqueta: "Data" },
+        { chave: "tipo", etiqueta: "Tipo" },
+        { chave: "valor_assinado", etiqueta: "Valor" },
+        { chave: "forma_nome", etiqueta: "Forma" },
+        { chave: "pedido_numero", etiqueta: "Venda" },
+        { chave: "cliente_nome", etiqueta: "Cliente" },
+        { chave: "rota_nome", etiqueta: "Rota" },
+        { chave: "utilizador_nome", etiqueta: "Responsável" },
+        { chave: "motivo_descricao", etiqueta: "Motivo" },
+        { chave: "descricao", etiqueta: "Descrição" },
+      ],
+      (movimentos.data ?? []) as unknown as Array<Record<string, unknown>>,
+    );
+  }
+
+  return (
+    <div>
+      <div className="mb-4 flex flex-wrap items-end gap-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="conc-de">De</Label>
+          <Input id="conc-de" type="date" value={de} onChange={(e) => setDe(e.target.value)} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="conc-ate">Até</Label>
+          <Input id="conc-ate" type="date" value={ate} onChange={(e) => setAte(e.target.value)} />
+        </div>
+        <Button
+          variant="outline"
+          onClick={exportar}
+          disabled={(movimentos.data ?? []).length === 0}
+        >
+          <Download className="mr-2 h-4 w-4" /> CSV
+        </Button>
+      </div>
+
+      <div className="mb-4 grid gap-2 sm:grid-cols-3">
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">Entradas</p>
+          <p className="text-lg font-semibold">{formatarDinheiro(totalEntradas)}</p>
+        </div>
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">Saídas</p>
+          <p className="text-lg font-semibold">{formatarDinheiro(totalSaidas)}</p>
+        </div>
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">Saldo do período</p>
+          <p className={`text-lg font-semibold ${saldo < 0 ? "text-destructive" : ""}`}>
+            {formatarDinheiro(saldo)}
+          </p>
+        </div>
+      </div>
+
+      {movimentos.isPending || dias.isPending ? (
+        <Skeleton className="h-64 w-full rounded-lg" />
+      ) : linhasDias.length === 0 ? (
+        <div className="rounded-lg border bg-card p-10 text-center text-muted-foreground">
+          Não há entradas nem saídas de dinheiro neste período.
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {linhasDias.map((d) => (
+            <section key={d.data} className="rounded-lg border bg-card">
+              <header className="flex flex-wrap items-center gap-3 border-b px-4 py-3">
+                <p className="text-sm font-medium">{formatarData(d.data)}</p>
+                <p className="text-xs text-muted-foreground">
+                  entrou {formatarDinheiro(d.entradas)} · saiu {formatarDinheiro(d.saidas)}
+                </p>
+                <p
+                  className={`ml-auto text-sm font-semibold ${
+                    Number(d.saldo) < 0 ? "text-destructive" : ""
+                  }`}
+                >
+                  {formatarDinheiro(d.saldo)}
+                </p>
+              </header>
+              <ul className="divide-y">
+                {(porDia.get(d.data) ?? []).map((m) => (
+                  <li key={m.id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
+                    {m.sentido > 0 ? (
+                      <ArrowDownCircle className="h-4 w-4 shrink-0 text-primary" />
+                    ) : (
+                      <ArrowUpCircle className="h-4 w-4 shrink-0 text-destructive" />
+                    )}
+                    <span
+                      className={`w-24 shrink-0 tabular-nums font-medium ${
+                        m.sentido < 0 ? "text-destructive" : ""
+                      }`}
+                    >
+                      {formatarDinheiro(m.valor_assinado)}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="flex flex-wrap items-center gap-2">
+                        <Badge variant="outline" className="text-[11px]">
+                          {ETIQUETA_MOVIMENTO_CAIXA[m.tipo]}
+                        </Badge>
+                        {m.forma_nome ? (
+                          <span className="text-xs text-muted-foreground">{m.forma_nome}</span>
+                        ) : null}
+                        {m.pedido_id && m.pedido_numero ? (
+                          <Link
+                            to="/pedidos/$pedidoId"
+                            params={{ pedidoId: m.pedido_id }}
+                            className="text-xs font-medium hover:underline"
+                          >
+                            {m.pedido_numero}
+                            {m.cliente_nome ? ` · ${m.cliente_nome}` : ""}
+                          </Link>
+                        ) : null}
+                        {m.rota_id ? (
+                          <Link
+                            to="/rotas/$rotaId"
+                            params={{ rotaId: m.rota_id }}
+                            className="text-xs font-medium hover:underline"
+                          >
+                            Rota {m.rota_nome ?? ""}
+                          </Link>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">Loja</span>
+                        )}
+                      </p>
+                      <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                        {m.utilizador_nome ?? "—"}
+                        {m.motivo_descricao ? ` · ${m.motivo_descricao}` : ""}
+                        {m.descricao ? ` · ${m.descricao}` : ""}
+                        {` · ${formatarDataCurta(m.ocorrido_em)}`}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
