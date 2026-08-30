@@ -106,7 +106,11 @@ export type Contexto =
   | "eliminacao"
   | "saida_caixa"
   | "desconto_excecional"
-  | "reabertura";
+  | "reabertura"
+  | "nao_entrega"
+  | "reagendamento"
+  | "saida_rota"
+  | "assistencia";
 
 export const CONTEXTOS: Array<{ valor: Contexto; etiqueta: string }> = [
   { valor: "cancelamento", etiqueta: "Cancelamento" },
@@ -115,7 +119,12 @@ export const CONTEXTOS: Array<{ valor: Contexto; etiqueta: string }> = [
   { valor: "saida_caixa", etiqueta: "Saída de caixa" },
   { valor: "desconto_excecional", etiqueta: "Desconto excecional" },
   { valor: "reabertura", etiqueta: "Reabertura" },
+  { valor: "nao_entrega", etiqueta: "Não entrega" },
+  { valor: "reagendamento", etiqueta: "Reagendamento" },
+  { valor: "saida_rota", etiqueta: "Saída de rota" },
+  { valor: "assistencia", etiqueta: "Assistência" },
 ];
+
 
 export interface Motivo extends CamposComuns {
   contexto: Contexto;
