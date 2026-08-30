@@ -1,6 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowDownCircle, ArrowUpCircle, Lock, Unlock, Wallet } from "lucide-react";
+import {
+  ArrowDownCircle,
+  ArrowUpCircle,
+  Inbox,
+  Lock,
+  PackageCheck,
+  Unlock,
+  Wallet,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -34,15 +42,19 @@ import {
   fecharCaixa,
   lerCaixaAtual,
   lerCaixas,
+  lerMotivosEntrada,
   lerMotivosSaida,
   lerMovimentos,
+  registarEntradaCaixa,
   registarSaidaCaixa,
 } from "@/lib/erp/pagamentos";
+import { lerEnvelopes, receberEnvelopeRota } from "@/lib/erp/rotas";
 import {
   ETIQUETA_MOVIMENTO_CAIXA,
   formatarDataCurta,
   formatarDinheiro,
 } from "@/lib/erp/tipos";
+
 
 export const Route = createFileRoute("/_authenticated/caixa")({
   head: () => ({
