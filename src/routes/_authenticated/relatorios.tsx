@@ -61,7 +61,7 @@ function Tabela({
 }: {
   nome: string;
   colunas: Coluna[];
-  linhas: Array<Record<string, unknown>>;
+  linhas: ReadonlyArray<Record<string, unknown>>;
   aCarregar: boolean;
 }) {
   if (aCarregar) return <Skeleton className="h-48 w-full rounded-lg" />;
@@ -187,7 +187,7 @@ function PaginaRelatorios() {
           <Tabela
             nome="vendas"
             aCarregar={vendas.isPending}
-            linhas={vendas.data ?? []}
+            linhas={(vendas.data ?? []) as unknown as Array<Record<string, unknown>>}
             colunas={[
               { chave: "data", etiqueta: "Data", data: true },
               { chave: "numero", etiqueta: "Pedido" },
@@ -206,7 +206,7 @@ function PaginaRelatorios() {
             <Tabela
               nome="margem"
               aCarregar={margens.isPending}
-              linhas={margens.data ?? []}
+              linhas={(margens.data ?? []) as unknown as Array<Record<string, unknown>>}
               colunas={[
                 { chave: "pedido_numero", etiqueta: "Pedido" },
                 { chave: "vendedor_nome", etiqueta: "Vendedora" },
@@ -223,7 +223,7 @@ function PaginaRelatorios() {
           <Tabela
             nome="recebimentos"
             aCarregar={recebimentos.isPending}
-            linhas={recebimentos.data ?? []}
+            linhas={(recebimentos.data ?? []) as unknown as Array<Record<string, unknown>>}
             colunas={[
               { chave: "data", etiqueta: "Data", data: true },
               { chave: "forma_nome", etiqueta: "Forma" },
@@ -255,7 +255,7 @@ function PaginaRelatorios() {
           <Tabela
             nome="fluxo-de-caixa"
             aCarregar={fluxo.isPending}
-            linhas={fluxoLinhas}
+            linhas={fluxoLinhas as unknown as Array<Record<string, unknown>>}
             colunas={[
               { chave: "semana", etiqueta: "Semana", data: true },
               { chave: "fim_semana", etiqueta: "Até", data: true },
@@ -270,7 +270,7 @@ function PaginaRelatorios() {
           <Tabela
             nome="atraso-fornecedores"
             aCarregar={atrasos.isPending}
-            linhas={atrasos.data ?? []}
+            linhas={(atrasos.data ?? []) as unknown as Array<Record<string, unknown>>}
             colunas={[
               { chave: "fornecedor_nome", etiqueta: "Fornecedor" },
               { chave: "numero", etiqueta: "Ordem" },
@@ -286,7 +286,7 @@ function PaginaRelatorios() {
           <Tabela
             nome="cupoes"
             aCarregar={cupoes.isPending}
-            linhas={cupoes.data ?? []}
+            linhas={(cupoes.data ?? []) as unknown as Array<Record<string, unknown>>}
             colunas={[
               { chave: "codigo", etiqueta: "Código" },
               { chave: "tipo", etiqueta: "Tipo" },
