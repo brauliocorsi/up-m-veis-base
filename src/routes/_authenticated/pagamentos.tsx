@@ -27,7 +27,7 @@ import {
 } from "@/lib/erp/pagamentos";
 import {
   ETIQUETA_PAGAMENTO,
-  formatarDataHora,
+  formatarData,
   formatarDinheiro,
   type Pagamento,
 } from "@/lib/erp/tipos";
@@ -121,7 +121,7 @@ function PaginaPagamentos() {
                     {p.forma_nome} · {p.cliente_nome}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Registado em {formatarDataHora(p.criado_em)}
+                    Registado em {formatarData(p.criado_em)}
                     {p.referencia ? ` · Ref. ${p.referencia}` : ""}
                   </p>
                 </div>
