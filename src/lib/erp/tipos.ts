@@ -1,10 +1,17 @@
-export type Perfil = "vendedora" | "escritorio" | "compras" | "financeiro" | "adm";
+export type Perfil =
+  | "vendedora"
+  | "escritorio"
+  | "compras"
+  | "financeiro"
+  | "entregador"
+  | "adm";
 
 export const PERFIS: Array<{ valor: Perfil; etiqueta: string }> = [
   { valor: "vendedora", etiqueta: "Vendedora" },
   { valor: "escritorio", etiqueta: "Escritório" },
   { valor: "compras", etiqueta: "Compras" },
   { valor: "financeiro", etiqueta: "Financeiro" },
+  { valor: "entregador", etiqueta: "Entregador" },
   { valor: "adm", etiqueta: "Administração" },
 ];
 
@@ -13,8 +20,10 @@ export const ETIQUETA_PERFIL: Record<Perfil, string> = {
   escritorio: "Escritório",
   compras: "Compras",
   financeiro: "Financeiro",
+  entregador: "Entregador",
   adm: "Administração",
 };
+
 
 export interface CamposComuns {
   id: string;
