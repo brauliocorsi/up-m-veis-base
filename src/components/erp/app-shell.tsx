@@ -76,6 +76,29 @@ const NAVEGACAO: GrupoNav[] = [
     itens: [{ para: "/painel", etiqueta: "Painel", icone: LayoutDashboard }],
   },
   {
+    etiqueta: "Rota",
+    itens: [
+      {
+        para: "/rota",
+        etiqueta: "A minha rota",
+        icone: Route,
+        perfis: ["entregador", "adm"],
+      },
+      {
+        para: "/rotas",
+        etiqueta: "Rotas",
+        icone: MapPinned,
+        perfis: ["adm", "escritorio", "financeiro"],
+      },
+      {
+        para: "/assistencias",
+        etiqueta: "Assistências",
+        icone: LifeBuoy,
+        perfis: ["adm", "escritorio", "financeiro"],
+      },
+    ],
+  },
+  {
     etiqueta: "Vendas",
     itens: [
       { para: "/pedidos", etiqueta: "Vendas", icone: ShoppingCart },
@@ -90,6 +113,7 @@ const NAVEGACAO: GrupoNav[] = [
       { para: "/cupoes", etiqueta: "Cupões", icone: Ticket, perfis: ["adm"] },
     ],
   },
+
   {
     etiqueta: "Caixa e pagamentos",
     itens: [
