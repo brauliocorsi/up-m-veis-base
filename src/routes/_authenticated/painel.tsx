@@ -69,7 +69,10 @@ function Painel() {
     { etiqueta: "Dias marcados", valor: totais?.dias, icone: CalendarDays, para: "/calendario" },
   ].filter((c) => eAdm || c.etiqueta !== "Utilizadores");
 
+  if (eEntregador) return <Navigate to="/rota" replace />;
+
   return (
+
     <div>
       <CabecalhoPagina
         titulo={`Bom trabalho, ${utilizador?.nome?.split(" ")[0] ?? ""}`}
