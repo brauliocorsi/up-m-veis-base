@@ -207,6 +207,8 @@ function EcraVenda() {
         <div className="space-y-4">
           <Totais pedido={p} />
           <Descontos pedido={p} editavel={editavel} onGuardar={(c) => guardar.mutate(c)} />
+          {p.tipo === "pedido" ? <PainelPagamentos pedido={p} /> : null}
+
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base">Observações</CardTitle>
