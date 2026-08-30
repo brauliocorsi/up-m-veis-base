@@ -324,17 +324,33 @@ export function AppShell({ children }: { children: ReactNode }) {
               </SheetTrigger>
               <SheetContent side="bottom" className="space-y-2 pb-8">
                 <SheetTitle>Menu</SheetTitle>
-                <nav className="space-y-4">
-                  {gruposRestantes.map((grupo) => (
-                    <div key={grupo.etiqueta}>
-                      <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        {grupo.etiqueta}
-                      </p>
-                      <div className="space-y-1">
-                        {grupo.itens.map((item) => linhaNav(item, () => setMenuAberto(false)))}
+                <nav className="space-y-2">
+                  {gruposRestantes.map((grupo) => {
+                    const aberto = categoriaAberta === grupo.etiqueta;
+                    return (
+                      <div key={grupo.etiqueta}>
+                        <button
+                          type="button"
+                          onClick={() => setCategoriaAberta(aberto ? null : grupo.etiqueta)}
+                          className="flex w-full items-center justify-between rounded-md px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted"
+                        >
+                          {grupo.etiqueta}
+                          {aberto ? (
+                            <ChevronDown className="h-3.5 w-3.5" />
+                          ) : (
+                            <ChevronRight className="h-3.5 w-3.5" />
+                          )}
+                        </button>
+                        {aberto && (
+                          <div className="mt-1 space-y-1 px-1">
+                            {grupo.itens.map((item) =>
+                              linhaNav(item, () => setMenuAberto(false)),
+                            )}
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </nav>
               </SheetContent>
             </Sheet>
