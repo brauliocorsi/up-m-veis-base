@@ -296,14 +296,18 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   const utilizador = sessao?.utilizador ?? null;
+  // O entregador só vê o que estiver explicitamente aberto ao seu perfil.
   const grupos = utilizador
     ? NAVEGACAO.map((grupo) => ({
         ...grupo,
-        itens: grupo.itens.filter(
-          (item) => !item.perfis || item.perfis.includes(utilizador.perfil),
+        itens: grupo.itens.filter((item) =>
+          utilizador.perfil === "entregador"
+            ? Boolean(item.perfis?.includes("entregador"))
+            : !item.perfis || item.perfis.includes(utilizador.perfil),
         ),
       })).filter((grupo) => grupo.itens.length > 0)
     : [];
+
 
   if (isLoading) {
     return (
