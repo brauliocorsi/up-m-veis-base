@@ -1,11 +1,14 @@
-import { Link } from "@tanstack/react-router";
-
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { formatarDataCurta, type Necessidade, type OcItem, type PedidoItem } from "@/lib/erp/tipos";
+import {
+  formatarDataCurta,
+  type FornecimentoLinha,
+  type Necessidade,
+  type PedidoItem,
+} from "@/lib/erp/tipos";
 
 export interface ContextoFornecimento {
-  ocs: OcItem[];
+  ocs: FornecimentoLinha[];
   necessidades: Necessidade[];
 }
 
@@ -47,23 +50,21 @@ export function BadgeFornecimento({
 
   const ocs = ocsDaLinha(item, contexto);
   if (ocs.length > 0) {
-    const recebido = ocs.reduce((s, o) => s + Number(o.quantidade_recebida ?? 0), 0);
+    const recebido = ocs.reduce((s, o) => s + Number(o.qt_recebida ?? 0), 0);
     const falta = Math.max(Number(item.quantidade) - recebido, 0);
     return (
       <div className="text-xs">
         <Badge className="bg-amber-500 text-white hover:bg-amber-500">🟠 Encomendado</Badge>
         <span className="ml-2 text-muted-foreground">
           {ocs.map((o, i) => (
-            <span key={o.id}>
+            <span key={o.oc_item_id ?? o.pedido_item_id}>
               {i > 0 && ", "}
-              <Link to="/ordens-compra/$ocId" params={{ ocId: o.oc_id }} className="underline">
-                {o.oc_numero}
-              </Link>
+              {o.oc_numero}
             </span>
           ))}
-          {ocs[0]?.fornecedor_nome ? ` · ${ocs[0].fornecedor_nome}` : ""}
-          {ocs[0]?.data_prevista_item || ocs[0]?.oc_data_prevista
-            ? ` · prevista ${formatarDataCurta(ocs[0].data_prevista_item ?? ocs[0].oc_data_prevista)}`
+          {ocs[0]?.fornecedor ? ` · ${ocs[0].fornecedor}` : ""}
+          {ocs[0]?.data_prevista_chegada
+            ? ` · prevista ${formatarDataCurta(ocs[0].data_prevista_chegada)}`
             : ""}
           {falta > 0 ? ` · faltam ${falta}` : " · já recebido"}
         </span>
@@ -103,7 +104,7 @@ export function ProgressoFornecimento({
 
   const primeira = emFalta[0];
   const ocs = primeira ? ocsDaLinha(primeira, contexto) : [];
-  const prevista = ocs[0]?.data_prevista_item ?? ocs[0]?.oc_data_prevista ?? primeira?.data_prevista;
+  const prevista = ocs[0]?.data_prevista_chegada ?? primeira?.data_prevista;
 
   return (
     <div className="rounded-lg border bg-card p-3">

@@ -899,6 +899,26 @@ export interface OcItem extends CamposComuns {
   oc_data_emissao: string | null;
 }
 
+/**
+ * Linha de erp.v_fornecimento_linha — exceção deliberada sem security_invoker:
+ * expõe à vendedora apenas o estado do fornecimento, SEM custos.
+ */
+export interface FornecimentoLinha {
+  oc_item_id: string | null;
+  oc_id: string | null;
+  pedido_item_id: string;
+  pedido_id: string;
+  produto_id: string | null;
+  estado_item: string;
+  oc_numero: string | null;
+  oc_estado: EstadoOc | null;
+  data_prevista_chegada: string | null;
+  fornecedor: string | null;
+  qt_encomendada: number | null;
+  qt_recebida: number | null;
+  qt_em_falta: number | null;
+}
+
 export interface OcRecebimento extends CamposComuns {
   oc_id: string;
   data: string;
