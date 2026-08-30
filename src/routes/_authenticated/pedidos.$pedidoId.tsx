@@ -672,11 +672,16 @@ function Entrega({
   pedido,
   editavel,
   onGuardar,
+  onAlterado,
 }: {
   pedido: Pedido;
   editavel: boolean;
   onGuardar: (campos: Record<string, unknown>) => void;
+  onAlterado: () => void;
 }) {
+  const [alterarData, setAlterarData] = useState(false);
+  const podeAlterarData =
+    !editavel && ["confirmado", "em_preparacao", "pronto"].includes(pedido.estado);
   const motivos = useQuery({
     queryKey: ["motivos-data"],
     queryFn: () =>
