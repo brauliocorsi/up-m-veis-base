@@ -50,6 +50,23 @@ export async function guardarPedido(id: string, campos: Record<string, unknown>)
   if (error) throw error;
 }
 
+/** Altera a data de entrega de uma venda confirmada, em preparação ou pronta. */
+export async function alterarDataEntrega(
+  pedidoId: string,
+  data: string,
+  motivoId: string,
+  nota?: string,
+): Promise<string> {
+  const { data: nova, error } = await erp().rpc("alterar_data_entrega", {
+    p_pedido_id: pedidoId,
+    p_data: data,
+    p_motivo_id: motivoId,
+    p_nota: nota?.trim() || null,
+  });
+  if (error) throw error;
+  return nova as string;
+}
+
 export async function adicionarItem(campos: {
   pedido_id: string;
   linha: number;

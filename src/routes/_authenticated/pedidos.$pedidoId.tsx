@@ -66,6 +66,7 @@ import {
 } from "@/lib/erp/tipos";
 import {
   adicionarItem,
+  alterarDataEntrega,
   cancelarPedido,
   confirmarPedido,
   guardarItem,
@@ -245,7 +246,7 @@ function EcraVenda() {
             </CardContent>
           </Card>
 
-          <Entrega pedido={p} editavel={editavel} onGuardar={(c) => guardar.mutate(c)} />
+          <Entrega pedido={p} editavel={editavel} onGuardar={(c) => guardar.mutate(c)} onAlterado={recarregar} />
         </div>
 
         <div className="space-y-4">
@@ -671,11 +672,16 @@ function Entrega({
   pedido,
   editavel,
   onGuardar,
+  onAlterado,
 }: {
   pedido: Pedido;
   editavel: boolean;
   onGuardar: (campos: Record<string, unknown>) => void;
+  onAlterado: () => void;
 }) {
+  const [alterarData, setAlterarData] = useState(false);
+  const podeAlterarData =
+    !editavel && ["confirmado", "em_preparacao", "pronto"].includes(pedido.estado);
   const motivos = useQuery({
     queryKey: ["motivos-data"],
     queryFn: () =>
@@ -830,24 +836,41 @@ function Entrega({
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1">
             <Label className="text-xs">Data de entrega</Label>
-            <Input
-              type="date"
-              defaultValue={pedido.data_entrega_prevista ?? ""}
-              disabled={!editavel}
-              onBlur={(e) => {
-                if (!e.target.value || e.target.value === pedido.data_entrega_prevista) return;
-                const motivo = motivos.data?.linhas[0]?.id ?? null;
-                if (!motivo) {
-                  toast.error("Falta configurar motivos de alteração de data.");
-                  return;
-                }
-                onGuardar({
-                  data_entrega_origem: "manual",
-                  motivo_data_id: motivo,
-                  data_entrega_prevista: e.target.value,
-                });
-              }}
-            />
+            {editavel ? (
+              <Input
+                type="date"
+                defaultValue={pedido.data_entrega_prevista ?? ""}
+                onBlur={(e) => {
+                  if (!e.target.value || e.target.value === pedido.data_entrega_prevista) return;
+                  const motivo = motivos.data?.linhas[0]?.id ?? null;
+                  if (!motivo) {
+                    toast.error("Falta configurar motivos de alteração de data.");
+                    return;
+                  }
+                  onGuardar({
+                    data_entrega_origem: "manual",
+                    motivo_data_id: motivo,
+                    data_entrega_prevista: e.target.value,
+                  });
+                }}
+              />
+            ) : (
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium">
+                  {formatarDataCurta(pedido.data_entrega_prometida ?? pedido.data_entrega_prevista)}
+                </p>
+                {podeAlterarData && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAlterarData(true)}
+                  >
+                    Alterar
+                  </Button>
+                )}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground">
               {pedido.data_entrega_origem === "manual"
                 ? "Data escolhida à mão."
@@ -884,8 +907,118 @@ function Entrega({
             Voltar à data calculada
           </Button>
         )}
+
+        {podeAlterarData && (
+          <DialogoAlterarData
+            aberto={alterarData}
+            pedido={pedido}
+            motivos={motivos.data?.linhas ?? []}
+            onFechar={() => setAlterarData(false)}
+            onFeito={onAlterado}
+          />
+        )}
       </CardContent>
     </Card>
+  );
+}
+
+// ---------------------------------------------------- alterar data de entrega
+function DialogoAlterarData({
+  aberto,
+  pedido,
+  motivos,
+  onFechar,
+  onFeito,
+}: {
+  aberto: boolean;
+  pedido: Pedido;
+  motivos: Motivo[];
+  onFechar: () => void;
+  onFeito: () => void;
+}) {
+  const [data, setData] = useState(pedido.data_entrega_prometida ?? "");
+  const [motivo, setMotivo] = useState("");
+  const [nota, setNota] = useState("");
+
+  const motivoEscolhido = motivos.find((m) => m.id === motivo);
+
+  const acao = useMutation({
+    mutationFn: () => alterarDataEntrega(pedido.id, data, motivo, nota),
+    onSuccess: (nova) => {
+      toast.success(`Data de entrega alterada para ${formatarDataCurta(nova)}.`);
+      onFechar();
+      onFeito();
+    },
+    onError: (erro) => toast.error(mensagemErro(erro)),
+  });
+
+  const valido =
+    !!data && data !== (pedido.data_entrega_prometida ?? "") && !!motivo &&
+    (!motivoEscolhido?.exige_texto || nota.trim().length > 0);
+
+  return (
+    <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Alterar data de entrega</DialogTitle>
+          <DialogDescription>
+            A alteração fica registada no histórico da venda.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <Label className="text-xs" htmlFor="nova-data">
+              Nova data
+            </Label>
+            <Input
+              id="nova-data"
+              type="date"
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">Motivo</Label>
+            <Select value={motivo} onValueChange={setMotivo}>
+              <SelectTrigger>
+                <SelectValue placeholder="Escolha o motivo" />
+              </SelectTrigger>
+              <SelectContent>
+                {motivos.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.descricao}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {motivos.length === 0 && (
+              <p className="text-xs font-medium text-destructive">
+                Falta configurar motivos de alteração de data nas definições.
+              </p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs" htmlFor="nota-data">
+              Nota {motivoEscolhido?.exige_texto ? "(obrigatória)" : "(opcional)"}
+            </Label>
+            <Textarea
+              id="nota-data"
+              value={nota}
+              onChange={(e) => setNota(e.target.value)}
+              placeholder="Explique em poucas palavras"
+            />
+          </div>
+        </div>
+        <DialogFooter className="gap-2 sm:justify-between">
+          <Button variant="outline" onClick={onFechar}>
+            Voltar
+          </Button>
+          <Button disabled={!valido || acao.isPending} onClick={() => acao.mutate()}>
+            {acao.isPending ? "A guardar…" : "Guardar nova data"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
