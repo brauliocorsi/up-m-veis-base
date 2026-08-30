@@ -165,6 +165,7 @@ function PaginaFormas() {
       prazo_confirmacao_horas: linha.prazo_confirmacao_horas?.toString() ?? "",
       taxa_pct: String(linha.taxa_pct ?? 0),
       entra_caixa: linha.entra_caixa,
+      e_numerario: linha.e_numerario ?? false,
       ordem: String(linha.ordem ?? 0),
       ativo: linha.ativo,
     });
