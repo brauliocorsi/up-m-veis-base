@@ -29,7 +29,7 @@ end $$;
 do $$
 declare
   v_adm uuid; v_vend uuid; v_esc uuid;
-  v_cliente uuid; v_produto uuid; v_pedido uuid;
+  v_cliente uuid; v_pedido uuid;
   v_forma_transf uuid; v_forma_dinheiro uuid;
   v_pag uuid; v_pag2 uuid; v_conta uuid; v_despesa uuid;
   v_erro text; v_num numeric; v_txt text; v_n integer;
@@ -56,9 +56,6 @@ begin
 
   insert into erp.clientes (nome, telefone_e164, tipo)
   values ('Cliente Financeiro 7', '+351911000777', 'particular') returning id into v_cliente;
-
-  insert into erp.produtos (sku, nome, preco_venda, custo_ultimo, tipo_fornecimento)
-  values ('AUD-FIN7', 'Produto Financeiro 7', 100.00, 40.00, 'stock') returning id into v_produto;
 
   insert into erp.pedidos (numero, cliente_id, vendedor_id, estado, total, origem)
   values ('AUD-FIN7-1', v_cliente, (select id from erp.utilizadores where user_id = v_vend),
@@ -224,7 +221,6 @@ begin
    where pedido_id = v_pedido;
   perform set_config('erp.motor', '', true);
   update erp.pedidos set eliminado_em = now(), motivo_eliminacao = 'auditoria' where id = v_pedido;
-  update erp.produtos set eliminado_em = now(), motivo_eliminacao = 'auditoria' where id = v_produto;
   update erp.clientes set eliminado_em = now(), motivo_eliminacao = 'auditoria' where id = v_cliente;
   update erp.utilizadores set eliminado_em = now(), ativo = false,
     motivo_eliminacao = 'auditoria' where user_id in (v_adm, v_vend, v_esc);
