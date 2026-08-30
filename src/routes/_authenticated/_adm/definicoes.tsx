@@ -253,12 +253,70 @@ function PaginaDefinicoes() {
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="emp-logo">Endereço do logótipo (opcional)</Label>
+              <Label htmlFor="emp-logo-ficheiro">Logótipo dos documentos</Label>
+              <div className="flex flex-wrap items-center gap-3">
+                {prevLogo ? (
+                  <img
+                    src={prevLogo}
+                    alt="Logótipo da empresa"
+                    className="h-14 w-auto rounded border bg-white object-contain p-1"
+                  />
+                ) : (
+                  <span className="text-sm text-muted-foreground">Sem imagem carregada.</span>
+                )}
+                <Input
+                  id="emp-logo-ficheiro"
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  disabled={aEnviar}
+                  className="max-w-xs"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) void escolherLogotipo(f);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                PNG ou JPG até 5 MB. Aparece no cabeçalho da nota de encomenda.
+              </p>
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="emp-logo">Endereço do logótipo (alternativa)</Label>
               <Input
                 id="emp-logo"
                 value={empresa.logotipo_url}
                 onChange={(e) => setEmpresa({ ...empresa, logotipo_url: e.target.value })}
                 placeholder="https://…"
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="emp-mensagem">Mensagem no cabeçalho dos documentos</Label>
+              <Textarea
+                id="emp-mensagem"
+                rows={3}
+                value={empresa.mensagem_documento}
+                onChange={(e) => setEmpresa({ ...empresa, mensagem_documento: e.target.value })}
+                placeholder="Entregas de Seg a Sáb das 8:00 às 20:00, com agendamento antecipado."
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="emp-apoio">Endereço de apoio ao cliente</Label>
+              <Input
+                id="emp-apoio"
+                value={empresa.apoio_url}
+                onChange={(e) => setEmpresa({ ...empresa, apoio_url: e.target.value })}
+                placeholder="https://…"
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="emp-observacoes">Observações no fim dos documentos</Label>
+              <Textarea
+                id="emp-observacoes"
+                rows={4}
+                value={empresa.observacoes_documento}
+                onChange={(e) => setEmpresa({ ...empresa, observacoes_documento: e.target.value })}
+                placeholder="Condições de entrega, pagamento e outras notas."
               />
             </div>
           </div>
