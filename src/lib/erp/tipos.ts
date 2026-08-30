@@ -625,6 +625,8 @@ export interface Pedido extends CamposComuns {
   vendedor_nome?: string | null;
   zona_nome?: string | null;
   n_itens?: number;
+  falta_pagar?: number;
+
 }
 
 export interface PedidoItem extends CamposComuns {
