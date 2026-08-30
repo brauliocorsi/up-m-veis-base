@@ -11,7 +11,7 @@ export const esquemaCriarUtilizador = z.object({
 export const esquemaEditarUtilizador = z.object({
   nome: z.string().trim().min(3, "O nome tem de ter pelo menos 3 letras."),
   telefone: z.string().trim().max(30).optional().or(z.literal("")),
-  perfil: z.enum(["vendedora", "escritorio", "compras", "financeiro", "adm"]),
+  perfil: z.enum(["vendedora", "escritorio", "compras", "financeiro", "entregador", "adm"]),
   ativo: z.boolean(),
 });
 
