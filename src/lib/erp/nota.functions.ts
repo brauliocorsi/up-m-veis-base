@@ -121,7 +121,7 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
       })),
       montagem: Number(pedido.valor_montagem ?? 0),
       entrega: Number(pedido.valor_entrega ?? 0),
-      subtotal: Number(pedido.subtotal ?? 0),
+      subtotal: Number(pedido.total_sem_iva ?? pedido.subtotal ?? 0),
       descontos,
       iva: Number(pedido.total_iva ?? 0),
       total: Number(pedido.total ?? 0),

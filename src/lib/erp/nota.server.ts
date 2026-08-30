@@ -55,7 +55,7 @@ const PRETO = rgb(0.1, 0.1, 0.12);
 
 function euros(valor: number): string {
   const n = Number(valor ?? 0);
-  return `${n.toFixed(2).replace(".", ",")} EUR`;
+  return `${n.toFixed(2).replace(".", ",")} \u20AC`;
 }
 
 function dataPt(valor: string | null): string {
@@ -272,7 +272,7 @@ export async function construirNotaPdf(dados: DadosNota): Promise<Uint8Array> {
   }
   espaco(3);
   texto(`Já pago: ${euros(dados.pago)}`, { tamanho: 9.5, forte: true });
-  espaco(16);
+  espaco(28);
 
   pagina.drawRectangle({
     x: margem,
