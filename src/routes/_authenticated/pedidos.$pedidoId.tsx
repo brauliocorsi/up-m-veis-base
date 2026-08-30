@@ -5,6 +5,7 @@ import {
   Check,
   Package,
   Plus,
+  Printer,
   Search,
   Ticket,
   Trash2,
@@ -17,6 +18,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { CabecalhoPagina } from "@/components/erp/app-shell";
+import {
+  BadgeFornecimento,
+  ProgressoFornecimento,
+  type ContextoFornecimento,
+} from "@/components/erp/fornecimento";
 import { PainelPagamentos } from "@/components/erp/painel-pagamentos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -40,7 +46,9 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { fornecimentoDoPedido, necessidadesDoPedido } from "@/lib/erp/compras";
 import { erp, mensagemErro } from "@/lib/erp/db";
+import { gerarNotaEncomenda } from "@/lib/erp/nota.functions";
 import { listar } from "@/lib/erp/listar";
 import {
   ETIQUETA_ITEM,
@@ -96,10 +104,34 @@ function EcraVenda() {
 
   const pedido = useQuery({ queryKey: ["pedido", pedidoId], queryFn: () => lerPedido(pedidoId) });
   const itens = useQuery({ queryKey: ["pedido-itens", pedidoId], queryFn: () => lerItens(pedidoId) });
+  const ocs = useQuery({
+    queryKey: ["pedido-fornecimento", pedidoId],
+    queryFn: () => fornecimentoDoPedido(pedidoId),
+  });
+  const necessidades = useQuery({
+    queryKey: ["pedido-necessidades", pedidoId],
+    queryFn: () => necessidadesDoPedido(pedidoId),
+  });
+  const contexto: ContextoFornecimento = {
+    ocs: ocs.data ?? [],
+    necessidades: necessidades.data ?? [],
+  };
+
+  const nota = useMutation({
+    mutationFn: (regenerar: boolean) =>
+      gerarNotaEncomenda({ data: { pedido_id: pedidoId, regenerar } }),
+    onSuccess: (r) => {
+      window.open(r.url, "_blank", "noopener,noreferrer");
+      toast.success(`Nota de encomenda ${r.numero} pronta a imprimir.`);
+    },
+    onError: (erro) => toast.error(mensagemErro(erro)),
+  });
 
   function recarregar() {
     qc.invalidateQueries({ queryKey: ["pedido", pedidoId] });
     qc.invalidateQueries({ queryKey: ["pedido-itens", pedidoId] });
+    qc.invalidateQueries({ queryKey: ["pedido-fornecimento", pedidoId] });
+    qc.invalidateQueries({ queryKey: ["pedido-necessidades", pedidoId] });
   }
 
   const guardar = useMutation({
@@ -127,7 +159,9 @@ function EcraVenda() {
       setConfirmar(false);
       recarregar();
       qc.invalidateQueries({ queryKey: ["pedidos"] });
-      toast.success(`Pedido ${r.numero} confirmado. Entrega a ${formatarDataCurta(r.data_entrega)}.`);
+      toast.success(`Pedido ${r.numero} confirmado. Entrega a ${formatarDataCurta(r.data_entrega)}.`, {
+        action: { label: "Imprimir nota", onClick: () => nota.mutate(true) },
+      });
     },
     onError: (erro) => toast.error(mensagemErro(erro)),
   });
@@ -162,6 +196,11 @@ function EcraVenda() {
                 <Check className="mr-2 h-4 w-4" /> Confirmar venda
               </Button>
             )}
+            {p.tipo === "pedido" && (
+              <Button variant="outline" onClick={() => nota.mutate(false)} disabled={nota.isPending}>
+                <Printer className="mr-2 h-4 w-4" /> Nota de encomenda
+              </Button>
+            )}
             {!editavel && p.estado !== "cancelado" && (
               <Button variant="outline" onClick={() => setReabrir(true)}>
                 <Undo2 className="mr-2 h-4 w-4" /> Reabrir
@@ -178,6 +217,8 @@ function EcraVenda() {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-4">
+          {p.tipo === "pedido" && <ProgressoFornecimento linhas={linhas} contexto={contexto} />}
+
           {editavel && <Procurador pedidoId={pedidoId} proximaLinha={linhas.length + 1} onAdicionado={recarregar} />}
 
           <Card>
@@ -195,6 +236,7 @@ function EcraVenda() {
                   key={item.id}
                   item={item}
                   editavel={editavel}
+                  contexto={contexto}
                   onGuardar={(campos) => mudarItem.mutate({ id: item.id, campos })}
                   onApagar={() => apagarItem.mutate(item.id)}
                 />
@@ -406,11 +448,13 @@ function Procurador({
 function LinhaItem({
   item,
   editavel,
+  contexto,
   onGuardar,
   onApagar,
 }: {
   item: PedidoItem;
   editavel: boolean;
+  contexto: ContextoFornecimento;
   onGuardar: (campos: Record<string, unknown>) => void;
   onApagar: () => void;
 }) {
@@ -423,6 +467,9 @@ function LinhaItem({
             {item.cod_barras ?? "Serviço"} · {ETIQUETA_ITEM[item.estado]}
             {item.data_prevista ? ` · ${formatarDataCurta(item.data_prevista)}` : ""}
           </p>
+          <div className="mt-1">
+            <BadgeFornecimento item={item} contexto={contexto} />
+          </div>
         </div>
         <div className="text-right">
           <p className="font-semibold">{formatarDinheiro(item.total_linha)}</p>
