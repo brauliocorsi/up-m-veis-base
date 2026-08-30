@@ -198,9 +198,18 @@ export function AppShell({ children }: { children: ReactNode }) {
     );
   }
 
-  const itens = NAVEGACAO.filter((item) => !item.perfis || item.perfis.includes(utilizador.perfil));
+  const grupos = NAVEGACAO.map((grupo) => ({
+    ...grupo,
+    itens: grupo.itens.filter(
+      (item) => !item.perfis || item.perfis.includes(utilizador.perfil),
+    ),
+  })).filter((grupo) => grupo.itens.length > 0);
+  const itens = grupos.flatMap((g) => g.itens);
   const itensMobile = itens.slice(0, 3);
   const restantes = itens.slice(3);
+  const gruposRestantes = grupos
+    .map((grupo) => ({ ...grupo, itens: grupo.itens.filter((i) => restantes.includes(i)) }))
+    .filter((grupo) => grupo.itens.length > 0);
 
   const linhaNav = (item: ItemNav, aoClicar?: () => void) => {
     const ativo = caminho === item.para;
