@@ -3,6 +3,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   BadgeEuro,
   CalendarDays,
+  ChevronDown,
+  ChevronRight,
   ClipboardCheck,
   ClipboardList,
   Boxes,
@@ -34,7 +36,7 @@ import {
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { IndicadorSync } from "@/components/erp/indicador-sync";
