@@ -2,6 +2,8 @@ import { erp } from "./db";
 import type {
   CategoriaDespesa,
   ConciliacaoCaixa,
+  ConciliacaoDia,
+  ConciliacaoMovimento,
   ConciliacaoVenda,
   ContaReceber,
   Despesa,
