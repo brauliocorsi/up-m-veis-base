@@ -23,6 +23,7 @@ import { Route as AuthenticatedNecessidadesRouteImport } from './routes/_authent
 import { Route as AuthenticatedPagamentosRouteImport } from './routes/_authenticated/pagamentos'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
+import { Route as AuthenticatedRecepcaoRouteImport } from './routes/_authenticated/recepcao'
 import { Route as AuthenticatedReservasRouteImport } from './routes/_authenticated/reservas'
 import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
 import { Route as AuthenticatedAdmCaixasRouteImport } from './routes/_authenticated/_adm/caixas'
@@ -39,6 +40,7 @@ import { Route as AuthenticatedAdmSincronizacaoRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
 import { Route as AuthenticatedOrdensCompraIndexRouteImport } from './routes/_authenticated/ordens-compra.index'
+import { Route as AuthenticatedOrdensCompraOcIdRouteImport } from './routes/_authenticated/ordens-compra.$ocId'
 import { Route as AuthenticatedPedidosIndexRouteImport } from './routes/_authenticated/pedidos.index'
 import { Route as AuthenticatedPedidosPedidoIdRouteImport } from './routes/_authenticated/pedidos.$pedidoId'
 import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
@@ -114,6 +116,11 @@ const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
 const AuthenticatedProdutosRoute = AuthenticatedProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRecepcaoRoute = AuthenticatedRecepcaoRouteImport.update({
+  id: '/recepcao',
+  path: '/recepcao',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedReservasRoute = AuthenticatedReservasRouteImport.update({
@@ -206,6 +213,12 @@ const AuthenticatedOrdensCompraIndexRoute =
     path: '/ordens-compra/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedOrdensCompraOcIdRoute =
+  AuthenticatedOrdensCompraOcIdRouteImport.update({
+    id: '/ordens-compra/$ocId',
+    path: '/ordens-compra/$ocId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPedidosIndexRoute =
   AuthenticatedPedidosIndexRouteImport.update({
     id: '/pedidos/',
@@ -249,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/pagamentos': typeof AuthenticatedPagamentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/produtos': typeof AuthenticatedProdutosRoute
+  '/recepcao': typeof AuthenticatedRecepcaoRoute
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/caixas': typeof AuthenticatedAdmCaixasRoute
@@ -264,6 +278,7 @@ export interface FileRoutesByFullPath {
   '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/ordens-compra/$ocId': typeof AuthenticatedOrdensCompraOcIdRoute
   '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/ordens-compra/': typeof AuthenticatedOrdensCompraIndexRoute
@@ -284,6 +299,7 @@ export interface FileRoutesByTo {
   '/pagamentos': typeof AuthenticatedPagamentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/produtos': typeof AuthenticatedProdutosRoute
+  '/recepcao': typeof AuthenticatedRecepcaoRoute
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/caixas': typeof AuthenticatedAdmCaixasRoute
@@ -299,6 +315,7 @@ export interface FileRoutesByTo {
   '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/ordens-compra/$ocId': typeof AuthenticatedOrdensCompraOcIdRoute
   '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/ordens-compra': typeof AuthenticatedOrdensCompraIndexRoute
@@ -322,6 +339,7 @@ export interface FileRoutesById {
   '/_authenticated/pagamentos': typeof AuthenticatedPagamentosRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
+  '/_authenticated/recepcao': typeof AuthenticatedRecepcaoRoute
   '/_authenticated/reservas': typeof AuthenticatedReservasRoute
   '/_authenticated/servicos': typeof AuthenticatedServicosRoute
   '/_authenticated/_adm/caixas': typeof AuthenticatedAdmCaixasRoute
@@ -337,6 +355,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/_authenticated/ordens-compra/$ocId': typeof AuthenticatedOrdensCompraOcIdRoute
   '/_authenticated/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
   '/_authenticated/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
   '/_authenticated/ordens-compra/': typeof AuthenticatedOrdensCompraIndexRoute
@@ -359,6 +378,7 @@ export interface FileRouteTypes {
     | '/pagamentos'
     | '/painel'
     | '/produtos'
+    | '/recepcao'
     | '/reservas'
     | '/servicos'
     | '/caixas'
@@ -374,6 +394,7 @@ export interface FileRouteTypes {
     | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/ordens-compra/$ocId'
     | '/pedidos/$pedidoId'
     | '/stock/$produtoId'
     | '/ordens-compra/'
@@ -394,6 +415,7 @@ export interface FileRouteTypes {
     | '/pagamentos'
     | '/painel'
     | '/produtos'
+    | '/recepcao'
     | '/reservas'
     | '/servicos'
     | '/caixas'
@@ -409,6 +431,7 @@ export interface FileRouteTypes {
     | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/ordens-compra/$ocId'
     | '/pedidos/$pedidoId'
     | '/stock/$produtoId'
     | '/ordens-compra'
@@ -431,6 +454,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pagamentos'
     | '/_authenticated/painel'
     | '/_authenticated/produtos'
+    | '/_authenticated/recepcao'
     | '/_authenticated/reservas'
     | '/_authenticated/servicos'
     | '/_authenticated/_adm/caixas'
@@ -446,6 +470,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/sincronizacao'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
+    | '/_authenticated/ordens-compra/$ocId'
     | '/_authenticated/pedidos/$pedidoId'
     | '/_authenticated/stock/$produtoId'
     | '/_authenticated/ordens-compra/'
@@ -561,6 +586,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProdutosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/recepcao': {
+      id: '/_authenticated/recepcao'
+      path: '/recepcao'
+      fullPath: '/recepcao'
+      preLoaderRoute: typeof AuthenticatedRecepcaoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/reservas': {
       id: '/_authenticated/reservas'
       path: '/reservas'
@@ -673,6 +705,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdensCompraIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/ordens-compra/$ocId': {
+      id: '/_authenticated/ordens-compra/$ocId'
+      path: '/ordens-compra/$ocId'
+      fullPath: '/ordens-compra/$ocId'
+      preLoaderRoute: typeof AuthenticatedOrdensCompraOcIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pedidos/': {
       id: '/_authenticated/pedidos/'
       path: '/pedidos'
@@ -760,8 +799,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPagamentosRoute: typeof AuthenticatedPagamentosRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
+  AuthenticatedRecepcaoRoute: typeof AuthenticatedRecepcaoRoute
   AuthenticatedReservasRoute: typeof AuthenticatedReservasRoute
   AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
+  AuthenticatedOrdensCompraOcIdRoute: typeof AuthenticatedOrdensCompraOcIdRoute
   AuthenticatedPedidosPedidoIdRoute: typeof AuthenticatedPedidosPedidoIdRoute
   AuthenticatedStockProdutoIdRoute: typeof AuthenticatedStockProdutoIdRoute
   AuthenticatedOrdensCompraIndexRoute: typeof AuthenticatedOrdensCompraIndexRoute
@@ -781,8 +822,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPagamentosRoute: AuthenticatedPagamentosRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,
+  AuthenticatedRecepcaoRoute: AuthenticatedRecepcaoRoute,
   AuthenticatedReservasRoute: AuthenticatedReservasRoute,
   AuthenticatedServicosRoute: AuthenticatedServicosRoute,
+  AuthenticatedOrdensCompraOcIdRoute: AuthenticatedOrdensCompraOcIdRoute,
   AuthenticatedPedidosPedidoIdRoute: AuthenticatedPedidosPedidoIdRoute,
   AuthenticatedStockProdutoIdRoute: AuthenticatedStockProdutoIdRoute,
   AuthenticatedOrdensCompraIndexRoute: AuthenticatedOrdensCompraIndexRoute,
