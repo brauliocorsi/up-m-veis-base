@@ -23,6 +23,7 @@ import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
 import { Route as AuthenticatedReservasRouteImport } from './routes/_authenticated/reservas'
 import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
+import { Route as AuthenticatedAdmCaixasRouteImport } from './routes/_authenticated/_adm/caixas'
 import { Route as AuthenticatedAdmCalendarioRouteImport } from './routes/_authenticated/_adm/calendario'
 import { Route as AuthenticatedAdmCupoesRouteImport } from './routes/_authenticated/_adm/cupoes'
 import { Route as AuthenticatedAdmDefinicoesRouteImport } from './routes/_authenticated/_adm/definicoes'
@@ -109,6 +110,11 @@ const AuthenticatedServicosRoute = AuthenticatedServicosRouteImport.update({
   id: '/servicos',
   path: '/servicos',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdmCaixasRoute = AuthenticatedAdmCaixasRouteImport.update({
+  id: '/caixas',
+  path: '/caixas',
+  getParentRoute: () => AuthenticatedAdmRouteRoute,
 } as any)
 const AuthenticatedAdmCalendarioRoute =
   AuthenticatedAdmCalendarioRouteImport.update({
@@ -222,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/produtos': typeof AuthenticatedProdutosRoute
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
+  '/caixas': typeof AuthenticatedAdmCaixasRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -253,6 +260,7 @@ export interface FileRoutesByTo {
   '/produtos': typeof AuthenticatedProdutosRoute
   '/reservas': typeof AuthenticatedReservasRoute
   '/servicos': typeof AuthenticatedServicosRoute
+  '/caixas': typeof AuthenticatedAdmCaixasRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -287,6 +295,7 @@ export interface FileRoutesById {
   '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
   '/_authenticated/reservas': typeof AuthenticatedReservasRoute
   '/_authenticated/servicos': typeof AuthenticatedServicosRoute
+  '/_authenticated/_adm/caixas': typeof AuthenticatedAdmCaixasRoute
   '/_authenticated/_adm/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/_authenticated/_adm/cupoes': typeof AuthenticatedAdmCupoesRoute
   '/_authenticated/_adm/definicoes': typeof AuthenticatedAdmDefinicoesRoute
@@ -320,6 +329,7 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/reservas'
     | '/servicos'
+    | '/caixas'
     | '/calendario'
     | '/cupoes'
     | '/definicoes'
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/reservas'
     | '/servicos'
+    | '/caixas'
     | '/calendario'
     | '/cupoes'
     | '/definicoes'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/_authenticated/produtos'
     | '/_authenticated/reservas'
     | '/_authenticated/servicos'
+    | '/_authenticated/_adm/caixas'
     | '/_authenticated/_adm/calendario'
     | '/_authenticated/_adm/cupoes'
     | '/_authenticated/_adm/definicoes'
@@ -510,6 +522,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedServicosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/_adm/caixas': {
+      id: '/_authenticated/_adm/caixas'
+      path: '/caixas'
+      fullPath: '/caixas'
+      preLoaderRoute: typeof AuthenticatedAdmCaixasRouteImport
+      parentRoute: typeof AuthenticatedAdmRouteRoute
+    }
     '/_authenticated/_adm/calendario': {
       id: '/_authenticated/_adm/calendario'
       path: '/calendario'
@@ -633,6 +652,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdmRouteRouteChildren {
+  AuthenticatedAdmCaixasRoute: typeof AuthenticatedAdmCaixasRoute
   AuthenticatedAdmCalendarioRoute: typeof AuthenticatedAdmCalendarioRoute
   AuthenticatedAdmCupoesRoute: typeof AuthenticatedAdmCupoesRoute
   AuthenticatedAdmDefinicoesRoute: typeof AuthenticatedAdmDefinicoesRoute
@@ -648,6 +668,7 @@ interface AuthenticatedAdmRouteRouteChildren {
 }
 
 const AuthenticatedAdmRouteRouteChildren: AuthenticatedAdmRouteRouteChildren = {
+  AuthenticatedAdmCaixasRoute: AuthenticatedAdmCaixasRoute,
   AuthenticatedAdmCalendarioRoute: AuthenticatedAdmCalendarioRoute,
   AuthenticatedAdmCupoesRoute: AuthenticatedAdmCupoesRoute,
   AuthenticatedAdmDefinicoesRoute: AuthenticatedAdmDefinicoesRoute,
