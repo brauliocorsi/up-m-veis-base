@@ -66,6 +66,7 @@ import {
 } from "@/lib/erp/tipos";
 import {
   adicionarItem,
+  alterarDataEntrega,
   cancelarPedido,
   confirmarPedido,
   guardarItem,
@@ -245,7 +246,7 @@ function EcraVenda() {
             </CardContent>
           </Card>
 
-          <Entrega pedido={p} editavel={editavel} onGuardar={(c) => guardar.mutate(c)} />
+          <Entrega pedido={p} editavel={editavel} onGuardar={(c) => guardar.mutate(c)} onAlterado={recarregar} />
         </div>
 
         <div className="space-y-4">
