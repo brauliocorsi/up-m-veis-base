@@ -183,12 +183,11 @@ export const esquemaProduto = z
     preco_base: numeroOpcional,
     preco_promocional: numeroOpcional,
     iva_pct: z.coerce.number().min(0).max(100),
-    iva_pct: z.coerce.number().min(0).max(100),
     valor_montagem: z.coerce.number().min(0),
     montagem_obrigatoria: z.boolean(),
     tempo_montagem_min: inteiroOpcional,
     permite_desconto: z.boolean(),
-    margem_minima_pct: numeroOpcional,
+
     ponto_reposicao: inteiroOpcional,
     imagem_url: z.string().trim().url("Endereço inválido.").optional().or(z.literal("")),
     vendavel: z.boolean(),
