@@ -345,6 +345,7 @@ function FichaStock() {
         </div>
       </TabsContent>
 
+      {podeVerCompras && (
       <TabsContent value="compras">
         <div className="overflow-hidden rounded-lg border bg-card">
           <table className="w-full text-sm">
