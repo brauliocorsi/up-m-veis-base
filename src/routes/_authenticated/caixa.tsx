@@ -335,6 +335,57 @@ function PaginaCaixa() {
         </div>
       )}
 
+      {conferirRotas ? (
+        <Card className="mt-4">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Inbox className="h-4 w-4 text-primary" /> Envelopes das rotas por conciliar
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {envelopes.isLoading ? (
+              <p className="text-sm text-muted-foreground">A carregar…</p>
+            ) : (envelopes.data ?? []).length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Não há envelopes conferidos à espera de entrar no caixa da loja.
+              </p>
+            ) : (
+              <ul className="divide-y text-sm">
+                {(envelopes.data ?? []).map((e) => (
+                  <li key={e.rota_id} className="flex flex-wrap items-center gap-2 py-2">
+                    <span className="font-medium">{e.nome}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {formatarDataCurta(e.data)} · {e.responsavel ?? "—"}
+                    </span>
+                    <span className="tabular-nums">
+                      Contado {formatarDinheiro(e.valor_conferido ?? e.valor_envelope)}
+                    </span>
+                    {e.diferenca !== null && Number(e.diferenca) !== 0 ? (
+                      <Badge variant="destructive">{formatarDinheiro(e.diferenca)}</Badge>
+                    ) : null}
+                    <Button
+                      className="ml-auto"
+                      size="sm"
+                      variant="outline"
+                      disabled={!atual || receberEnvelope.isPending}
+                      onClick={() => receberEnvelope.mutate(e.rota_id)}
+                    >
+                      <PackageCheck className="mr-1 h-4 w-4" /> Dar entrada
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {!atual && (envelopes.data ?? []).length > 0 ? (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Abra o caixa do dia para dar entrada dos envelopes.
+              </p>
+            ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
+
+
       <Card className="mt-4">
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Caixas anteriores</CardTitle>
