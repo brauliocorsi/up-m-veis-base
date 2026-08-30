@@ -31,21 +31,21 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
     if (erroPedido) throw new Error(erroPedido.message);
     if (!pedido) throw new Error("Pedido não encontrado.");
 
-    const { data: registo } = await db
-      .from("pedidos")
-      .select("nota_pdf_path")
-      .eq("id", data.pedido_id)
-      .maybeSingle();
-
     const caminho = `notas/${pedido.id}.pdf`;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    if (!data.regenerar && registo?.nota_pdf_path) {
-      const { data: assinado } = await supabaseAdmin.storage
+    // Reimprimir devolve sempre o mesmo ficheiro já guardado.
+    if (!data.regenerar) {
+      const { data: existentes } = await supabaseAdmin.storage
         .from("documentos")
-        .createSignedUrl(registo.nota_pdf_path, 3600);
-      if (assinado?.signedUrl) {
-        return { url: assinado.signedUrl, numero: pedido.numero as string, reutilizado: true };
+        .list("notas", { search: `${pedido.id}.pdf` });
+      if (existentes?.some((f) => f.name === `${pedido.id}.pdf`)) {
+        const { data: assinado } = await supabaseAdmin.storage
+          .from("documentos")
+          .createSignedUrl(caminho, 3600);
+        if (assinado?.signedUrl) {
+          return { url: assinado.signedUrl, numero: pedido.numero as string, reutilizado: true };
+        }
       }
     }
 
@@ -142,12 +142,6 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
       .from("documentos")
       .upload(caminho, bytes, { contentType: "application/pdf", upsert: true });
     if (erroUpload) throw new Error(`Não foi possível guardar o PDF: ${erroUpload.message}`);
-
-    await (supabaseAdmin as unknown as ClienteSchema)
-      .schema("erp")
-      .from("pedidos")
-      .update({ nota_pdf_path: caminho, nota_pdf_em: new Date().toISOString() })
-      .eq("id", data.pedido_id);
 
     const { data: assinado, error: erroUrl } = await supabaseAdmin.storage
       .from("documentos")
