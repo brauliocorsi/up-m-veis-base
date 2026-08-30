@@ -70,10 +70,7 @@ export function PainelPagamentos({ pedido }: { pedido: Pedido }) {
   const formas = useQuery({ queryKey: ["formas-ativas"], queryFn: lerFormasAtivas });
 
   const lista = pagamentos.data ?? [];
-  const registado = lista
-    .filter((p) => p.estado !== "rejeitado" && p.estado !== "devolvido")
-    .reduce((soma, p) => soma + Number(p.valor), 0);
-  const falta = Math.max(Number(pedido.total) - registado, 0);
+  const falta = Math.max(Number(pedido.total) - Number(pedido.total_pago), 0);
 
   function atualizar() {
     void queryClient.invalidateQueries({ queryKey: ["pagamentos", pedido.id] });

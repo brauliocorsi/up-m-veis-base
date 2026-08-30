@@ -1,0 +1,1 @@
+comment on function erp.remover_item(uuid, text) is 'Remove logicamente uma linha de pedido em estado orçamento e recalcula os totais.';
