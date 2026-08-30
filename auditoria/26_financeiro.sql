@@ -15,9 +15,15 @@ create temporary table if not exists resultado (
 
 create or replace function pg_temp.verificar(p_teste text, p_esperado text, p_obtido text)
 returns void language plpgsql as $$
+declare ok boolean;
 begin
-  insert into resultado values (p_teste, p_esperado, p_obtido,
-    coalesce(p_esperado, '') = coalesce(p_obtido, ''));
+  ok := coalesce(p_esperado, '') = coalesce(p_obtido, '');
+  insert into resultado values (p_teste, p_esperado, p_obtido, ok);
+  if ok then
+    raise notice 'PASSA · %', p_teste;
+  else
+    raise notice 'FALHA · % (esperado %, obtido %)', p_teste, p_esperado, p_obtido;
+  end if;
 end $$;
 
 do $$
@@ -41,7 +47,7 @@ begin
          (v_vend, 'Aud Vendedora 7', 'aud.vend7@teste.local', 'vendedora', true),
          (v_esc, 'Aud Escritorio 7', 'aud.esc7@teste.local', 'escritorio', true);
 
-  perform set_config('request.jwt.claims', json_build_object('sub', v_adm)::text, true);
+  perform set_config('request.jwt.claim.sub', v_adm::text, true);
 
   select id into v_forma_transf from erp.formas_pagamento
    where exige_comprovativo and eliminado_em is null limit 1;
@@ -177,7 +183,7 @@ begin
   perform pg_temp.verificar('R · alertas sem duplicados', '0', v_n::text);
 
   -- S — vendedora não vê o financeiro
-  perform set_config('request.jwt.claims', json_build_object('sub', v_vend)::text, true);
+  perform set_config('request.jwt.claim.sub', v_vend::text, true);
   perform pg_temp.verificar('S · vendedora sem financeiro', 'false',
     erp.pode_ver_financeiro()::text);
   perform pg_temp.verificar('S2 · vendedora sem custos', 'false', erp.pode_ver_custos()::text);
@@ -192,7 +198,7 @@ begin
   perform pg_temp.verificar('T · vendedora não cria despesas', 'recusou', v_txt);
 
   -- U — escritório vê financeiro mas não vê custos nem margens
-  perform set_config('request.jwt.claims', json_build_object('sub', v_esc)::text, true);
+  perform set_config('request.jwt.claim.sub', v_esc::text, true);
   perform pg_temp.verificar('U · escritório vê financeiro', 'true',
     erp.pode_ver_financeiro()::text);
   perform pg_temp.verificar('U2 · escritório sem custos', 'false', erp.pode_ver_custos()::text);
@@ -200,7 +206,7 @@ begin
   perform pg_temp.verificar('U3 · escritório sem margens', '0', v_n::text);
 
   -- V — ADM vê margens com o custo do produto
-  perform set_config('request.jwt.claims', json_build_object('sub', v_adm)::text, true);
+  perform set_config('request.jwt.claim.sub', v_adm::text, true);
   perform pg_temp.verificar('V · ADM vê custos', 'true', erp.pode_ver_custos()::text);
 
   -- ---------------------------------------------------------- limpeza
@@ -226,6 +232,7 @@ begin
 exception when others then
   v_erro := SQLERRM;
   insert into resultado values ('ERRO FATAL', 'sem erro', v_erro, false);
+  raise notice 'FALHA · ERRO FATAL: %', v_erro;
 end $$;
 
 select teste, esperado, obtido, case when passou then 'PASSOU' else 'FALHOU' end as estado
