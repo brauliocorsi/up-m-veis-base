@@ -248,7 +248,7 @@ function PaginaProdutos() {
     onError: (erro) => toast.error(primeiraMensagem(erro)),
   });
 
-  function abrirEdicao(l: Produto) {
+  async function abrirEdicao(l: Produto) {
     setEmEdicao(l);
     setForm({
       cod_barras: l.cod_barras,
@@ -669,15 +669,17 @@ function PaginaProdutos() {
               onChange={(e) => setForm({ ...form, preco_promocional: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="p-custo">Último custo (€)</Label>
-            <Input
-              id="p-custo"
-              inputMode="decimal"
-              value={form.custo_ultimo}
-              onChange={(e) => setForm({ ...form, custo_ultimo: e.target.value })}
-            />
-          </div>
+          {editarCustos ? (
+            <div className="space-y-2">
+              <Label htmlFor="p-custo">Último custo (€)</Label>
+              <Input
+                id="p-custo"
+                inputMode="decimal"
+                value={form.custo_ultimo}
+                onChange={(e) => setForm({ ...form, custo_ultimo: e.target.value })}
+              />
+            </div>
+          ) : null}
           <div className="space-y-2">
             <Label htmlFor="p-iva">IVA (%)</Label>
             <Input
@@ -705,15 +707,17 @@ function PaginaProdutos() {
               onChange={(e) => setForm({ ...form, tempo_montagem_min: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="p-margem">Margem mínima (%)</Label>
-            <Input
-              id="p-margem"
-              inputMode="decimal"
-              value={form.margem_minima_pct}
-              onChange={(e) => setForm({ ...form, margem_minima_pct: e.target.value })}
-            />
-          </div>
+          {editarCustos ? (
+            <div className="space-y-2">
+              <Label htmlFor="p-margem">Margem mínima (%)</Label>
+              <Input
+                id="p-margem"
+                inputMode="decimal"
+                value={form.margem_minima_pct}
+                onChange={(e) => setForm({ ...form, margem_minima_pct: e.target.value })}
+              />
+            </div>
+          ) : null}
           <div className="space-y-2">
             <Label htmlFor="p-reposicao">Ponto de reposição</Label>
             <Input
