@@ -609,6 +609,8 @@ export interface Pedido extends CamposComuns {
   total_iva: number;
   total: number;
   total_pago: number;
+  estado_pagamento: EstadoPagamentoPedido;
+
   observacoes: string | null;
   observacoes_internas: string | null;
   confirmado_em: string | null;
