@@ -63,8 +63,13 @@ begin
   -- stock inicial: 10 unidades
   perform erp.ajuste_manual(v_produto, 10, 'auditoria fase 8');
 
-  insert into erp.pedidos (numero, cliente_id, vendedor_id, estado, total, origem)
-  values ('AUD-ENT8-1', v_cliente, v_vend_perfil, 'orcamento', 0, 'loja')
+  insert into erp.zonas_entrega (nome, cp_inicio, cp_fim, valor_base, dias_rota)
+    values ('[AUD8] Zona', '4591', '4599', 30, '{3,4,5,6,7}') on conflict do nothing;
+
+  insert into erp.pedidos (cliente_id, vendedor_id, estado, total, origem, morada_entrega,
+                           cp4_entrega, cp3_entrega, localidade_entrega, data_entrega_prevista)
+  values (v_cliente, v_vend_perfil, 'orcamento', 0, 'loja', 'Rua da Auditoria 8',
+          '4591', '000', 'Paços de Ferreira', current_date + 20)
   returning id into v_pedido;
 
   insert into erp.pedido_itens (pedido_id, linha, produto_id, descricao, quantidade, preco_unitario)
