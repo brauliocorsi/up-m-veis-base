@@ -18,6 +18,7 @@ import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authentic
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
 import { Route as AuthenticatedFornecedoresRouteImport } from './routes/_authenticated/fornecedores'
 import { Route as AuthenticatedMovimentosRouteImport } from './routes/_authenticated/movimentos'
+import { Route as AuthenticatedNecessidadesRouteImport } from './routes/_authenticated/necessidades'
 import { Route as AuthenticatedPagamentosRouteImport } from './routes/_authenticated/pagamentos'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
@@ -86,6 +87,12 @@ const AuthenticatedMovimentosRoute = AuthenticatedMovimentosRouteImport.update({
   path: '/movimentos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedNecessidadesRoute =
+  AuthenticatedNecessidadesRouteImport.update({
+    id: '/necessidades',
+    path: '/necessidades',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPagamentosRoute = AuthenticatedPagamentosRouteImport.update({
   id: '/pagamentos',
   path: '/pagamentos',
@@ -223,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/clientes': typeof AuthenticatedClientesRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/movimentos': typeof AuthenticatedMovimentosRoute
+  '/necessidades': typeof AuthenticatedNecessidadesRoute
   '/pagamentos': typeof AuthenticatedPagamentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/produtos': typeof AuthenticatedProdutosRoute
@@ -255,6 +263,7 @@ export interface FileRoutesByTo {
   '/clientes': typeof AuthenticatedClientesRoute
   '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/movimentos': typeof AuthenticatedMovimentosRoute
+  '/necessidades': typeof AuthenticatedNecessidadesRoute
   '/pagamentos': typeof AuthenticatedPagamentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/produtos': typeof AuthenticatedProdutosRoute
@@ -290,6 +299,7 @@ export interface FileRoutesById {
   '/_authenticated/clientes': typeof AuthenticatedClientesRoute
   '/_authenticated/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/_authenticated/movimentos': typeof AuthenticatedMovimentosRoute
+  '/_authenticated/necessidades': typeof AuthenticatedNecessidadesRoute
   '/_authenticated/pagamentos': typeof AuthenticatedPagamentosRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
@@ -324,6 +334,7 @@ export interface FileRouteTypes {
     | '/clientes'
     | '/fornecedores'
     | '/movimentos'
+    | '/necessidades'
     | '/pagamentos'
     | '/painel'
     | '/produtos'
@@ -356,6 +367,7 @@ export interface FileRouteTypes {
     | '/clientes'
     | '/fornecedores'
     | '/movimentos'
+    | '/necessidades'
     | '/pagamentos'
     | '/painel'
     | '/produtos'
@@ -390,6 +402,7 @@ export interface FileRouteTypes {
     | '/_authenticated/clientes'
     | '/_authenticated/fornecedores'
     | '/_authenticated/movimentos'
+    | '/_authenticated/necessidades'
     | '/_authenticated/pagamentos'
     | '/_authenticated/painel'
     | '/_authenticated/produtos'
@@ -485,6 +498,13 @@ declare module '@tanstack/react-router' {
       path: '/movimentos'
       fullPath: '/movimentos'
       preLoaderRoute: typeof AuthenticatedMovimentosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/necessidades': {
+      id: '/_authenticated/necessidades'
+      path: '/necessidades'
+      fullPath: '/necessidades'
+      preLoaderRoute: typeof AuthenticatedNecessidadesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/pagamentos': {
@@ -695,6 +715,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
   AuthenticatedFornecedoresRoute: typeof AuthenticatedFornecedoresRoute
   AuthenticatedMovimentosRoute: typeof AuthenticatedMovimentosRoute
+  AuthenticatedNecessidadesRoute: typeof AuthenticatedNecessidadesRoute
   AuthenticatedPagamentosRoute: typeof AuthenticatedPagamentosRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
@@ -713,6 +734,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedClientesRoute: AuthenticatedClientesRoute,
   AuthenticatedFornecedoresRoute: AuthenticatedFornecedoresRoute,
   AuthenticatedMovimentosRoute: AuthenticatedMovimentosRoute,
+  AuthenticatedNecessidadesRoute: AuthenticatedNecessidadesRoute,
   AuthenticatedPagamentosRoute: AuthenticatedPagamentosRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,

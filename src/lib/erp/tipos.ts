@@ -805,3 +805,187 @@ export interface CaixaMovimento extends CamposComuns {
   utilizador_nome?: string | null;
   de_dia_anterior?: boolean;
 }
+
+// ===================== Fase 6: compras e contas a pagar
+
+export type EstadoOc =
+  | "rascunho"
+  | "pronta_enviar"
+  | "enviada"
+  | "confirmada"
+  | "recebida_parcial"
+  | "recebida"
+  | "cancelada";
+
+export const ETIQUETA_OC: Record<EstadoOc, string> = {
+  rascunho: "Rascunho",
+  pronta_enviar: "Pronta a enviar",
+  enviada: "Enviada",
+  confirmada: "Confirmada pelo fornecedor",
+  recebida_parcial: "Recebida em parte",
+  recebida: "Recebida",
+  cancelada: "Cancelada",
+};
+
+export const ESTADOS_OC: Array<{ valor: EstadoOc; etiqueta: string }> = (
+  Object.keys(ETIQUETA_OC) as EstadoOc[]
+).map((valor) => ({ valor, etiqueta: ETIQUETA_OC[valor] }));
+
+export interface OrdemCompra extends CamposComuns {
+  numero: string;
+  fornecedor_id: string;
+  estado: EstadoOc;
+  data_emissao: string;
+  data_prevista: string | null;
+  data_confirmada_fornecedor: string | null;
+  data_recebida: string | null;
+  moeda: string;
+  total: number;
+  observacoes: string | null;
+  observacoes_fornecedor: string | null;
+  enviada_em: string | null;
+  enviada_para: string | null;
+  envio_message_id: string | null;
+  envio_erro: string | null;
+  envio_tentativas: number;
+  pdf_url: string | null;
+  cancelada_em: string | null;
+  motivo_cancelamento: string | null;
+  fornecedor_nome: string;
+  fornecedor_email: string | null;
+  enviar_automatico: boolean;
+  fornecedor_idioma: string;
+  n_itens: number;
+  unidades_em_falta: number;
+  atrasada: boolean;
+}
+
+export interface OcItem extends CamposComuns {
+  oc_id: string;
+  linha: number;
+  produto_id: string | null;
+  descricao: string;
+  quantidade: number;
+  quantidade_recebida: number;
+  custo_unitario: number;
+  total_linha: number;
+  data_prevista_item: string | null;
+  necessidade_id: string | null;
+  pedido_item_id: string | null;
+  oc_numero: string;
+  oc_estado: EstadoOc;
+  produto_nome: string | null;
+  cod_barras: string | null;
+  em_falta: number;
+  pedido_numero: string | null;
+  pedido_id: string | null;
+  cliente_nome: string | null;
+}
+
+export interface OcRecebimento extends CamposComuns {
+  oc_id: string;
+  data: string;
+  doc_fornecedor: string | null;
+  observacoes: string | null;
+  oc_numero: string;
+  registado_por_nome: string | null;
+  unidades: number;
+}
+
+export interface Necessidade extends CamposComuns {
+  pedido_id: string | null;
+  item_id: string | null;
+  produto_id: string;
+  fornecedor_id: string | null;
+  quantidade: number;
+  estado: string;
+  origem: string;
+  oc_id: string | null;
+  pedido_numero: string | null;
+  cliente_nome: string | null;
+  produto_nome: string;
+  cod_barras: string | null;
+  fornecedor_nome: string | null;
+  oc_numero: string | null;
+}
+
+export const ETIQUETA_NECESSIDADE: Record<string, string> = {
+  aberta: "Aberta",
+  encomendada: "Encomendada",
+  recebida: "Recebida",
+  cancelada: "Cancelada",
+};
+
+export const ETIQUETA_ORIGEM_NECESSIDADE: Record<string, string> = {
+  venda: "Venda",
+  reposicao: "Reposição de stock",
+  manual: "Pedido manual",
+};
+
+export interface ContaPagar extends CamposComuns {
+  fornecedor_id: string;
+  oc_id: string | null;
+  descricao: string;
+  categoria: string | null;
+  valor: number;
+  valor_pago: number;
+  data_vencimento: string;
+  data_pagamento: string | null;
+  estado: "pendente" | "paga_parcial" | "paga" | "cancelada";
+  doc_fornecedor: string | null;
+  comprovativo_url: string | null;
+  fornecedor_nome: string;
+  oc_numero: string | null;
+  em_divida: number;
+  dias_para_vencer: number;
+}
+
+export const ETIQUETA_CONTA: Record<string, string> = {
+  pendente: "Pendente",
+  paga_parcial: "Paga em parte",
+  paga: "Paga",
+  cancelada: "Cancelada",
+};
+
+export interface PedidoCompra extends CamposComuns {
+  numero: string;
+  solicitante_id: string;
+  urgencia: "normal" | "urgente";
+  destino: "stock" | "cliente" | "consumo_interno";
+  justificacao: string;
+  estado: "rascunho" | "submetido" | "aprovado" | "convertido" | "recusado";
+  valor_estimado: number;
+  aprovador_id: string | null;
+  data_aprovacao: string | null;
+  motivo_recusa: string | null;
+  oc_id: string | null;
+  solicitante_nome: string;
+  aprovador_nome: string | null;
+  oc_numero: string | null;
+  n_itens: number;
+}
+
+export const ETIQUETA_PEDIDO_COMPRA: Record<string, string> = {
+  rascunho: "Rascunho",
+  submetido: "A aguardar aprovação",
+  aprovado: "Aprovado",
+  convertido: "Convertido em OC",
+  recusado: "Recusado",
+};
+
+export const DESTINOS_COMPRA: Array<{ valor: string; etiqueta: string }> = [
+  { valor: "stock", etiqueta: "Stock" },
+  { valor: "cliente", etiqueta: "Cliente" },
+  { valor: "consumo_interno", etiqueta: "Consumo interno" },
+];
+
+export interface PedidoCompraItem extends CamposComuns {
+  pedido_compra_id: string;
+  produto_id: string | null;
+  descricao_livre: string | null;
+  quantidade: number;
+  custo_estimado: number;
+  fornecedor_sugerido_id: string | null;
+  produto_nome: string | null;
+  fornecedor_sugerido_nome: string | null;
+}
