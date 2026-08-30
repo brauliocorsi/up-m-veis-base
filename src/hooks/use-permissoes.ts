@@ -20,5 +20,12 @@ export function usePermissoes() {
     pagar: ativo && (perfil === "adm" || perfil === "financeiro"),
     /** Escritório também acompanha necessidades e estados de fornecimento. */
     verCompras: ativo && perfil !== "vendedora",
+    /** Ecrãs financeiros: tudo menos vendedoras. */
+    verFinanceiro: ativo && perfil !== "vendedora",
+    /** Custos e margens: só Financeiro e Administração. */
+    verCustos: ativo && (perfil === "adm" || perfil === "financeiro"),
+    /** Confirmar e devolver recebimentos. */
+    receber: ativo && (perfil === "adm" || perfil === "financeiro" || perfil === "escritorio"),
   };
 }
+
