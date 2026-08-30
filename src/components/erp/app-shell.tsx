@@ -238,7 +238,16 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="mb-6">
             <Marca />
           </div>
-          <nav className="space-y-1">{itens.map((item) => linhaNav(item))}</nav>
+          <nav className="space-y-4">
+            {grupos.map((grupo) => (
+              <div key={grupo.etiqueta}>
+                <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {grupo.etiqueta}
+                </p>
+                <div className="space-y-1">{grupo.itens.map((item) => linhaNav(item))}</div>
+              </div>
+            ))}
+          </nav>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
@@ -290,8 +299,17 @@ export function AppShell({ children }: { children: ReactNode }) {
               </SheetTrigger>
               <SheetContent side="bottom" className="space-y-2 pb-8">
                 <SheetTitle>Menu</SheetTitle>
-                <nav className="space-y-1">
-                  {restantes.map((item) => linhaNav(item, () => setMenuAberto(false)))}
+                <nav className="space-y-4">
+                  {gruposRestantes.map((grupo) => (
+                    <div key={grupo.etiqueta}>
+                      <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        {grupo.etiqueta}
+                      </p>
+                      <div className="space-y-1">
+                        {grupo.itens.map((item) => linhaNav(item, () => setMenuAberto(false)))}
+                      </div>
+                    </div>
+                  ))}
                 </nav>
               </SheetContent>
             </Sheet>
