@@ -207,6 +207,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       (item) => !item.perfis || item.perfis.includes(utilizador.perfil),
     ),
   })).filter((grupo) => grupo.itens.length > 0);
+
+  useEffect(() => {
+    const ativa = grupos.find((g) => g.itens.some((i) => caminho === i.para));
+    if (ativa) setCategoriaAberta(ativa.etiqueta);
+  }, [caminho, grupos]);
+
   const itens = grupos.flatMap((g) => g.itens);
   const itensMobile = itens.slice(0, 3);
   const restantes = itens.slice(3);
