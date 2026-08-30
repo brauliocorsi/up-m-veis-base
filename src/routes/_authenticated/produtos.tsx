@@ -123,7 +123,7 @@ const VAZIO: Formulario = {
 };
 
 function PaginaProdutos() {
-  const { editarCatalogo, adm } = usePermissoes();
+  const { editarCatalogo, adm, editarCustos } = usePermissoes();
   const estado = useListagem("nome_cliente", true);
   const queryClient = useQueryClient();
 
@@ -267,13 +267,13 @@ function PaginaProdutos() {
       peso_kg: l.peso_kg === null ? "" : String(l.peso_kg),
       preco_base: l.preco_base === null ? "" : String(l.preco_base),
       preco_promocional: l.preco_promocional === null ? "" : String(l.preco_promocional),
-      custo_ultimo: l.custo_ultimo === null ? "" : String(l.custo_ultimo),
+      custo_ultimo: "",
       iva_pct: String(l.iva_pct ?? 23),
       valor_montagem: String(l.valor_montagem ?? 0),
       montagem_obrigatoria: l.montagem_obrigatoria,
       tempo_montagem_min: l.tempo_montagem_min === null ? "" : String(l.tempo_montagem_min),
       permite_desconto: l.permite_desconto,
-      margem_minima_pct: l.margem_minima_pct === null ? "" : String(l.margem_minima_pct),
+      margem_minima_pct: "",
       ponto_reposicao: l.ponto_reposicao === null ? "" : String(l.ponto_reposicao),
       imagem_url: l.imagem_url ?? "",
       vendavel: l.vendavel,
