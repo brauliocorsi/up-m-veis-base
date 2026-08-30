@@ -52,62 +52,95 @@ interface ItemNav {
   perfis?: Perfil[];
 }
 
-const NAVEGACAO: ItemNav[] = [
-  { para: "/painel", etiqueta: "Painel", icone: LayoutDashboard },
-  { para: "/pedidos", etiqueta: "Vendas", icone: ShoppingCart },
-  { para: "/caixa", etiqueta: "Caixa", icone: Wallet },
+interface GrupoNav {
+  etiqueta: string;
+  itens: ItemNav[];
+}
+
+const NAVEGACAO: GrupoNav[] = [
   {
-    para: "/pagamentos",
-    etiqueta: "Pagamentos",
-    icone: BadgeEuro,
-    perfis: ["adm", "financeiro", "escritorio"],
-  },
-  { para: "/caixas", etiqueta: "Caixas da equipa", icone: Wallet, perfis: ["adm"] },
-  { para: "/cupoes", etiqueta: "Cupões", icone: Ticket, perfis: ["adm"] },
-  { para: "/clientes", etiqueta: "Clientes", icone: Contact, perfis: ["adm", "vendedora", "escritorio"] },
-  { para: "/produtos", etiqueta: "Produtos", icone: Package },
-  { para: "/stock", etiqueta: "Stock", icone: Warehouse },
-  { para: "/reservas", etiqueta: "Reservas", icone: Boxes },
-  { para: "/movimentos", etiqueta: "Movimentos", icone: ClipboardList },
-  {
-    para: "/necessidades",
-    etiqueta: "Necessidades",
-    icone: ClipboardCheck,
-    perfis: ["adm", "compras", "escritorio", "financeiro"],
+    etiqueta: "Geral",
+    itens: [{ para: "/painel", etiqueta: "Painel", icone: LayoutDashboard }],
   },
   {
-    para: "/ordens-compra",
-    etiqueta: "Ordens de compra",
-    icone: PackageSearch,
-    perfis: ["adm", "compras", "escritorio", "financeiro"],
+    etiqueta: "Vendas",
+    itens: [
+      { para: "/pedidos", etiqueta: "Vendas", icone: ShoppingCart },
+      { para: "/clientes", etiqueta: "Clientes", icone: Contact, perfis: ["adm", "vendedora", "escritorio"] },
+      { para: "/cupoes", etiqueta: "Cupões", icone: Ticket, perfis: ["adm"] },
+    ],
   },
   {
-    para: "/recepcao",
-    etiqueta: "Receção",
-    icone: PackageCheck,
-    perfis: ["adm", "compras"],
+    etiqueta: "Caixa e pagamentos",
+    itens: [
+      { para: "/caixa", etiqueta: "Caixa", icone: Wallet },
+      {
+        para: "/pagamentos",
+        etiqueta: "Pagamentos",
+        icone: BadgeEuro,
+        perfis: ["adm", "financeiro", "escritorio"],
+      },
+      { para: "/caixas", etiqueta: "Caixas da equipa", icone: Wallet, perfis: ["adm"] },
+    ],
   },
-  { para: "/pedidos-compra", etiqueta: "Pedidos de compra", icone: FileQuestion },
   {
-    para: "/contas-pagar",
-    etiqueta: "Contas a pagar",
-    icone: Receipt,
-    perfis: ["adm", "financeiro"],
+    etiqueta: "Inventário",
+    itens: [
+      { para: "/produtos", etiqueta: "Produtos", icone: Package },
+      { para: "/stock", etiqueta: "Stock", icone: Warehouse },
+      { para: "/reservas", etiqueta: "Reservas", icone: Boxes },
+      { para: "/movimentos", etiqueta: "Movimentos", icone: ClipboardList },
+      { para: "/categorias", etiqueta: "Categorias", icone: FolderTree },
+      { para: "/servicos", etiqueta: "Serviços", icone: Wrench },
+    ],
   },
-  { para: "/categorias", etiqueta: "Categorias", icone: FolderTree },
-  { para: "/servicos", etiqueta: "Serviços", icone: Wrench },
-  { para: "/fornecedores", etiqueta: "Fornecedores", icone: Factory },
-  { para: "/utilizadores", etiqueta: "Utilizadores", icone: Users, perfis: ["adm"] },
-  { para: "/regras-desconto", etiqueta: "Regras de desconto", icone: Percent, perfis: ["adm"] },
-  { para: "/formas-pagamento", etiqueta: "Formas de pagamento", icone: BadgeEuro, perfis: ["adm"] },
-  { para: "/zonas-entrega", etiqueta: "Zonas de entrega", icone: Truck, perfis: ["adm"] },
-  { para: "/calendario", etiqueta: "Calendário", icone: CalendarDays, perfis: ["adm"] },
-  { para: "/motivos", etiqueta: "Motivos", icone: ListChecks, perfis: ["adm"] },
-  { para: "/sincronizacao", etiqueta: "Sincronização", icone: RefreshCw, perfis: ["adm"] },
-  { para: "/reconciliacao", etiqueta: "Reconciliação", icone: ScanSearch, perfis: ["adm"] },
-  { para: "/definicoes", etiqueta: "Definições", icone: Settings, perfis: ["adm"] },
-  { para: "/lixeira", etiqueta: "Lixeira", icone: Trash2, perfis: ["adm"] },
-  { para: "/historico", etiqueta: "Histórico", icone: History, perfis: ["adm"] },
+  {
+    etiqueta: "Compras",
+    itens: [
+      {
+        para: "/necessidades",
+        etiqueta: "Necessidades",
+        icone: ClipboardCheck,
+        perfis: ["adm", "compras", "escritorio", "financeiro"],
+      },
+      {
+        para: "/ordens-compra",
+        etiqueta: "Ordens de compra",
+        icone: PackageSearch,
+        perfis: ["adm", "compras", "escritorio", "financeiro"],
+      },
+      {
+        para: "/recepcao",
+        etiqueta: "Receção",
+        icone: PackageCheck,
+        perfis: ["adm", "compras"],
+      },
+      { para: "/pedidos-compra", etiqueta: "Pedidos de compra", icone: FileQuestion },
+      {
+        para: "/contas-pagar",
+        etiqueta: "Contas a pagar",
+        icone: Receipt,
+        perfis: ["adm", "financeiro"],
+      },
+      { para: "/fornecedores", etiqueta: "Fornecedores", icone: Factory },
+    ],
+  },
+  {
+    etiqueta: "Administração",
+    itens: [
+      { para: "/utilizadores", etiqueta: "Utilizadores", icone: Users, perfis: ["adm"] },
+      { para: "/regras-desconto", etiqueta: "Regras de desconto", icone: Percent, perfis: ["adm"] },
+      { para: "/formas-pagamento", etiqueta: "Formas de pagamento", icone: BadgeEuro, perfis: ["adm"] },
+      { para: "/zonas-entrega", etiqueta: "Zonas de entrega", icone: Truck, perfis: ["adm"] },
+      { para: "/calendario", etiqueta: "Calendário", icone: CalendarDays, perfis: ["adm"] },
+      { para: "/motivos", etiqueta: "Motivos", icone: ListChecks, perfis: ["adm"] },
+      { para: "/sincronizacao", etiqueta: "Sincronização", icone: RefreshCw, perfis: ["adm"] },
+      { para: "/reconciliacao", etiqueta: "Reconciliação", icone: ScanSearch, perfis: ["adm"] },
+      { para: "/definicoes", etiqueta: "Definições", icone: Settings, perfis: ["adm"] },
+      { para: "/lixeira", etiqueta: "Lixeira", icone: Trash2, perfis: ["adm"] },
+      { para: "/historico", etiqueta: "Histórico", icone: History, perfis: ["adm"] },
+    ],
+  },
 ];
 
 
@@ -165,9 +198,18 @@ export function AppShell({ children }: { children: ReactNode }) {
     );
   }
 
-  const itens = NAVEGACAO.filter((item) => !item.perfis || item.perfis.includes(utilizador.perfil));
+  const grupos = NAVEGACAO.map((grupo) => ({
+    ...grupo,
+    itens: grupo.itens.filter(
+      (item) => !item.perfis || item.perfis.includes(utilizador.perfil),
+    ),
+  })).filter((grupo) => grupo.itens.length > 0);
+  const itens = grupos.flatMap((g) => g.itens);
   const itensMobile = itens.slice(0, 3);
   const restantes = itens.slice(3);
+  const gruposRestantes = grupos
+    .map((grupo) => ({ ...grupo, itens: grupo.itens.filter((i) => restantes.includes(i)) }))
+    .filter((grupo) => grupo.itens.length > 0);
 
   const linhaNav = (item: ItemNav, aoClicar?: () => void) => {
     const ativo = caminho === item.para;
@@ -196,7 +238,16 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="mb-6">
             <Marca />
           </div>
-          <nav className="space-y-1">{itens.map((item) => linhaNav(item))}</nav>
+          <nav className="space-y-4">
+            {grupos.map((grupo) => (
+              <div key={grupo.etiqueta}>
+                <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {grupo.etiqueta}
+                </p>
+                <div className="space-y-1">{grupo.itens.map((item) => linhaNav(item))}</div>
+              </div>
+            ))}
+          </nav>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
@@ -248,8 +299,17 @@ export function AppShell({ children }: { children: ReactNode }) {
               </SheetTrigger>
               <SheetContent side="bottom" className="space-y-2 pb-8">
                 <SheetTitle>Menu</SheetTitle>
-                <nav className="space-y-1">
-                  {restantes.map((item) => linhaNav(item, () => setMenuAberto(false)))}
+                <nav className="space-y-4">
+                  {gruposRestantes.map((grupo) => (
+                    <div key={grupo.etiqueta}>
+                      <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        {grupo.etiqueta}
+                      </p>
+                      <div className="space-y-1">
+                        {grupo.itens.map((item) => linhaNav(item, () => setMenuAberto(false)))}
+                      </div>
+                    </div>
+                  ))}
                 </nav>
               </SheetContent>
             </Sheet>
