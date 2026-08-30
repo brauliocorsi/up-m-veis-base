@@ -29,7 +29,7 @@ end $$;
 do $$
 declare
   v_adm uuid; v_vend uuid; v_esc uuid;
-  v_cliente uuid; v_pedido uuid;
+  v_cliente uuid; v_produto uuid; v_pedido uuid;
   v_forma_transf uuid; v_forma_dinheiro uuid;
   v_pag uuid; v_pag2 uuid; v_conta uuid; v_despesa uuid;
   v_erro text; v_num numeric; v_txt text; v_n integer;
@@ -57,10 +57,22 @@ begin
   insert into erp.clientes (nome, telefone_e164, tipo)
   values ('Cliente Financeiro 7', '+351911000777', 'particular') returning id into v_cliente;
 
+  insert into erp.categorias (codigo, nome) values ('AUDF7', 'Auditoria Financeiro')
+    on conflict (codigo) do nothing;
+  insert into erp.produtos (cod_barras, categoria_id, nome_cliente, tipo_fornecimento,
+                            preco_base, custo_ultimo, n_colis)
+  select 'AUD-FIN7', id, '[AUD] Produto Financeiro', 'stock', 100.00, 40.00, 1
+    from erp.categorias where codigo = 'AUDF7'
+  returning id into v_produto;
+
   insert into erp.pedidos (numero, cliente_id, vendedor_id, estado, total, origem)
   values ('AUD-FIN7-1', v_cliente, (select id from erp.utilizadores where user_id = v_vend),
           'confirmado', 200.00, 'loja')
   returning id into v_pedido;
+
+  insert into erp.pedido_itens (pedido_id, linha, produto_id, descricao, quantidade,
+                                preco_unitario, preco_tabela)
+  values (v_pedido, 1, v_produto, '[AUD] Produto Financeiro', 2, 100.00, 100.00);
 
   insert into erp.pagamentos (pedido_id, forma_id, valor, estado)
   values (v_pedido, v_forma_transf, 200.00, 'pendente_confirmacao')
@@ -221,6 +233,7 @@ begin
    where pedido_id = v_pedido;
   perform set_config('erp.motor', '', true);
   update erp.pedidos set eliminado_em = now(), motivo_eliminacao = 'auditoria' where id = v_pedido;
+  update erp.produtos set eliminado_em = now(), motivo_eliminacao = 'auditoria' where id = v_produto;
   update erp.clientes set eliminado_em = now(), motivo_eliminacao = 'auditoria' where id = v_cliente;
   update erp.utilizadores set eliminado_em = now(), ativo = false,
     motivo_eliminacao = 'auditoria' where user_id in (v_adm, v_vend, v_esc);
