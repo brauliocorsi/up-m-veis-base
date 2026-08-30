@@ -907,8 +907,118 @@ function Entrega({
             Voltar à data calculada
           </Button>
         )}
+
+        {podeAlterarData && (
+          <DialogoAlterarData
+            aberto={alterarData}
+            pedido={pedido}
+            motivos={motivos.data?.linhas ?? []}
+            onFechar={() => setAlterarData(false)}
+            onFeito={onAlterado}
+          />
+        )}
       </CardContent>
     </Card>
+  );
+}
+
+// ---------------------------------------------------- alterar data de entrega
+function DialogoAlterarData({
+  aberto,
+  pedido,
+  motivos,
+  onFechar,
+  onFeito,
+}: {
+  aberto: boolean;
+  pedido: Pedido;
+  motivos: Motivo[];
+  onFechar: () => void;
+  onFeito: () => void;
+}) {
+  const [data, setData] = useState(pedido.data_entrega_prometida ?? "");
+  const [motivo, setMotivo] = useState("");
+  const [nota, setNota] = useState("");
+
+  const motivoEscolhido = motivos.find((m) => m.id === motivo);
+
+  const acao = useMutation({
+    mutationFn: () => alterarDataEntrega(pedido.id, data, motivo, nota),
+    onSuccess: (nova) => {
+      toast.success(`Data de entrega alterada para ${formatarDataCurta(nova)}.`);
+      onFechar();
+      onFeito();
+    },
+    onError: (erro) => toast.error(mensagemErro(erro)),
+  });
+
+  const valido =
+    !!data && data !== (pedido.data_entrega_prometida ?? "") && !!motivo &&
+    (!motivoEscolhido?.exige_texto || nota.trim().length > 0);
+
+  return (
+    <Dialog open={aberto} onOpenChange={(v) => !v && onFechar()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Alterar data de entrega</DialogTitle>
+          <DialogDescription>
+            A alteração fica registada no histórico da venda.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <Label className="text-xs" htmlFor="nova-data">
+              Nova data
+            </Label>
+            <Input
+              id="nova-data"
+              type="date"
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">Motivo</Label>
+            <Select value={motivo} onValueChange={setMotivo}>
+              <SelectTrigger>
+                <SelectValue placeholder="Escolha o motivo" />
+              </SelectTrigger>
+              <SelectContent>
+                {motivos.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.descricao}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {motivos.length === 0 && (
+              <p className="text-xs font-medium text-destructive">
+                Falta configurar motivos de alteração de data nas definições.
+              </p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs" htmlFor="nota-data">
+              Nota {motivoEscolhido?.exige_texto ? "(obrigatória)" : "(opcional)"}
+            </Label>
+            <Textarea
+              id="nota-data"
+              value={nota}
+              onChange={(e) => setNota(e.target.value)}
+              placeholder="Explique em poucas palavras"
+            />
+          </div>
+        </div>
+        <DialogFooter className="gap-2 sm:justify-between">
+          <Button variant="outline" onClick={onFechar}>
+            Voltar
+          </Button>
+          <Button disabled={!valido || acao.isPending} onClick={() => acao.mutate()}>
+            {acao.isPending ? "A guardar…" : "Guardar nova data"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
