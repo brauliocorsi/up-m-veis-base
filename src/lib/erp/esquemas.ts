@@ -182,7 +182,7 @@ export const esquemaProduto = z
     peso_kg: numeroOpcional,
     preco_base: numeroOpcional,
     preco_promocional: numeroOpcional,
-    custo_ultimo: numeroOpcional,
+    iva_pct: z.coerce.number().min(0).max(100),
     iva_pct: z.coerce.number().min(0).max(100),
     valor_montagem: z.coerce.number().min(0),
     montagem_obrigatoria: z.boolean(),
