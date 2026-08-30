@@ -244,3 +244,38 @@ export function descarregarCsv(
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// -------------------------------------------- entradas e saídas de dinheiro
+/** Movimentos de dinheiro (loja e rotas) com ligação ao pedido e à rota. */
+export async function lerMovimentosConciliacao(params?: {
+  de?: string;
+  ate?: string;
+}): Promise<ConciliacaoMovimento[]> {
+  let consulta = erp()
+    .from("v_conciliacao_movimentos")
+    .select("*")
+    .order("ocorrido_em", { ascending: false })
+    .limit(500);
+  if (params?.de) consulta = consulta.gte("data", params.de);
+  if (params?.ate) consulta = consulta.lte("data", params.ate);
+  const { data, error } = await consulta;
+  if (error) throw error;
+  return (data ?? []) as ConciliacaoMovimento[];
+}
+
+/** Totais de entradas, saídas e saldo por dia. */
+export async function lerDiasConciliacao(params?: {
+  de?: string;
+  ate?: string;
+}): Promise<ConciliacaoDia[]> {
+  let consulta = erp()
+    .from("v_conciliacao_dias")
+    .select("*")
+    .order("data", { ascending: false })
+    .limit(120);
+  if (params?.de) consulta = consulta.gte("data", params.de);
+  if (params?.ate) consulta = consulta.lte("data", params.ate);
+  const { data, error } = await consulta;
+  if (error) throw error;
+  return (data ?? []) as ConciliacaoDia[];
+}
