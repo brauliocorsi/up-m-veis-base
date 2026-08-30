@@ -263,6 +263,38 @@ export function AppShell({ children }: { children: ReactNode }) {
     .map((grupo) => ({ ...grupo, itens: grupo.itens.filter((i) => restantes.includes(i)) }))
     .filter((grupo) => grupo.itens.length > 0);
 
+  const grupoAtual = grupos.find((g) => g.itens.some((i) => rotaAtiva(caminho, i.para))) ?? null;
+  const itemAtual = grupoAtual?.itens.find((i) => rotaAtiva(caminho, i.para)) ?? null;
+  const subNivel = Boolean(itemAtual && caminho !== itemAtual.para);
+
+  // Navegação por teclado dentro do menu: setas, Home/End e Escape.
+  function aoTeclaMenu(evento: ReactKeyboardEvent<HTMLElement>) {
+    const contentor = evento.currentTarget;
+    const focaveis = Array.from(
+      contentor.querySelectorAll<HTMLElement>("[data-nav-foco]"),
+    ).filter((el) => el.offsetParent !== null || el.tagName === "BUTTON");
+    const atual = document.activeElement as HTMLElement | null;
+    const indice = atual ? focaveis.indexOf(atual) : -1;
+
+    if (evento.key === "Escape") {
+      setCategoriaAberta(null);
+      return;
+    }
+    if (evento.key === "ArrowDown" || evento.key === "ArrowUp") {
+      evento.preventDefault();
+      if (focaveis.length === 0) return;
+      const passo = evento.key === "ArrowDown" ? 1 : -1;
+      const proximo = focaveis[(indice + passo + focaveis.length) % focaveis.length];
+      proximo?.focus();
+      return;
+    }
+    if (evento.key === "Home" || evento.key === "End") {
+      evento.preventDefault();
+      const alvo = evento.key === "Home" ? focaveis[0] : focaveis[focaveis.length - 1];
+      alvo?.focus();
+    }
+  }
+
   const linhaNav = (item: ItemNav, aoClicar?: () => void) => {
     const ativo = rotaAtiva(caminho, item.para);
     return (
@@ -270,9 +302,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         key={item.para}
         to={item.para}
         onClick={aoClicar}
+        data-nav-foco
         aria-current={ativo ? "page" : undefined}
         className={cn(
-          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
           ativo
             ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
             : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
@@ -287,14 +320,27 @@ export function AppShell({ children }: { children: ReactNode }) {
   const grupoNav = (grupo: GrupoNav, aoClicar?: () => void, classeBotao?: string) => {
     const aberto = categoriaAberta === grupo.etiqueta;
     const temAtivo = grupo.itens.some((item) => rotaAtiva(caminho, item.para));
+    const idPainel = `nav-grupo-${grupo.etiqueta.replace(/\s+/g, "-").toLowerCase()}`;
     return (
       <div key={grupo.etiqueta}>
         <button
           type="button"
+          data-nav-foco
           aria-expanded={aberto}
+          aria-controls={idPainel}
           onClick={() => setCategoriaAberta(aberto ? null : grupo.etiqueta)}
+          onKeyDown={(evento) => {
+            if (evento.key === "ArrowRight" && !aberto) {
+              evento.preventDefault();
+              setCategoriaAberta(grupo.etiqueta);
+            }
+            if (evento.key === "ArrowLeft" && aberto) {
+              evento.preventDefault();
+              setCategoriaAberta(null);
+            }
+          }}
           className={cn(
-            "flex w-full items-center justify-between rounded-md px-3 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors",
+            "flex w-full items-center justify-between rounded-md px-3 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
             temAtivo ? "text-foreground" : "text-muted-foreground",
             classeBotao ?? "hover:bg-sidebar-accent/40",
           )}
@@ -308,6 +354,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           />
         </button>
         <div
+          id={idPainel}
+          role="group"
+          aria-label={grupo.etiqueta}
+          hidden={!aberto}
           className={cn(
             "grid transition-all duration-300 ease-out",
             aberto ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
@@ -322,6 +372,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
     );
   };
+
 
   return (
     <TooltipProvider delayDuration={200}>
