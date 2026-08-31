@@ -376,6 +376,14 @@ export function DialogoRegistarEntrega({
         });
       }
       if (escolhidas.length === 0) throw new Error("Indique as quantidades que vai entregar.");
+      const fecha =
+        linhas.reduce((s, l) => s + Number(l.qt_por_entregar), 0) ===
+        escolhidas.reduce((s, e) => s + Number(e.quantidade), 0);
+      if (fecha && Number(faltaPagar) > 0.004) {
+        throw new Error(
+          `Esta venda ainda tem ${formatarDinheiro(faltaPagar)} a receber. Registe o recebimento antes de marcar como entregue.`,
+        );
+      }
       return registarEntrega({
         pedido_id: pedidoId,
         linhas: escolhidas,
