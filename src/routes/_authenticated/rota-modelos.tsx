@@ -298,7 +298,7 @@ function DialogoModelo({
           <Input id="t-nome" value={nome} onChange={(e) => setNome(e.target.value)} />
         </div>
         <div>
-          <Label>PeriodicidadeRota</Label>
+          <Label>Periodicidade</Label>
           <Select
             value={periodicidade}
             onValueChange={(v) => setPeriodicidade(v as PeriodicidadeRota)}
