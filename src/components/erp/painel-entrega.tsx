@@ -49,7 +49,7 @@ import {
 
 const hoje = () => new Date().toISOString().slice(0, 10);
 
-const ESTADOS_ENTREGAVEIS = ["confirmado", "em_preparacao", "pronto"];
+const ESTADOS_ENTREGAVEIS = ["confirmado", "em_preparacao", "pronto", "agendado", "entrega_parcial"];
 
 /** Entregas e documentos fiscais de uma venda. Uma entrega nunca se edita: reverte-se. */
 export function PainelEntrega({ pedido }: { pedido: Pedido }) {
