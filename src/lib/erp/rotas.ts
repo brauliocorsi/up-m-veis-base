@@ -196,6 +196,38 @@ export async function registarRecebimentoEntrega(
   return Number(data ?? 0);
 }
 
+/** Desconto dado pelo entregador na paragem. Fica registado com motivo e autor. */
+export async function aplicarDescontoEntrega(
+  paragemId: string,
+  valor: number,
+  motivo: string,
+): Promise<{ desconto: number; falta_receber: number }> {
+  const { data, error } = await erp().rpc("aplicar_desconto_entrega", {
+    p_paragem_id: paragemId,
+    p_valor: valor,
+    p_motivo: motivo,
+  });
+  if (error) throw error;
+  return data as { desconto: number; falta_receber: number };
+}
+
+/** Retira unidades de uma linha da venda na entrega e abate o valor a receber. */
+export async function retirarItemEntrega(params: {
+  paragem_id: string;
+  pedido_item_id: string;
+  quantidade: number;
+  motivo: string;
+}): Promise<{ retiradas: number; falta_receber: number }> {
+  const { data, error } = await erp().rpc("retirar_item_entrega", {
+    p_paragem_id: params.paragem_id,
+    p_pedido_item_id: params.pedido_item_id,
+    p_quantidade: params.quantidade,
+    p_motivo: params.motivo,
+  });
+  if (error) throw error;
+  return data as { retiradas: number; falta_receber: number };
+}
+
 export async function registarSaidaRota(params: {
   rota_id: string;
   valor: number;

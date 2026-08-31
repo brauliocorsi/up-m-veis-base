@@ -6,9 +6,11 @@ import {
   LifeBuoy,
   Lock,
   MapPin,
+  Package,
   Phone,
   Route as RouteIcon,
   Wallet,
+  Wrench,
   XCircle,
 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -35,15 +37,18 @@ import { lerLinhasEntrega } from "@/lib/erp/entregas";
 import { lerFormasAtivas } from "@/lib/erp/pagamentos";
 import {
   abrirAssistencia,
+  aplicarDescontoEntrega,
   fecharRota,
   lerContasDaRota,
   lerMotivosDe,
   lerMovimentosDaRota,
+  lerParagem,
   lerParagens,
   lerRotaDeHoje,
   registarDesfecho,
   registarRecebimentoEntrega,
   registarSaidaRota,
+  retirarItemEntrega,
   type LinhaRecebimento,
 } from "@/lib/erp/rotas";
 import {
@@ -322,6 +327,48 @@ function CartaoParagem({
             <Badge variant="outline">{formatarDinheiro(paragem.previsto_receber)} a receber</Badge>
           )}
         </div>
+
+        <div className="flex flex-wrap gap-2 text-xs">
+          <Badge variant="secondary">
+            <Package className="mr-1 h-3 w-3" />
+            {paragem.n_itens ?? 0} {(paragem.n_itens ?? 0) === 1 ? "item" : "itens"}
+          </Badge>
+          {(paragem.n_montagens ?? 0) > 0 && (
+            <Badge variant="secondary">
+              <Wrench className="mr-1 h-3 w-3" />
+              {paragem.n_montagens} com montagem
+            </Badge>
+          )}
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 rounded-md bg-muted/50 p-2 text-center text-xs">
+          <div>
+            <p className="text-muted-foreground">Total</p>
+            <p className="font-medium tabular-nums">{formatarDinheiro(paragem.total ?? 0)}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">Já pago</p>
+            <p className="font-medium tabular-nums">{formatarDinheiro(paragem.total_pago ?? 0)}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">Falta receber</p>
+            <p
+              className={
+                (paragem.pendente ?? 0) > 0
+                  ? "font-semibold tabular-nums text-primary"
+                  : "font-medium tabular-nums"
+              }
+            >
+              {formatarDinheiro(paragem.pendente ?? 0)}
+            </p>
+          </div>
+        </div>
+        {(paragem.desconto_entrega ?? 0) > 0 && (
+          <p className="text-xs text-muted-foreground">
+            Desconto dado na entrega: {formatarDinheiro(paragem.desconto_entrega ?? 0)}
+          </p>
+        )}
+
         {morada && (
           <p className="flex items-start gap-2 text-sm text-muted-foreground">
             <MapPin className="mt-0.5 h-4 w-4 shrink-0" /> {morada}
@@ -370,15 +417,32 @@ function DialogoParagem({
   onFechar: () => void;
   onFeito: () => void;
 }) {
-  const [passo, setPasso] = useState<"escolher" | Desfecho | "recebimento" | "assistencia">(
-    editavel ? "escolher" : "escolher",
-  );
+  const [passo, setPasso] = useState<
+    "escolher" | Desfecho | "recebimento" | "assistencia" | "retirar" | "desconto"
+  >("escolher");
+  const qc = useQueryClient();
 
   const linhasQ = useQuery({
     queryKey: ["paragem-linhas", paragem.pedido_id],
     queryFn: () => lerLinhasEntrega(paragem.pedido_id),
   });
   const linhas = linhasQ.data ?? [];
+  const paragemQ = useQuery({
+    queryKey: ["paragem", paragem.id],
+    queryFn: () => lerParagem(paragem.id),
+    initialData: paragem,
+  });
+  const atual = paragemQ.data ?? paragem;
+  const faltaReceber = Number(atual.pendente ?? atual.previsto_receber ?? 0);
+
+  const recarregar = () => {
+    qc.invalidateQueries({ queryKey: ["paragem", paragem.id] });
+    qc.invalidateQueries({ queryKey: ["paragem-linhas", paragem.pedido_id] });
+    qc.invalidateQueries({ queryKey: ["rota-paragens"] });
+    qc.invalidateQueries({ queryKey: ["rota-contas"] });
+    qc.invalidateQueries({ queryKey: ["rota-movimentos"] });
+  };
+
   const [quantidades, setQuantidades] = useState<Record<string, number>>({});
   const [recebidoPor, setRecebidoPor] = useState("");
   const [motivoId, setMotivoId] = useState("");
@@ -425,7 +489,7 @@ function DialogoParagem({
     onError: (e) => toast.error(mensagemErro(e)),
   });
 
-  const total = paragem.previsto_receber;
+  const total = faltaReceber;
 
   return (
     <DialogoForm
@@ -434,16 +498,26 @@ function DialogoParagem({
       titulo={`${paragem.cliente ?? "Cliente"} · ${paragem.pedido_numero ?? ""}`}
       descricao={
         editavel
-          ? `Previsto receber ${formatarDinheiro(total)}.`
+          ? `Falta receber ${formatarDinheiro(total)} · ${atual.n_itens ?? 0} itens${
+              (atual.n_montagens ?? 0) > 0 ? ` · ${atual.n_montagens} com montagem` : ""
+            }`
           : `Desfecho: ${paragem.desfecho ? ETIQUETA_DESFECHO[paragem.desfecho] : "—"}`
       }
       onGuardar={onFechar}
     >
-      {!editavel && (
-        <div className="space-y-2 text-sm">
+      {!editavel && passo === "escolher" && (
+        <div className="space-y-3 text-sm">
           <p>
-            <span className="text-muted-foreground">Previsto: </span>
-            {formatarDinheiro(paragem.previsto_receber)}
+            <span className="text-muted-foreground">Total: </span>
+            {formatarDinheiro(atual.total ?? 0)} ·{" "}
+            <span className="text-muted-foreground">pago </span>
+            {formatarDinheiro(atual.total_pago ?? 0)} ·{" "}
+            <span className="text-muted-foreground">falta </span>
+            {formatarDinheiro(faltaReceber)}
+          </p>
+          <p className="text-muted-foreground">
+            {atual.n_itens ?? 0} itens
+            {(atual.n_montagens ?? 0) > 0 ? ` · ${atual.n_montagens} com montagem` : ""}
           </p>
           {paragem.motivo_descricao && (
             <p>
@@ -458,6 +532,14 @@ function DialogoParagem({
               {paragem.data_reagendamento}
             </p>
           )}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full justify-start"
+            onClick={() => setPasso("assistencia")}
+          >
+            <LifeBuoy className="mr-2 h-5 w-5" /> Abrir assistência
+          </Button>
         </div>
       )}
 
@@ -551,16 +633,75 @@ function DialogoParagem({
               placeholder="Nome de quem assinou"
             />
           </div>
+
+          <div className="space-y-2 rounded-md border p-3">
+            <p className="text-sm">
+              <span className="text-muted-foreground">Falta receber: </span>
+              <span className="font-semibold tabular-nums">{formatarDinheiro(faltaReceber)}</span>
+            </p>
+            {passo === "entregue" && faltaReceber > 0.004 && (
+              <p className="text-xs text-muted-foreground">
+                Para fechar a entrega tem de receber o valor, retirar um produto ou dar desconto.
+              </p>
+            )}
+            <div className="grid gap-2 sm:grid-cols-3">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setPasso("recebimento")}
+                disabled={faltaReceber <= 0.004}
+              >
+                <Wallet className="mr-2 h-4 w-4" /> Receber
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setPasso("retirar")}>
+                <Package className="mr-2 h-4 w-4" /> Retirar produto
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setPasso("desconto")}
+                disabled={faltaReceber <= 0.004}
+              >
+                Dar desconto
+              </Button>
+            </div>
+          </div>
+
           <Button
             type="button"
             className="w-full"
-            disabled={desfecho.isPending}
+            disabled={desfecho.isPending || (passo === "entregue" && faltaReceber > 0.004)}
             onClick={() => desfecho.mutate(passo)}
           >
             {desfecho.isPending ? "A registar…" : "Confirmar entrega"}
           </Button>
         </div>
       )}
+
+      {editavel && passo === "retirar" && (
+        <FormRetirar
+          paragemId={paragem.id}
+          linhas={linhas}
+          onFeito={() => {
+            recarregar();
+            setPasso("entregue");
+          }}
+          onVoltar={() => setPasso("entregue")}
+        />
+      )}
+
+      {editavel && passo === "desconto" && (
+        <FormDesconto
+          paragemId={paragem.id}
+          maximo={faltaReceber}
+          onFeito={() => {
+            recarregar();
+            setPasso("entregue");
+          }}
+          onVoltar={() => setPasso("entregue")}
+        />
+      )}
+
 
       {editavel && (passo === "reagendada" || passo === "ausente") && (
         <div className="space-y-3">
@@ -614,8 +755,21 @@ function DialogoParagem({
         <FormRecebimento
           paragemId={paragem.id}
           previsto={total}
-          onFeito={onFeito}
-          onSaltar={onFeito}
+          onFeito={() => {
+            if (entregaId) {
+              onFeito();
+            } else {
+              recarregar();
+              setPasso("entregue");
+            }
+          }}
+          onSaltar={() => {
+            if (entregaId) {
+              onFeito();
+            } else {
+              setPasso("entregue");
+            }
+          }}
           entregaId={entregaId}
         />
       )}
@@ -629,6 +783,166 @@ function DialogoParagem({
     </DialogoForm>
   );
 }
+
+// ------------------------------------------------------ retirar produto na rua
+function FormRetirar({
+  paragemId,
+  linhas,
+  onFeito,
+  onVoltar,
+}: {
+  paragemId: string;
+  linhas: { pedido_item_id: string; descricao: string; qt_por_entregar: number }[];
+  onFeito: () => void;
+  onVoltar: () => void;
+}) {
+  const [itemId, setItemId] = useState("");
+  const [quantidade, setQuantidade] = useState(1);
+  const [motivo, setMotivo] = useState("");
+
+  const guardar = useMutation({
+    mutationFn: () =>
+      retirarItemEntrega({
+        paragem_id: paragemId,
+        pedido_item_id: itemId,
+        quantidade,
+        motivo,
+      }),
+    onSuccess: (r) => {
+      toast.success(
+        `Produto retirado. Falta receber ${formatarDinheiro(Number(r.falta_receber ?? 0))}.`,
+      );
+      onFeito();
+    },
+    onError: (e) => toast.error(mensagemErro(e)),
+  });
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <Label>Produto a retirar</Label>
+        <Select value={itemId} onValueChange={setItemId}>
+          <SelectTrigger>
+            <SelectValue placeholder="Escolher produto" />
+          </SelectTrigger>
+          <SelectContent>
+            {linhas.map((l) => (
+              <SelectItem key={l.pedido_item_id} value={l.pedido_item_id}>
+                {l.descricao} ({l.qt_por_entregar} por entregar)
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label htmlFor="qt-retirar">Quantidade</Label>
+        <Input
+          id="qt-retirar"
+          type="number"
+          min={1}
+          step="1"
+          value={quantidade}
+          onChange={(e) => setQuantidade(Math.max(1, Number(e.target.value || 1)))}
+        />
+      </div>
+      <div>
+        <Label htmlFor="motivo-retirar">Motivo</Label>
+        <Textarea
+          id="motivo-retirar"
+          value={motivo}
+          onChange={(e) => setMotivo(e.target.value)}
+          placeholder="Porque é que o produto não ficou com o cliente"
+        />
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <Button type="button" variant="outline" onClick={onVoltar}>
+          Voltar
+        </Button>
+        <Button
+          type="button"
+          disabled={guardar.isPending || !itemId || motivo.trim().length < 3}
+          onClick={() => guardar.mutate()}
+        >
+          {guardar.isPending ? "A retirar…" : "Retirar produto"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------- desconto
+function FormDesconto({
+  paragemId,
+  maximo,
+  onFeito,
+  onVoltar,
+}: {
+  paragemId: string;
+  maximo: number;
+  onFeito: () => void;
+  onVoltar: () => void;
+}) {
+  const [valor, setValor] = useState("");
+  const [motivo, setMotivo] = useState("");
+
+  const guardar = useMutation({
+    mutationFn: () => aplicarDescontoEntrega(paragemId, Number(valor || 0), motivo),
+    onSuccess: (r) => {
+      toast.success(
+        `Desconto registado. Falta receber ${formatarDinheiro(Number(r.falta_receber ?? 0))}.`,
+      );
+      onFeito();
+    },
+    onError: (e) => toast.error(mensagemErro(e)),
+  });
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        Desconto máximo nesta paragem: {formatarDinheiro(maximo)}. Fica registado com o seu nome.
+      </p>
+      <div>
+        <Label htmlFor="valor-desconto">Valor do desconto</Label>
+        <Input
+          id="valor-desconto"
+          type="number"
+          min={0}
+          max={maximo}
+          step="0.01"
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+        />
+      </div>
+      <div>
+        <Label htmlFor="motivo-desconto">Motivo</Label>
+        <Textarea
+          id="motivo-desconto"
+          value={motivo}
+          onChange={(e) => setMotivo(e.target.value)}
+          placeholder="Porque é que deu desconto ao cliente"
+        />
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <Button type="button" variant="outline" onClick={onVoltar}>
+          Voltar
+        </Button>
+        <Button
+          type="button"
+          disabled={
+            guardar.isPending ||
+            Number(valor || 0) <= 0 ||
+            Number(valor || 0) > maximo + 0.004 ||
+            motivo.trim().length < 3
+          }
+          onClick={() => guardar.mutate()}
+        >
+          {guardar.isPending ? "A registar…" : "Dar desconto"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 
 function FormRecebimento({
   paragemId,
