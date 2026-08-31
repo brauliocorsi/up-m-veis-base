@@ -543,6 +543,7 @@ export type EstadoPedido =
   | "em_preparacao"
   | "pronto"
   | "agendado"
+  | "entrega_parcial"
   | "entregue"
   | "cancelado";
 
@@ -552,6 +553,7 @@ export const ETIQUETA_PEDIDO: Record<EstadoPedido, string> = {
   em_preparacao: "Em preparação",
   pronto: "Pronto",
   agendado: "Agendado",
+  entrega_parcial: "Entrega parcial",
   entregue: "Entregue",
   cancelado: "Cancelado",
 };
@@ -1370,7 +1372,10 @@ export interface LinhaEntrega {
   qt_por_entregar: number;
   pedido_numero: string | null;
   pedido_estado: EstadoPedido;
+  data_primeira_entrega?: string | null;
+  data_entrega_efetiva?: string | null;
 }
+
 
 export interface DocumentoFiscal extends CamposComuns {
   pedido_id: string;
