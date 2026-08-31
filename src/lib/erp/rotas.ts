@@ -6,7 +6,7 @@ import type {
   EstadoAssistencia,
   Motivo,
   PedidoPorAgendar,
-  Periodicidade,
+  PeriodicidadeRota,
   Rota,
   RotaAlteracao,
   RotaContas,
@@ -358,7 +358,7 @@ export async function lerTemplates(params?: { incluirInativos?: boolean }): Prom
 export async function guardarTemplate(
   valores: {
     nome: string;
-    periodicidade: Periodicidade;
+    periodicidade: PeriodicidadeRota;
     dias_semana: number[];
     semana_referencia?: string | null;
     max_entregas?: number | null;
@@ -402,7 +402,7 @@ export async function eliminarTemplate(id: string, motivo: string): Promise<void
 
 /** Pré-visualização das datas que um modelo vai gerar. */
 export async function preverDatasTemplate(params: {
-  periodicidade: Periodicidade;
+  periodicidade: PeriodicidadeRota;
   dias_semana: number[];
   semana_referencia?: string | null;
   de?: string | null;

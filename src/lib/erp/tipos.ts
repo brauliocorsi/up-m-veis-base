@@ -1493,15 +1493,15 @@ export interface Viatura extends CamposComuns {
   ativa: boolean;
 }
 
-export type Periodicidade = "semanal" | "quinzenal" | "mensal";
+export type PeriodicidadeRota = "semanal" | "quinzenal" | "mensal";
 
-export const ETIQUETA_PERIODICIDADE: Record<Periodicidade, string> = {
+export const ETIQUETA_PERIODICIDADE_ROTA: Record<PeriodicidadeRota, string> = {
   semanal: "Todas as semanas",
   quinzenal: "A cada duas semanas",
   mensal: "Uma vez por mês",
 };
 
-export const DIAS_SEMANA: Array<{ valor: number; etiqueta: string; curto: string }> = [
+export const DIAS_SEMANA_ROTA: Array<{ valor: number; etiqueta: string; curto: string }> = [
   { valor: 2, etiqueta: "Segunda-feira", curto: "Seg" },
   { valor: 3, etiqueta: "Terça-feira", curto: "Ter" },
   { valor: 4, etiqueta: "Quarta-feira", curto: "Qua" },

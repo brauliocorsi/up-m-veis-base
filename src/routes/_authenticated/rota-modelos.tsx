@@ -31,9 +31,9 @@ import {
   preverDatasTemplate,
 } from "@/lib/erp/rotas";
 import {
-  DIAS_SEMANA,
-  ETIQUETA_PERIODICIDADE,
-  type Periodicidade,
+  DIAS_SEMANA_ROTA,
+  ETIQUETA_PERIODICIDADE_ROTA,
+  type PeriodicidadeRota,
   type RotaTemplate,
   type Utilizador,
 } from "@/lib/erp/tipos";
@@ -142,9 +142,9 @@ function Pagina() {
                   {!t.ativo && <Badge variant="outline">Inativo</Badge>}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {ETIQUETA_PERIODICIDADE[t.periodicidade]} ·{" "}
+                  {ETIQUETA_PERIODICIDADE_ROTA[t.periodicidade]} ·{" "}
                   {(t.dias_semana ?? [])
-                    .map((d) => DIAS_SEMANA.find((x) => x.valor === d)?.curto ?? d)
+                    .map((d) => DIAS_SEMANA_ROTA.find((x) => x.valor === d)?.curto ?? d)
                     .join(", ")}
                   {t.responsavel ? ` · ${t.responsavel}` : ""}
                   {t.viatura ? ` · ${t.viatura}` : ""}
@@ -215,7 +215,7 @@ function DialogoModelo({
   const viaturasQ = useQuery({ queryKey: ["viaturas"], queryFn: () => lerViaturas() });
 
   const [nome, setNome] = useState(modelo?.nome ?? "");
-  const [periodicidade, setPeriodicidade] = useState<Periodicidade>(
+  const [periodicidade, setPeriodicidade] = useState<PeriodicidadeRota>(
     modelo?.periodicidade ?? "semanal",
   );
   const [dias, setDias] = useState<number[]>(modelo?.dias_semana ?? []);
@@ -298,18 +298,18 @@ function DialogoModelo({
           <Input id="t-nome" value={nome} onChange={(e) => setNome(e.target.value)} />
         </div>
         <div>
-          <Label>Periodicidade</Label>
+          <Label>PeriodicidadeRota</Label>
           <Select
             value={periodicidade}
-            onValueChange={(v) => setPeriodicidade(v as Periodicidade)}
+            onValueChange={(v) => setPeriodicidade(v as PeriodicidadeRota)}
           >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {(Object.keys(ETIQUETA_PERIODICIDADE) as Periodicidade[]).map((p) => (
+              {(Object.keys(ETIQUETA_PERIODICIDADE_ROTA) as PeriodicidadeRota[]).map((p) => (
                 <SelectItem key={p} value={p}>
-                  {ETIQUETA_PERIODICIDADE[p]}
+                  {ETIQUETA_PERIODICIDADE_ROTA[p]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -320,7 +320,7 @@ function DialogoModelo({
       <div>
         <Label>Dias da semana</Label>
         <div className="mt-2 flex flex-wrap gap-3">
-          {DIAS_SEMANA.map((d) => (
+          {DIAS_SEMANA_ROTA.map((d) => (
             <label key={d.valor} className="flex items-center gap-2 text-sm">
               <Checkbox
                 checked={dias.includes(d.valor)}
