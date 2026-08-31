@@ -1,0 +1,2 @@
+ALTER TABLE erp.rota_templates ALTER COLUMN atualizado_em DROP NOT NULL, ALTER COLUMN atualizado_em DROP DEFAULT;
+ALTER TABLE erp.rota_alteracoes ALTER COLUMN atualizado_em DROP NOT NULL, ALTER COLUMN atualizado_em DROP DEFAULT;
