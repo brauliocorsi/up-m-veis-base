@@ -1513,7 +1513,7 @@ export const DIAS_SEMANA_ROTA: Array<{ valor: number; etiqueta: string; curto: s
 
 export interface RotaTemplate extends CamposComuns {
   nome: string;
-  periodicidade: Periodicidade;
+  periodicidade: PeriodicidadeRota;
   dias_semana: number[];
   semana_referencia: string | null;
   max_entregas: number | null;
