@@ -88,22 +88,35 @@ export async function lerFormasAtivas(): Promise<FormaPagamento[]> {
 }
 
 // ----------------------------------------------------------------------- caixa
-export async function lerCaixaAtual(utilizadorId: string): Promise<Caixa | null> {
-  const { data, error } = await erp()
+/** O caixa da loja é o que não pertence a nenhuma rota; o da rota tem `rota_id`. */
+export type AmbitoCaixa = "loja" | "rota" | "todos";
+
+export async function lerCaixaAtual(
+  utilizadorId: string,
+  ambito: AmbitoCaixa = "loja",
+): Promise<Caixa | null> {
+  let consulta = erp()
     .from("v_caixas")
     .select("*")
     .eq("utilizador_id", utilizadorId)
     .eq("estado", "aberto")
     .order("data", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .limit(1);
+  if (ambito === "loja") consulta = consulta.is("rota_id", null);
+  if (ambito === "rota") consulta = consulta.not("rota_id", "is", null);
+  const { data, error } = await consulta.maybeSingle();
   if (error) throw error;
   return (data ?? null) as Caixa | null;
 }
 
-export async function lerCaixas(params?: { utilizadorId?: string }): Promise<Caixa[]> {
+export async function lerCaixas(params?: {
+  utilizadorId?: string;
+  ambito?: AmbitoCaixa;
+}): Promise<Caixa[]> {
   let consulta = erp().from("v_caixas").select("*").order("data", { ascending: false }).limit(200);
   if (params?.utilizadorId) consulta = consulta.eq("utilizador_id", params.utilizadorId);
+  if (params?.ambito === "loja") consulta = consulta.is("rota_id", null);
+  if (params?.ambito === "rota") consulta = consulta.not("rota_id", "is", null);
   const { data, error } = await consulta;
   if (error) throw error;
   return (data ?? []) as Caixa[];

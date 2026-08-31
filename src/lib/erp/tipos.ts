@@ -815,6 +815,11 @@ export interface Caixa extends CamposComuns {
   total_saidas?: number;
   total_sangrias?: number;
   n_movimentos?: number;
+  /** Preenchido quando o caixa é o de uma rota do entregador. */
+  rota_id?: string | null;
+  rota_nome?: string | null;
+  rota_data?: string | null;
+  rota_estado?: string | null;
 }
 
 export type TipoMovimentoCaixa =
