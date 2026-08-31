@@ -1412,7 +1412,13 @@ export interface EntreguePorReceber {
 }
 
 // ================================================= Fase 9 — área do entregador
-export type EstadoRota = "planeada" | "em_curso" | "concluida" | "fechada" | "conferida";
+export type EstadoRota =
+  | "planeada"
+  | "em_curso"
+  | "concluida"
+  | "fechada"
+  | "conferida"
+  | "cancelada";
 
 export const ETIQUETA_ROTA: Record<EstadoRota, string> = {
   planeada: "Planeada",
@@ -1420,6 +1426,7 @@ export const ETIQUETA_ROTA: Record<EstadoRota, string> = {
   concluida: "Concluída",
   fechada: "Fechada",
   conferida: "Conferida",
+  cancelada: "Cancelada",
 };
 
 export type Desfecho = "entregue" | "parcial" | "reagendada" | "cancelada" | "ausente";
