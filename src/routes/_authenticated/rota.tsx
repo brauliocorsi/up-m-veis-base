@@ -426,7 +426,8 @@ function DialogoParagem({
     queryKey: ["paragem-linhas", paragem.pedido_id],
     queryFn: () => lerLinhasEntrega(paragem.pedido_id),
   });
-  const linhas = linhasQ.data ?? [];
+  // O entregador só vê o que ainda falta entregar nesta venda.
+  const linhas = (linhasQ.data ?? []).filter((l) => (l.qt_por_entregar ?? 0) > 0);
   const paragemQ = useQuery({
     queryKey: ["paragem", paragem.id],
     queryFn: () => lerParagem(paragem.id),
