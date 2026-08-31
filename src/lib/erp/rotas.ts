@@ -5,10 +5,17 @@ import type {
   EnvelopeRota,
   EstadoAssistencia,
   Motivo,
+  PedidoPorAgendar,
+  Periodicidade,
   Rota,
+  RotaAlteracao,
   RotaContas,
   RotaMovimento,
+  RotaOcupacao,
   RotaParagem,
+  RotaSugerida,
+  RotaTemplate,
+  Viatura,
 } from "./tipos";
 import type { LinhaARegistar } from "./entregas";
 
