@@ -129,7 +129,32 @@ export function PainelEntrega({ pedido }: { pedido: Pedido }) {
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
             {entregue} entregues · {porEntregar} por entregar
+            {porEntregar > 0 && entregue > 0 ? " · entrega parcial" : ""}
           </p>
+
+          {(linhas.data ?? []).length > 0 && (
+            <div className="space-y-1 rounded-md border p-2">
+              {(linhas.data ?? []).map((l) => (
+                <div
+                  key={l.pedido_item_id}
+                  className="flex flex-wrap items-center justify-between gap-2 text-xs"
+                >
+                  <span className="font-medium">{l.descricao}</span>
+                  <span className="text-muted-foreground">
+                    {Number(l.qt_por_entregar) <= 0
+                      ? `Entregue${l.data_entrega_efetiva ? ` a ${formatarDataCurta(l.data_entrega_efetiva)}` : ""}`
+                      : Number(l.qt_entregue) > 0
+                        ? `${l.qt_entregue} de ${l.quantidade} entregues${
+                            l.data_primeira_entrega
+                              ? ` (desde ${formatarDataCurta(l.data_primeira_entrega)})`
+                              : ""
+                          }`
+                        : "Por entregar"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
 
           {(entregas.data ?? []).length === 0 && (
             <p className="text-sm text-muted-foreground">Ainda não há entregas registadas.</p>
