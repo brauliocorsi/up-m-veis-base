@@ -66,6 +66,18 @@ export async function lerParagens(rotaId: string): Promise<RotaParagem[]> {
   return (data ?? []) as RotaParagem[];
 }
 
+export async function lerParagemDoPedido(pedidoId: string): Promise<RotaParagem | null> {
+  const { data, error } = await erp()
+    .from("v_rota_paragens")
+    .select("*")
+    .eq("pedido_id", pedidoId)
+    .order("criado_em", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return (data ?? null) as RotaParagem | null;
+}
+
 export async function lerParagem(paragemId: string): Promise<RotaParagem | null> {
   const { data, error } = await erp()
     .from("v_rota_paragens")
