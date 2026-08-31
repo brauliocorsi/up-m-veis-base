@@ -29,12 +29,15 @@ import { Route as AuthenticatedNecessidadesRouteImport } from './routes/_authent
 import { Route as AuthenticatedPagamentosRouteImport } from './routes/_authenticated/pagamentos'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPedidosCompraRouteImport } from './routes/_authenticated/pedidos-compra'
+import { Route as AuthenticatedPorAgendarRouteImport } from './routes/_authenticated/por-agendar'
 import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
 import { Route as AuthenticatedRecepcaoRouteImport } from './routes/_authenticated/recepcao'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedReservasRouteImport } from './routes/_authenticated/reservas'
 import { Route as AuthenticatedRotaRouteImport } from './routes/_authenticated/rota'
+import { Route as AuthenticatedRotaModelosRouteImport } from './routes/_authenticated/rota-modelos'
 import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
+import { Route as AuthenticatedViaturasRouteImport } from './routes/_authenticated/viaturas'
 import { Route as AuthenticatedAdmCaixasRouteImport } from './routes/_authenticated/_adm/caixas'
 import { Route as AuthenticatedAdmCalendarioRouteImport } from './routes/_authenticated/_adm/calendario'
 import { Route as AuthenticatedAdmCupoesRouteImport } from './routes/_authenticated/_adm/cupoes'
@@ -164,6 +167,11 @@ const AuthenticatedPedidosCompraRoute =
     path: '/pedidos-compra',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPorAgendarRoute = AuthenticatedPorAgendarRouteImport.update({
+  id: '/por-agendar',
+  path: '/por-agendar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProdutosRoute = AuthenticatedProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
@@ -189,9 +197,20 @@ const AuthenticatedRotaRoute = AuthenticatedRotaRouteImport.update({
   path: '/rota',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRotaModelosRoute =
+  AuthenticatedRotaModelosRouteImport.update({
+    id: '/rota-modelos',
+    path: '/rota-modelos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedServicosRoute = AuthenticatedServicosRouteImport.update({
   id: '/servicos',
   path: '/servicos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedViaturasRoute = AuthenticatedViaturasRouteImport.update({
+  id: '/viaturas',
+  path: '/viaturas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdmCaixasRoute = AuthenticatedAdmCaixasRouteImport.update({
@@ -340,12 +359,15 @@ export interface FileRoutesByFullPath {
   '/pagamentos': typeof AuthenticatedPagamentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/pedidos-compra': typeof AuthenticatedPedidosCompraRoute
+  '/por-agendar': typeof AuthenticatedPorAgendarRoute
   '/produtos': typeof AuthenticatedProdutosRoute
   '/recepcao': typeof AuthenticatedRecepcaoRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/reservas': typeof AuthenticatedReservasRoute
   '/rota': typeof AuthenticatedRotaRoute
+  '/rota-modelos': typeof AuthenticatedRotaModelosRoute
   '/servicos': typeof AuthenticatedServicosRoute
+  '/viaturas': typeof AuthenticatedViaturasRoute
   '/caixas': typeof AuthenticatedAdmCaixasRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/cupoes': typeof AuthenticatedAdmCupoesRoute
@@ -388,12 +410,15 @@ export interface FileRoutesByTo {
   '/pagamentos': typeof AuthenticatedPagamentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/pedidos-compra': typeof AuthenticatedPedidosCompraRoute
+  '/por-agendar': typeof AuthenticatedPorAgendarRoute
   '/produtos': typeof AuthenticatedProdutosRoute
   '/recepcao': typeof AuthenticatedRecepcaoRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/reservas': typeof AuthenticatedReservasRoute
   '/rota': typeof AuthenticatedRotaRoute
+  '/rota-modelos': typeof AuthenticatedRotaModelosRoute
   '/servicos': typeof AuthenticatedServicosRoute
+  '/viaturas': typeof AuthenticatedViaturasRoute
   '/caixas': typeof AuthenticatedAdmCaixasRoute
   '/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/cupoes': typeof AuthenticatedAdmCupoesRoute
@@ -439,12 +464,15 @@ export interface FileRoutesById {
   '/_authenticated/pagamentos': typeof AuthenticatedPagamentosRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/pedidos-compra': typeof AuthenticatedPedidosCompraRoute
+  '/_authenticated/por-agendar': typeof AuthenticatedPorAgendarRoute
   '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
   '/_authenticated/recepcao': typeof AuthenticatedRecepcaoRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/reservas': typeof AuthenticatedReservasRoute
   '/_authenticated/rota': typeof AuthenticatedRotaRoute
+  '/_authenticated/rota-modelos': typeof AuthenticatedRotaModelosRoute
   '/_authenticated/servicos': typeof AuthenticatedServicosRoute
+  '/_authenticated/viaturas': typeof AuthenticatedViaturasRoute
   '/_authenticated/_adm/caixas': typeof AuthenticatedAdmCaixasRoute
   '/_authenticated/_adm/calendario': typeof AuthenticatedAdmCalendarioRoute
   '/_authenticated/_adm/cupoes': typeof AuthenticatedAdmCupoesRoute
@@ -489,12 +517,15 @@ export interface FileRouteTypes {
     | '/pagamentos'
     | '/painel'
     | '/pedidos-compra'
+    | '/por-agendar'
     | '/produtos'
     | '/recepcao'
     | '/relatorios'
     | '/reservas'
     | '/rota'
+    | '/rota-modelos'
     | '/servicos'
+    | '/viaturas'
     | '/caixas'
     | '/calendario'
     | '/cupoes'
@@ -537,12 +568,15 @@ export interface FileRouteTypes {
     | '/pagamentos'
     | '/painel'
     | '/pedidos-compra'
+    | '/por-agendar'
     | '/produtos'
     | '/recepcao'
     | '/relatorios'
     | '/reservas'
     | '/rota'
+    | '/rota-modelos'
     | '/servicos'
+    | '/viaturas'
     | '/caixas'
     | '/calendario'
     | '/cupoes'
@@ -587,12 +621,15 @@ export interface FileRouteTypes {
     | '/_authenticated/pagamentos'
     | '/_authenticated/painel'
     | '/_authenticated/pedidos-compra'
+    | '/_authenticated/por-agendar'
     | '/_authenticated/produtos'
     | '/_authenticated/recepcao'
     | '/_authenticated/relatorios'
     | '/_authenticated/reservas'
     | '/_authenticated/rota'
+    | '/_authenticated/rota-modelos'
     | '/_authenticated/servicos'
+    | '/_authenticated/viaturas'
     | '/_authenticated/_adm/caixas'
     | '/_authenticated/_adm/calendario'
     | '/_authenticated/_adm/cupoes'
@@ -766,6 +803,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPedidosCompraRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/por-agendar': {
+      id: '/_authenticated/por-agendar'
+      path: '/por-agendar'
+      fullPath: '/por-agendar'
+      preLoaderRoute: typeof AuthenticatedPorAgendarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/produtos': {
       id: '/_authenticated/produtos'
       path: '/produtos'
@@ -801,11 +845,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRotaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/rota-modelos': {
+      id: '/_authenticated/rota-modelos'
+      path: '/rota-modelos'
+      fullPath: '/rota-modelos'
+      preLoaderRoute: typeof AuthenticatedRotaModelosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/servicos': {
       id: '/_authenticated/servicos'
       path: '/servicos'
       fullPath: '/servicos'
       preLoaderRoute: typeof AuthenticatedServicosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/viaturas': {
+      id: '/_authenticated/viaturas'
+      path: '/viaturas'
+      fullPath: '/viaturas'
+      preLoaderRoute: typeof AuthenticatedViaturasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/_adm/caixas': {
@@ -1020,12 +1078,15 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPagamentosRoute: typeof AuthenticatedPagamentosRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedPedidosCompraRoute: typeof AuthenticatedPedidosCompraRoute
+  AuthenticatedPorAgendarRoute: typeof AuthenticatedPorAgendarRoute
   AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
   AuthenticatedRecepcaoRoute: typeof AuthenticatedRecepcaoRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedReservasRoute: typeof AuthenticatedReservasRoute
   AuthenticatedRotaRoute: typeof AuthenticatedRotaRoute
+  AuthenticatedRotaModelosRoute: typeof AuthenticatedRotaModelosRoute
   AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
+  AuthenticatedViaturasRoute: typeof AuthenticatedViaturasRoute
   AuthenticatedOrdensCompraOcIdRoute: typeof AuthenticatedOrdensCompraOcIdRoute
   AuthenticatedPedidosPedidoIdRoute: typeof AuthenticatedPedidosPedidoIdRoute
   AuthenticatedRotasRotaIdRoute: typeof AuthenticatedRotasRotaIdRoute
@@ -1054,12 +1115,15 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPagamentosRoute: AuthenticatedPagamentosRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedPedidosCompraRoute: AuthenticatedPedidosCompraRoute,
+  AuthenticatedPorAgendarRoute: AuthenticatedPorAgendarRoute,
   AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,
   AuthenticatedRecepcaoRoute: AuthenticatedRecepcaoRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
   AuthenticatedReservasRoute: AuthenticatedReservasRoute,
   AuthenticatedRotaRoute: AuthenticatedRotaRoute,
+  AuthenticatedRotaModelosRoute: AuthenticatedRotaModelosRoute,
   AuthenticatedServicosRoute: AuthenticatedServicosRoute,
+  AuthenticatedViaturasRoute: AuthenticatedViaturasRoute,
   AuthenticatedOrdensCompraOcIdRoute: AuthenticatedOrdensCompraOcIdRoute,
   AuthenticatedPedidosPedidoIdRoute: AuthenticatedPedidosPedidoIdRoute,
   AuthenticatedRotasRotaIdRoute: AuthenticatedRotasRotaIdRoute,

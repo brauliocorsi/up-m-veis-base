@@ -3,7 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   BadgeEuro,
   BarChart3,
+  CalendarClock,
   CalendarDays,
+  CalendarRange,
+
   ChevronDown,
   ChevronRight,
   HandCoins,
@@ -95,6 +98,24 @@ const NAVEGACAO: GrupoNav[] = [
         perfis: ["adm", "escritorio", "financeiro"],
       },
       {
+        para: "/por-agendar",
+        etiqueta: "Por agendar",
+        icone: CalendarClock,
+        perfis: ["adm", "escritorio"],
+      },
+      {
+        para: "/rota-modelos",
+        etiqueta: "Modelos de rota",
+        icone: CalendarRange,
+        perfis: ["adm", "escritorio"],
+      },
+      {
+        para: "/viaturas",
+        etiqueta: "Viaturas",
+        icone: Truck,
+        perfis: ["adm", "escritorio"],
+      },
+      {
         para: "/assistencias",
         etiqueta: "Assistências",
         icone: LifeBuoy,
@@ -102,6 +123,7 @@ const NAVEGACAO: GrupoNav[] = [
       },
     ],
   },
+
   {
     etiqueta: "Vendas",
     itens: [

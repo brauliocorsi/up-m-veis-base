@@ -542,6 +542,7 @@ export type EstadoPedido =
   | "confirmado"
   | "em_preparacao"
   | "pronto"
+  | "agendado"
   | "entregue"
   | "cancelado";
 
@@ -550,6 +551,7 @@ export const ETIQUETA_PEDIDO: Record<EstadoPedido, string> = {
   confirmado: "Confirmado",
   em_preparacao: "Em preparação",
   pronto: "Pronto",
+  agendado: "Agendado",
   entregue: "Entregue",
   cancelado: "Cancelado",
 };
@@ -610,6 +612,8 @@ export interface Pedido extends CamposComuns {
   estado: EstadoPedido;
   data_entrega_prevista: string | null;
   data_entrega_prometida: string | null;
+  /** Fase 10 — data da rota onde a venda foi encaixada. */
+  data_entrega_agendada?: string | null;
   data_entrega_origem: "calculada" | "manual";
   motivo_data_id: string | null;
   nota_data: string | null;
@@ -1408,7 +1412,13 @@ export interface EntreguePorReceber {
 }
 
 // ================================================= Fase 9 — área do entregador
-export type EstadoRota = "planeada" | "em_curso" | "concluida" | "fechada" | "conferida";
+export type EstadoRota =
+  | "planeada"
+  | "em_curso"
+  | "concluida"
+  | "fechada"
+  | "conferida"
+  | "cancelada";
 
 export const ETIQUETA_ROTA: Record<EstadoRota, string> = {
   planeada: "Planeada",
@@ -1416,6 +1426,7 @@ export const ETIQUETA_ROTA: Record<EstadoRota, string> = {
   concluida: "Concluída",
   fechada: "Fechada",
   conferida: "Conferida",
+  cancelada: "Cancelada",
 };
 
 export type Desfecho = "entregue" | "parcial" | "reagendada" | "cancelada" | "ausente";
@@ -1455,6 +1466,132 @@ export interface Rota extends CamposComuns {
   paragens?: number;
   paragens_fechadas?: number;
   caixa_id?: string | null;
+  /** Fase 10 — planeamento e capacidade */
+  template_id?: string | null;
+  viatura_id?: string | null;
+  max_entregas?: number | null;
+  max_minutos_montagem?: number | null;
+  cancelada_em?: string | null;
+  motivo_cancelamento?: string | null;
+  template_nome?: string | null;
+  viatura_nome?: string | null;
+  viatura_cubicagem_m3?: number | null;
+  ocup_entregas?: number | null;
+  ocup_montagem_min?: number | null;
+  ocup_cubicagem_m3?: number | null;
+  ocup_peso_kg?: number | null;
+}
+
+// ============================================ Fase 10 — planeamento de rotas
+export interface Viatura extends CamposComuns {
+  nome: string;
+  matricula: string | null;
+  cubicagem_m3: number;
+  peso_max_kg: number | null;
+  consumo_l_100km: number | null;
+  observacoes: string | null;
+  ativa: boolean;
+}
+
+export type PeriodicidadeRota = "semanal" | "quinzenal" | "mensal";
+
+export const ETIQUETA_PERIODICIDADE_ROTA: Record<PeriodicidadeRota, string> = {
+  semanal: "Todas as semanas",
+  quinzenal: "A cada duas semanas",
+  mensal: "Uma vez por mês",
+};
+
+export const DIAS_SEMANA_ROTA: Array<{ valor: number; etiqueta: string; curto: string }> = [
+  { valor: 2, etiqueta: "Segunda-feira", curto: "Seg" },
+  { valor: 3, etiqueta: "Terça-feira", curto: "Ter" },
+  { valor: 4, etiqueta: "Quarta-feira", curto: "Qua" },
+  { valor: 5, etiqueta: "Quinta-feira", curto: "Qui" },
+  { valor: 6, etiqueta: "Sexta-feira", curto: "Sex" },
+  { valor: 7, etiqueta: "Sábado", curto: "Sáb" },
+  { valor: 1, etiqueta: "Domingo", curto: "Dom" },
+];
+
+export interface RotaTemplate extends CamposComuns {
+  nome: string;
+  periodicidade: PeriodicidadeRota;
+  dias_semana: number[];
+  semana_referencia: string | null;
+  max_entregas: number | null;
+  max_minutos_montagem: number | null;
+  viatura_id: string | null;
+  responsavel_id: string | null;
+  cp_inicio: string | null;
+  cp_fim: string | null;
+  zonas_entrega_ids: string[] | null;
+  ativo: boolean;
+  viatura?: string | null;
+  responsavel?: string | null;
+}
+
+export interface RotaOcupacao {
+  rota_id: string;
+  data: string;
+  nome: string;
+  estado: EstadoRota;
+  max_entregas: number | null;
+  max_minutos_montagem: number | null;
+  viatura_id: string | null;
+  viatura: string | null;
+  viatura_cubicagem_m3: number | null;
+  viatura_peso_max_kg: number | null;
+  entregas: number;
+  montagem_min: number;
+  cubicagem_m3: number;
+  peso_kg: number;
+}
+
+export interface PedidoPorAgendar {
+  id: string;
+  numero: string;
+  estado: EstadoPedido;
+  cliente_id: string;
+  cliente: string | null;
+  data_entrega_prevista: string | null;
+  data_entrega_prometida: string | null;
+  morada_entrega: string | null;
+  localidade_entrega: string | null;
+  cp4_entrega: string | null;
+  cp3_entrega: string | null;
+  entrega_domicilio: boolean;
+  zona_entrega_id: string | null;
+  total: number;
+  total_pago: number;
+  pendente: number;
+  dias_pronto: number;
+  montagem_min: number;
+  cubicagem_m3: number;
+  peso_kg: number;
+}
+
+export interface RotaSugerida {
+  rota_id: string;
+  data: string;
+  nome: string;
+  estado: EstadoRota;
+  responsavel: string | null;
+  viatura: string | null;
+  max_entregas: number | null;
+  entregas: number;
+  max_minutos_montagem: number | null;
+  montagem_min: number;
+  cubicagem_m3: number;
+  viatura_cubicagem_m3: number | null;
+  serve_zona: boolean;
+  excede: boolean;
+}
+
+export interface RotaAlteracao {
+  id: string;
+  criado_em: string;
+  rota_id: string;
+  tipo: "adicionou" | "retirou";
+  pedido_id: string | null;
+  descricao: string | null;
 }
 
 export interface RotaParagem extends CamposComuns {
@@ -1488,6 +1625,8 @@ export interface RotaParagem extends CamposComuns {
   cliente_telefone?: string | null;
   cliente_telefone_alt?: string | null;
   motivo_descricao?: string | null;
+  /** Fase 10 — a paragem entrou acima dos limites da rota. */
+  excedeu_capacidade?: boolean;
 }
 
 export interface RotaMovimento {
