@@ -79,7 +79,7 @@ const COR_ESTADO: Record<EstadoPedido, string> = {
   em_preparacao: "bg-amber-100 text-amber-900",
   pronto: "bg-emerald-100 text-emerald-900",
   agendado: "bg-sky-100 text-sky-900",
-
+  entrega_parcial: "bg-orange-100 text-orange-900",
   entregue: "bg-emerald-600/10 text-emerald-800",
   cancelado: "bg-destructive/10 text-destructive",
 };
