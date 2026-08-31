@@ -633,16 +633,75 @@ function DialogoParagem({
               placeholder="Nome de quem assinou"
             />
           </div>
+
+          <div className="space-y-2 rounded-md border p-3">
+            <p className="text-sm">
+              <span className="text-muted-foreground">Falta receber: </span>
+              <span className="font-semibold tabular-nums">{formatarDinheiro(faltaReceber)}</span>
+            </p>
+            {passo === "entregue" && faltaReceber > 0.004 && (
+              <p className="text-xs text-muted-foreground">
+                Para fechar a entrega tem de receber o valor, retirar um produto ou dar desconto.
+              </p>
+            )}
+            <div className="grid gap-2 sm:grid-cols-3">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setPasso("recebimento")}
+                disabled={faltaReceber <= 0.004}
+              >
+                <Wallet className="mr-2 h-4 w-4" /> Receber
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setPasso("retirar")}>
+                <Package className="mr-2 h-4 w-4" /> Retirar produto
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setPasso("desconto")}
+                disabled={faltaReceber <= 0.004}
+              >
+                Dar desconto
+              </Button>
+            </div>
+          </div>
+
           <Button
             type="button"
             className="w-full"
-            disabled={desfecho.isPending}
+            disabled={desfecho.isPending || (passo === "entregue" && faltaReceber > 0.004)}
             onClick={() => desfecho.mutate(passo)}
           >
             {desfecho.isPending ? "A registar…" : "Confirmar entrega"}
           </Button>
         </div>
       )}
+
+      {editavel && passo === "retirar" && (
+        <FormRetirar
+          paragemId={paragem.id}
+          linhas={linhas}
+          onFeito={() => {
+            recarregar();
+            setPasso("entregue");
+          }}
+          onVoltar={() => setPasso("entregue")}
+        />
+      )}
+
+      {editavel && passo === "desconto" && (
+        <FormDesconto
+          paragemId={paragem.id}
+          maximo={faltaReceber}
+          onFeito={() => {
+            recarregar();
+            setPasso("entregue");
+          }}
+          onVoltar={() => setPasso("entregue")}
+        />
+      )}
+
 
       {editavel && (passo === "reagendada" || passo === "ausente") && (
         <div className="space-y-3">
