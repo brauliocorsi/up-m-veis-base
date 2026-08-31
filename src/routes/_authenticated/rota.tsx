@@ -6,9 +6,11 @@ import {
   LifeBuoy,
   Lock,
   MapPin,
+  Package,
   Phone,
   Route as RouteIcon,
   Wallet,
+  Wrench,
   XCircle,
 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -35,15 +37,18 @@ import { lerLinhasEntrega } from "@/lib/erp/entregas";
 import { lerFormasAtivas } from "@/lib/erp/pagamentos";
 import {
   abrirAssistencia,
+  aplicarDescontoEntrega,
   fecharRota,
   lerContasDaRota,
   lerMotivosDe,
   lerMovimentosDaRota,
+  lerParagem,
   lerParagens,
   lerRotaDeHoje,
   registarDesfecho,
   registarRecebimentoEntrega,
   registarSaidaRota,
+  retirarItemEntrega,
   type LinhaRecebimento,
 } from "@/lib/erp/rotas";
 import {
