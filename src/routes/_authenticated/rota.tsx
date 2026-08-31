@@ -484,7 +484,7 @@ function DialogoParagem({
     onError: (e) => toast.error(mensagemErro(e)),
   });
 
-  const total = paragem.previsto_receber;
+  const total = faltaReceber;
 
   return (
     <DialogoForm
@@ -493,16 +493,26 @@ function DialogoParagem({
       titulo={`${paragem.cliente ?? "Cliente"} · ${paragem.pedido_numero ?? ""}`}
       descricao={
         editavel
-          ? `Previsto receber ${formatarDinheiro(total)}.`
+          ? `Falta receber ${formatarDinheiro(total)} · ${atual.n_itens ?? 0} itens${
+              (atual.n_montagens ?? 0) > 0 ? ` · ${atual.n_montagens} com montagem` : ""
+            }`
           : `Desfecho: ${paragem.desfecho ? ETIQUETA_DESFECHO[paragem.desfecho] : "—"}`
       }
       onGuardar={onFechar}
     >
-      {!editavel && (
-        <div className="space-y-2 text-sm">
+      {!editavel && passo === "escolher" && (
+        <div className="space-y-3 text-sm">
           <p>
-            <span className="text-muted-foreground">Previsto: </span>
-            {formatarDinheiro(paragem.previsto_receber)}
+            <span className="text-muted-foreground">Total: </span>
+            {formatarDinheiro(atual.total ?? 0)} ·{" "}
+            <span className="text-muted-foreground">pago </span>
+            {formatarDinheiro(atual.total_pago ?? 0)} ·{" "}
+            <span className="text-muted-foreground">falta </span>
+            {formatarDinheiro(faltaReceber)}
+          </p>
+          <p className="text-muted-foreground">
+            {atual.n_itens ?? 0} itens
+            {(atual.n_montagens ?? 0) > 0 ? ` · ${atual.n_montagens} com montagem` : ""}
           </p>
           {paragem.motivo_descricao && (
             <p>
@@ -517,6 +527,14 @@ function DialogoParagem({
               {paragem.data_reagendamento}
             </p>
           )}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full justify-start"
+            onClick={() => setPasso("assistencia")}
+          >
+            <LifeBuoy className="mr-2 h-5 w-5" /> Abrir assistência
+          </Button>
         </div>
       )}
 
