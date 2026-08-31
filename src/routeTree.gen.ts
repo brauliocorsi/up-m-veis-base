@@ -29,6 +29,7 @@ import { Route as AuthenticatedNecessidadesRouteImport } from './routes/_authent
 import { Route as AuthenticatedPagamentosRouteImport } from './routes/_authenticated/pagamentos'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPedidosCompraRouteImport } from './routes/_authenticated/pedidos-compra'
+import { Route as AuthenticatedPorAgendarRouteImport } from './routes/_authenticated/por-agendar'
 import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
 import { Route as AuthenticatedRecepcaoRouteImport } from './routes/_authenticated/recepcao'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
@@ -166,6 +167,11 @@ const AuthenticatedPedidosCompraRoute =
     path: '/pedidos-compra',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPorAgendarRoute = AuthenticatedPorAgendarRouteImport.update({
+  id: '/por-agendar',
+  path: '/por-agendar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProdutosRoute = AuthenticatedProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
@@ -353,6 +359,7 @@ export interface FileRoutesByFullPath {
   '/pagamentos': typeof AuthenticatedPagamentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/pedidos-compra': typeof AuthenticatedPedidosCompraRoute
+  '/por-agendar': typeof AuthenticatedPorAgendarRoute
   '/produtos': typeof AuthenticatedProdutosRoute
   '/recepcao': typeof AuthenticatedRecepcaoRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -403,6 +410,7 @@ export interface FileRoutesByTo {
   '/pagamentos': typeof AuthenticatedPagamentosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/pedidos-compra': typeof AuthenticatedPedidosCompraRoute
+  '/por-agendar': typeof AuthenticatedPorAgendarRoute
   '/produtos': typeof AuthenticatedProdutosRoute
   '/recepcao': typeof AuthenticatedRecepcaoRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -456,6 +464,7 @@ export interface FileRoutesById {
   '/_authenticated/pagamentos': typeof AuthenticatedPagamentosRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/pedidos-compra': typeof AuthenticatedPedidosCompraRoute
+  '/_authenticated/por-agendar': typeof AuthenticatedPorAgendarRoute
   '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
   '/_authenticated/recepcao': typeof AuthenticatedRecepcaoRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -508,6 +517,7 @@ export interface FileRouteTypes {
     | '/pagamentos'
     | '/painel'
     | '/pedidos-compra'
+    | '/por-agendar'
     | '/produtos'
     | '/recepcao'
     | '/relatorios'
@@ -558,6 +568,7 @@ export interface FileRouteTypes {
     | '/pagamentos'
     | '/painel'
     | '/pedidos-compra'
+    | '/por-agendar'
     | '/produtos'
     | '/recepcao'
     | '/relatorios'
@@ -610,6 +621,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pagamentos'
     | '/_authenticated/painel'
     | '/_authenticated/pedidos-compra'
+    | '/_authenticated/por-agendar'
     | '/_authenticated/produtos'
     | '/_authenticated/recepcao'
     | '/_authenticated/relatorios'
@@ -789,6 +801,13 @@ declare module '@tanstack/react-router' {
       path: '/pedidos-compra'
       fullPath: '/pedidos-compra'
       preLoaderRoute: typeof AuthenticatedPedidosCompraRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/por-agendar': {
+      id: '/_authenticated/por-agendar'
+      path: '/por-agendar'
+      fullPath: '/por-agendar'
+      preLoaderRoute: typeof AuthenticatedPorAgendarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/produtos': {
@@ -1059,6 +1078,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPagamentosRoute: typeof AuthenticatedPagamentosRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedPedidosCompraRoute: typeof AuthenticatedPedidosCompraRoute
+  AuthenticatedPorAgendarRoute: typeof AuthenticatedPorAgendarRoute
   AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
   AuthenticatedRecepcaoRoute: typeof AuthenticatedRecepcaoRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
@@ -1095,6 +1115,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPagamentosRoute: AuthenticatedPagamentosRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedPedidosCompraRoute: AuthenticatedPedidosCompraRoute,
+  AuthenticatedPorAgendarRoute: AuthenticatedPorAgendarRoute,
   AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,
   AuthenticatedRecepcaoRoute: AuthenticatedRecepcaoRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
