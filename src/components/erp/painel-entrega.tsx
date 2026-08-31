@@ -245,6 +245,7 @@ export function PainelEntrega({ pedido }: { pedido: Pedido }) {
         aberto={registar}
         pedidoId={pedido.id}
         linhas={linhas.data ?? []}
+        faltaPagar={faltaPagar}
         onFechar={() => setRegistar(false)}
         onRegistado={atualizar}
       />
