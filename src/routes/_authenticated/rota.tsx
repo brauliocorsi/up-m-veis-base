@@ -943,11 +943,6 @@ function FormDesconto({
   );
 }
 
-function _FimDialogoParagem() {
-  return null;
-    </DialogoForm>
-  );
-}
 
 function FormRecebimento({
   paragemId,
