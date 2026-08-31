@@ -1,0 +1,18 @@
+GRANT SELECT, INSERT, UPDATE ON erp.viaturas TO authenticated;
+GRANT ALL ON erp.viaturas TO service_role;
+GRANT SELECT, INSERT, UPDATE ON erp.rota_templates TO authenticated;
+GRANT ALL ON erp.rota_templates TO service_role;
+GRANT SELECT, INSERT, UPDATE ON erp.rota_alteracoes TO authenticated;
+GRANT ALL ON erp.rota_alteracoes TO service_role;
+GRANT SELECT ON erp.v_viaturas TO authenticated;
+GRANT SELECT ON erp.v_rota_templates TO authenticated;
+GRANT SELECT ON erp.v_rota_ocupacao TO authenticated;
+GRANT SELECT ON erp.v_pedidos_por_agendar TO authenticated;
+GRANT SELECT ON erp.v_rotas TO authenticated;
+GRANT SELECT ON erp.v_rota_paragens TO authenticated;
+GRANT SELECT ON erp.v_viaturas TO service_role;
+GRANT SELECT ON erp.v_rota_templates TO service_role;
+GRANT SELECT ON erp.v_rota_ocupacao TO service_role;
+GRANT SELECT ON erp.v_pedidos_por_agendar TO service_role;
+GRANT SELECT ON erp.v_rotas TO service_role;
+GRANT SELECT ON erp.v_rota_paragens TO service_role;
