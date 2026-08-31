@@ -116,6 +116,7 @@ export function PainelEntrega({ pedido }: { pedido: Pedido }) {
   const entregue = (linhas.data ?? []).reduce((s, l) => s + Number(l.qt_entregue), 0);
   const podeEntregar =
     perms.entregar && ESTADOS_ENTREGAVEIS.includes(pedido.estado) && porEntregar > 0;
+  const faltaPagar = Math.max(Number(pedido.total ?? 0) - Number(pedido.total_pago ?? 0), 0);
 
   return (
     <>
@@ -178,6 +179,12 @@ export function PainelEntrega({ pedido }: { pedido: Pedido }) {
               <Truck className="mr-2 h-4 w-4" /> Registar entrega
             </Button>
           )}
+          {podeEntregar && faltaPagar > 0.004 && (
+            <p className="text-xs text-destructive">
+              Faltam receber {formatarDinheiro(faltaPagar)}. Registe o recebimento antes de fechar a
+              entrega — só é possível entregar parte do que falta.
+            </p>
+          )}
           {!perms.entregar && (
             <p className="text-xs text-muted-foreground">
               O seu perfil não pode registar entregas.
@@ -238,6 +245,7 @@ export function PainelEntrega({ pedido }: { pedido: Pedido }) {
         aberto={registar}
         pedidoId={pedido.id}
         linhas={linhas.data ?? []}
+        faltaPagar={faltaPagar}
         onFechar={() => setRegistar(false)}
         onRegistado={atualizar}
       />
@@ -323,6 +331,7 @@ export function DialogoRegistarEntrega({
   aberto,
   pedidoId,
   linhas,
+  faltaPagar = 0,
   onFechar,
   onRegistado,
 }: {
@@ -335,6 +344,8 @@ export function DialogoRegistarEntrega({
     qt_por_entregar: number;
     qt_entregue: number;
   }>;
+  /** Valor ainda por receber da venda. Não se fecha uma venda com dinheiro em falta. */
+  faltaPagar?: number;
   onFechar: () => void;
   onRegistado: () => void;
 }) {
@@ -373,6 +384,14 @@ export function DialogoRegistarEntrega({
         });
       }
       if (escolhidas.length === 0) throw new Error("Indique as quantidades que vai entregar.");
+      const fecha =
+        linhas.reduce((s, l) => s + Number(l.qt_por_entregar), 0) ===
+        escolhidas.reduce((s, e) => s + Number(e.quantidade), 0);
+      if (fecha && Number(faltaPagar) > 0.004) {
+        throw new Error(
+          `Esta venda ainda tem ${formatarDinheiro(faltaPagar)} a receber. Registe o recebimento antes de marcar como entregue.`,
+        );
+      }
       return registarEntrega({
         pedido_id: pedidoId,
         linhas: escolhidas,
