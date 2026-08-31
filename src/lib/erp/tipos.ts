@@ -1372,7 +1372,10 @@ export interface LinhaEntrega {
   qt_por_entregar: number;
   pedido_numero: string | null;
   pedido_estado: EstadoPedido;
+  data_primeira_entrega?: string | null;
+  data_entrega_efetiva?: string | null;
 }
+
 
 export interface DocumentoFiscal extends CamposComuns {
   pedido_id: string;
