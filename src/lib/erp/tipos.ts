@@ -1630,6 +1630,10 @@ export interface RotaParagem extends CamposComuns {
   cliente_telefone?: string | null;
   cliente_telefone_alt?: string | null;
   motivo_descricao?: string | null;
+  /** Unidades a entregar nesta venda e quantas levam montagem. */
+  n_itens?: number;
+  n_montagens?: number;
+  desconto_entrega?: number;
   /** Fase 10 — a paragem entrou acima dos limites da rota. */
   excedeu_capacidade?: boolean;
 }
