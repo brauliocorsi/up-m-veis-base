@@ -755,8 +755,21 @@ function DialogoParagem({
         <FormRecebimento
           paragemId={paragem.id}
           previsto={total}
-          onFeito={onFeito}
-          onSaltar={onFeito}
+          onFeito={() => {
+            if (entregaId) {
+              onFeito();
+            } else {
+              recarregar();
+              setPasso("entregue");
+            }
+          }}
+          onSaltar={() => {
+            if (entregaId) {
+              onFeito();
+            } else {
+              setPasso("entregue");
+            }
+          }}
           entregaId={entregaId}
         />
       )}
@@ -767,6 +780,171 @@ function DialogoParagem({
           onFeito={() => setPasso("escolher")}
         />
       )}
+    </DialogoForm>
+  );
+}
+
+// ------------------------------------------------------ retirar produto na rua
+function FormRetirar({
+  paragemId,
+  linhas,
+  onFeito,
+  onVoltar,
+}: {
+  paragemId: string;
+  linhas: { pedido_item_id: string; descricao: string; qt_por_entregar: number }[];
+  onFeito: () => void;
+  onVoltar: () => void;
+}) {
+  const [itemId, setItemId] = useState("");
+  const [quantidade, setQuantidade] = useState(1);
+  const [motivo, setMotivo] = useState("");
+
+  const guardar = useMutation({
+    mutationFn: () =>
+      retirarItemEntrega({
+        paragem_id: paragemId,
+        pedido_item_id: itemId,
+        quantidade,
+        motivo,
+      }),
+    onSuccess: (r) => {
+      toast.success(
+        `Produto retirado. Falta receber ${formatarDinheiro(Number(r.falta_receber ?? 0))}.`,
+      );
+      onFeito();
+    },
+    onError: (e) => toast.error(mensagemErro(e)),
+  });
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <Label>Produto a retirar</Label>
+        <Select value={itemId} onValueChange={setItemId}>
+          <SelectTrigger>
+            <SelectValue placeholder="Escolher produto" />
+          </SelectTrigger>
+          <SelectContent>
+            {linhas.map((l) => (
+              <SelectItem key={l.pedido_item_id} value={l.pedido_item_id}>
+                {l.descricao} ({l.qt_por_entregar} por entregar)
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label htmlFor="qt-retirar">Quantidade</Label>
+        <Input
+          id="qt-retirar"
+          type="number"
+          min={1}
+          step="1"
+          value={quantidade}
+          onChange={(e) => setQuantidade(Math.max(1, Number(e.target.value || 1)))}
+        />
+      </div>
+      <div>
+        <Label htmlFor="motivo-retirar">Motivo</Label>
+        <Textarea
+          id="motivo-retirar"
+          value={motivo}
+          onChange={(e) => setMotivo(e.target.value)}
+          placeholder="Porque é que o produto não ficou com o cliente"
+        />
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <Button type="button" variant="outline" onClick={onVoltar}>
+          Voltar
+        </Button>
+        <Button
+          type="button"
+          disabled={guardar.isPending || !itemId || motivo.trim().length < 3}
+          onClick={() => guardar.mutate()}
+        >
+          {guardar.isPending ? "A retirar…" : "Retirar produto"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------- desconto
+function FormDesconto({
+  paragemId,
+  maximo,
+  onFeito,
+  onVoltar,
+}: {
+  paragemId: string;
+  maximo: number;
+  onFeito: () => void;
+  onVoltar: () => void;
+}) {
+  const [valor, setValor] = useState("");
+  const [motivo, setMotivo] = useState("");
+
+  const guardar = useMutation({
+    mutationFn: () => aplicarDescontoEntrega(paragemId, Number(valor || 0), motivo),
+    onSuccess: (r) => {
+      toast.success(
+        `Desconto registado. Falta receber ${formatarDinheiro(Number(r.falta_receber ?? 0))}.`,
+      );
+      onFeito();
+    },
+    onError: (e) => toast.error(mensagemErro(e)),
+  });
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        Desconto máximo nesta paragem: {formatarDinheiro(maximo)}. Fica registado com o seu nome.
+      </p>
+      <div>
+        <Label htmlFor="valor-desconto">Valor do desconto</Label>
+        <Input
+          id="valor-desconto"
+          type="number"
+          min={0}
+          max={maximo}
+          step="0.01"
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+        />
+      </div>
+      <div>
+        <Label htmlFor="motivo-desconto">Motivo</Label>
+        <Textarea
+          id="motivo-desconto"
+          value={motivo}
+          onChange={(e) => setMotivo(e.target.value)}
+          placeholder="Porque é que deu desconto ao cliente"
+        />
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <Button type="button" variant="outline" onClick={onVoltar}>
+          Voltar
+        </Button>
+        <Button
+          type="button"
+          disabled={
+            guardar.isPending ||
+            Number(valor || 0) <= 0 ||
+            Number(valor || 0) > maximo + 0.004 ||
+            motivo.trim().length < 3
+          }
+          onClick={() => guardar.mutate()}
+        >
+          {guardar.isPending ? "A registar…" : "Dar desconto"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function _FimDialogoParagem() {
+  return null;
     </DialogoForm>
   );
 }
