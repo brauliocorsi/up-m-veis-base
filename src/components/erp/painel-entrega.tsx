@@ -323,6 +323,7 @@ export function DialogoRegistarEntrega({
   aberto,
   pedidoId,
   linhas,
+  faltaPagar = 0,
   onFechar,
   onRegistado,
 }: {
@@ -335,6 +336,8 @@ export function DialogoRegistarEntrega({
     qt_por_entregar: number;
     qt_entregue: number;
   }>;
+  /** Valor ainda por receber da venda. Não se fecha uma venda com dinheiro em falta. */
+  faltaPagar?: number;
   onFechar: () => void;
   onRegistado: () => void;
 }) {
