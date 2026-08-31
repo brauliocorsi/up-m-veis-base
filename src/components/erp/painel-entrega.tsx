@@ -116,6 +116,7 @@ export function PainelEntrega({ pedido }: { pedido: Pedido }) {
   const entregue = (linhas.data ?? []).reduce((s, l) => s + Number(l.qt_entregue), 0);
   const podeEntregar =
     perms.entregar && ESTADOS_ENTREGAVEIS.includes(pedido.estado) && porEntregar > 0;
+  const faltaPagar = Math.max(Number(pedido.total ?? 0) - Number(pedido.total_pago ?? 0), 0);
 
   return (
     <>
