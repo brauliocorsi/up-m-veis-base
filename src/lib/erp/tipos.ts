@@ -612,6 +612,8 @@ export interface Pedido extends CamposComuns {
   estado: EstadoPedido;
   data_entrega_prevista: string | null;
   data_entrega_prometida: string | null;
+  /** Fase 10 — data da rota onde a venda foi encaixada. */
+  data_entrega_agendada?: string | null;
   data_entrega_origem: "calculada" | "manual";
   motivo_data_id: string | null;
   nota_data: string | null;
