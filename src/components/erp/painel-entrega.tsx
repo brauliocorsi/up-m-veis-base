@@ -179,6 +179,12 @@ export function PainelEntrega({ pedido }: { pedido: Pedido }) {
               <Truck className="mr-2 h-4 w-4" /> Registar entrega
             </Button>
           )}
+          {podeEntregar && faltaPagar > 0.004 && (
+            <p className="text-xs text-destructive">
+              Faltam receber {formatarDinheiro(faltaPagar)}. Registe o recebimento antes de fechar a
+              entrega — só é possível entregar parte do que falta.
+            </p>
+          )}
           {!perms.entregar && (
             <p className="text-xs text-muted-foreground">
               O seu perfil não pode registar entregas.
