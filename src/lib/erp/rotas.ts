@@ -295,3 +295,259 @@ export async function receberEnvelopeRota(rotaId: string, valor?: number | null)
   });
   if (error) throw error;
 }
+
+// ============================================ Fase 10 — planeamento de rotas
+export async function lerViaturas(params?: { incluirInativas?: boolean }): Promise<Viatura[]> {
+  let consulta = erp().from("v_viaturas").select("*").order("nome", { ascending: true });
+  if (!params?.incluirInativas) consulta = consulta.eq("ativa", true);
+  const { data, error } = await consulta;
+  if (error) throw error;
+  return (data ?? []) as Viatura[];
+}
+
+export async function guardarViatura(
+  valores: {
+    nome: string;
+    matricula?: string | null;
+    cubicagem_m3: number;
+    peso_max_kg?: number | null;
+    consumo_l_100km?: number | null;
+    observacoes?: string | null;
+    ativa?: boolean;
+  },
+  id?: string,
+): Promise<void> {
+  const linha = {
+    nome: valores.nome.trim(),
+    matricula: valores.matricula?.trim() || null,
+    cubicagem_m3: valores.cubicagem_m3,
+    peso_max_kg: valores.peso_max_kg ?? null,
+    consumo_l_100km: valores.consumo_l_100km ?? null,
+    observacoes: valores.observacoes?.trim() || null,
+    ativa: valores.ativa ?? true,
+  };
+  const { error } = id
+    ? await erp().from("viaturas").update(linha).eq("id", id)
+    : await erp().from("viaturas").insert(linha);
+  if (error) throw error;
+}
+
+export async function eliminarViatura(id: string, motivo: string): Promise<void> {
+  const { error } = await erp()
+    .from("viaturas")
+    .update({ eliminado_em: new Date().toISOString(), motivo_eliminacao: motivo, ativa: false })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+export async function lerTemplates(params?: { incluirInativos?: boolean }): Promise<RotaTemplate[]> {
+  let consulta = erp().from("v_rota_templates").select("*").order("nome", { ascending: true });
+  if (!params?.incluirInativos) consulta = consulta.eq("ativo", true);
+  const { data, error } = await consulta;
+  if (error) throw error;
+  return (data ?? []) as RotaTemplate[];
+}
+
+export async function guardarTemplate(
+  valores: {
+    nome: string;
+    periodicidade: Periodicidade;
+    dias_semana: number[];
+    semana_referencia?: string | null;
+    max_entregas?: number | null;
+    max_minutos_montagem?: number | null;
+    viatura_id?: string | null;
+    responsavel_id?: string | null;
+    cp_inicio?: string | null;
+    cp_fim?: string | null;
+    zonas_entrega_ids?: string[] | null;
+    ativo?: boolean;
+  },
+  id?: string,
+): Promise<void> {
+  const linha = {
+    nome: valores.nome.trim(),
+    periodicidade: valores.periodicidade,
+    dias_semana: valores.dias_semana,
+    semana_referencia: valores.semana_referencia || null,
+    max_entregas: valores.max_entregas ?? null,
+    max_minutos_montagem: valores.max_minutos_montagem ?? null,
+    viatura_id: valores.viatura_id || null,
+    responsavel_id: valores.responsavel_id || null,
+    cp_inicio: valores.cp_inicio?.trim() || null,
+    cp_fim: valores.cp_fim?.trim() || null,
+    zonas_entrega_ids: valores.zonas_entrega_ids?.length ? valores.zonas_entrega_ids : null,
+    ativo: valores.ativo ?? true,
+  };
+  const { error } = id
+    ? await erp().from("rota_templates").update(linha).eq("id", id)
+    : await erp().from("rota_templates").insert(linha);
+  if (error) throw error;
+}
+
+export async function eliminarTemplate(id: string, motivo: string): Promise<void> {
+  const { error } = await erp()
+    .from("rota_templates")
+    .update({ eliminado_em: new Date().toISOString(), motivo_eliminacao: motivo, ativo: false })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+/** Pré-visualização das datas que um modelo vai gerar. */
+export async function preverDatasTemplate(params: {
+  periodicidade: Periodicidade;
+  dias_semana: number[];
+  semana_referencia?: string | null;
+  de?: string | null;
+  ate?: string | null;
+}): Promise<string[]> {
+  const { data, error } = await erp().rpc("datas_template", {
+    p_periodicidade: params.periodicidade,
+    p_dias_semana: params.dias_semana,
+    p_semana_referencia: params.semana_referencia ?? null,
+    p_de: params.de ?? null,
+    p_ate: params.ate ?? null,
+  });
+  if (error) throw error;
+  return (data ?? []) as string[];
+}
+
+/** Corre a geração das rotas das próximas semanas a partir dos modelos ativos. */
+export async function gerarRotasDosTemplates(semanas = 6): Promise<number> {
+  const { data, error } = await erp().rpc("gerar_rotas_templates", { p_semanas: semanas });
+  if (error) throw error;
+  return Number(data ?? 0);
+}
+
+export async function criarRota(params: {
+  nome: string;
+  data: string;
+  responsavel_id?: string | null;
+  viatura_id?: string | null;
+  template_id?: string | null;
+  max_entregas?: number | null;
+  max_minutos_montagem?: number | null;
+}): Promise<string> {
+  const { data, error } = await erp().rpc("criar_rota", {
+    p_nome: params.nome,
+    p_data: params.data,
+    p_responsavel_id: params.responsavel_id ?? null,
+    p_viatura_id: params.viatura_id ?? null,
+    p_template_id: params.template_id ?? null,
+    p_max_entregas: params.max_entregas ?? null,
+    p_max_minutos_montagem: params.max_minutos_montagem ?? null,
+  });
+  if (error) throw error;
+  return data as string;
+}
+
+export async function lerOcupacaoRota(rotaId: string): Promise<RotaOcupacao | null> {
+  const { data, error } = await erp()
+    .from("v_rota_ocupacao")
+    .select("*")
+    .eq("rota_id", rotaId)
+    .maybeSingle();
+  if (error) throw error;
+  return (data ?? null) as RotaOcupacao | null;
+}
+
+export async function lerPedidosPorAgendar(): Promise<PedidoPorAgendar[]> {
+  const { data, error } = await erp()
+    .from("v_pedidos_por_agendar")
+    .select("*")
+    .order("data_entrega_prevista", { ascending: true })
+    .limit(300);
+  if (error) throw error;
+  return (data ?? []) as PedidoPorAgendar[];
+}
+
+export async function lerRotasSugeridas(pedidoId: string): Promise<RotaSugerida[]> {
+  const { data, error } = await erp().rpc("rotas_sugeridas", { p_pedido_id: pedidoId });
+  if (error) throw error;
+  return (data ?? []) as RotaSugerida[];
+}
+
+export async function lerAlteracoesRota(rotaId: string): Promise<RotaAlteracao[]> {
+  const { data, error } = await erp()
+    .from("rota_alteracoes")
+    .select("*")
+    .eq("rota_id", rotaId)
+    .is("eliminado_em", null)
+    .order("criado_em", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as RotaAlteracao[];
+}
+
+export async function agendarEntrega(params: {
+  pedido_id: string;
+  rota_id: string;
+  confirmar?: boolean;
+}): Promise<{ rota_id: string; data: string; excedeu_capacidade: boolean; avisos: string[] }> {
+  const { data, error } = await erp().rpc("agendar_entrega", {
+    p_pedido_id: params.pedido_id,
+    p_rota_id: params.rota_id,
+    p_confirmar: params.confirmar ?? false,
+  });
+  if (error) throw error;
+  return data as { rota_id: string; data: string; excedeu_capacidade: boolean; avisos: string[] };
+}
+
+export async function desagendarEntrega(params: {
+  pedido_id: string;
+  motivo?: string | null;
+  confirmar?: boolean;
+}): Promise<void> {
+  const { error } = await erp().rpc("desagendar_entrega", {
+    p_pedido_id: params.pedido_id,
+    p_motivo: params.motivo ?? null,
+    p_confirmar: params.confirmar ?? false,
+  });
+  if (error) throw error;
+}
+
+export async function definirViaturaRota(rotaId: string, viaturaId: string | null): Promise<void> {
+  const { error } = await erp().rpc("definir_viatura_rota", {
+    p_rota_id: rotaId,
+    p_viatura_id: viaturaId,
+  });
+  if (error) throw error;
+}
+
+export async function definirResponsavelRota(rotaId: string, responsavelId: string): Promise<void> {
+  const { error } = await erp().rpc("definir_responsavel_rota", {
+    p_rota_id: rotaId,
+    p_responsavel_id: responsavelId,
+  });
+  if (error) throw error;
+}
+
+export async function definirLimitesRota(
+  rotaId: string,
+  maxEntregas: number | null,
+  maxMinutos: number | null,
+): Promise<void> {
+  const { error } = await erp().rpc("definir_limites_rota", {
+    p_rota_id: rotaId,
+    p_max_entregas: maxEntregas,
+    p_max_minutos_montagem: maxMinutos,
+  });
+  if (error) throw error;
+}
+
+export async function reordenarParagens(rotaId: string, ordem: string[]): Promise<void> {
+  const { error } = await erp().rpc("reordenar_paragens", {
+    p_rota_id: rotaId,
+    p_ordem: ordem,
+  });
+  if (error) throw error;
+}
+
+export async function arrancarRota(rotaId: string): Promise<void> {
+  const { error } = await erp().rpc("arrancar_rota", { p_rota_id: rotaId });
+  if (error) throw error;
+}
+
+export async function cancelarRota(rotaId: string, motivo: string): Promise<void> {
+  const { error } = await erp().rpc("cancelar_rota", { p_rota_id: rotaId, p_motivo: motivo });
+  if (error) throw error;
+}
