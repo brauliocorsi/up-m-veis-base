@@ -1625,6 +1625,8 @@ export interface RotaParagem extends CamposComuns {
   cliente_telefone?: string | null;
   cliente_telefone_alt?: string | null;
   motivo_descricao?: string | null;
+  /** Fase 10 — a paragem entrou acima dos limites da rota. */
+  excedeu_capacidade?: boolean;
 }
 
 export interface RotaMovimento {
