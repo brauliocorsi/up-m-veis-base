@@ -542,6 +542,7 @@ export type EstadoPedido =
   | "confirmado"
   | "em_preparacao"
   | "pronto"
+  | "agendado"
   | "entregue"
   | "cancelado";
 
@@ -550,6 +551,7 @@ export const ETIQUETA_PEDIDO: Record<EstadoPedido, string> = {
   confirmado: "Confirmado",
   em_preparacao: "Em preparação",
   pronto: "Pronto",
+  agendado: "Agendado",
   entregue: "Entregue",
   cancelado: "Cancelado",
 };
