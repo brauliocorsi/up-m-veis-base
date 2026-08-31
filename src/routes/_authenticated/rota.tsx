@@ -412,15 +412,32 @@ function DialogoParagem({
   onFechar: () => void;
   onFeito: () => void;
 }) {
-  const [passo, setPasso] = useState<"escolher" | Desfecho | "recebimento" | "assistencia">(
-    editavel ? "escolher" : "escolher",
-  );
+  const [passo, setPasso] = useState<
+    "escolher" | Desfecho | "recebimento" | "assistencia" | "retirar" | "desconto"
+  >("escolher");
+  const qc = useQueryClient();
 
   const linhasQ = useQuery({
     queryKey: ["paragem-linhas", paragem.pedido_id],
     queryFn: () => lerLinhasEntrega(paragem.pedido_id),
   });
   const linhas = linhasQ.data ?? [];
+  const paragemQ = useQuery({
+    queryKey: ["paragem", paragem.id],
+    queryFn: () => lerParagem(paragem.id),
+    initialData: paragem,
+  });
+  const atual = paragemQ.data ?? paragem;
+  const faltaReceber = Number(atual.pendente ?? atual.previsto_receber ?? 0);
+
+  const recarregar = () => {
+    qc.invalidateQueries({ queryKey: ["paragem", paragem.id] });
+    qc.invalidateQueries({ queryKey: ["paragem-linhas", paragem.pedido_id] });
+    qc.invalidateQueries({ queryKey: ["rota-paragens"] });
+    qc.invalidateQueries({ queryKey: ["rota-contas"] });
+    qc.invalidateQueries({ queryKey: ["rota-movimentos"] });
+  };
+
   const [quantidades, setQuantidades] = useState<Record<string, number>>({});
   const [recebidoPor, setRecebidoPor] = useState("");
   const [motivoId, setMotivoId] = useState("");
