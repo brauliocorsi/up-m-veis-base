@@ -322,6 +322,48 @@ function CartaoParagem({
             <Badge variant="outline">{formatarDinheiro(paragem.previsto_receber)} a receber</Badge>
           )}
         </div>
+
+        <div className="flex flex-wrap gap-2 text-xs">
+          <Badge variant="secondary">
+            <Package className="mr-1 h-3 w-3" />
+            {paragem.n_itens ?? 0} {(paragem.n_itens ?? 0) === 1 ? "item" : "itens"}
+          </Badge>
+          {(paragem.n_montagens ?? 0) > 0 && (
+            <Badge variant="secondary">
+              <Wrench className="mr-1 h-3 w-3" />
+              {paragem.n_montagens} com montagem
+            </Badge>
+          )}
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 rounded-md bg-muted/50 p-2 text-center text-xs">
+          <div>
+            <p className="text-muted-foreground">Total</p>
+            <p className="font-medium tabular-nums">{formatarDinheiro(paragem.total ?? 0)}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">Já pago</p>
+            <p className="font-medium tabular-nums">{formatarDinheiro(paragem.total_pago ?? 0)}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">Falta receber</p>
+            <p
+              className={
+                (paragem.pendente ?? 0) > 0
+                  ? "font-semibold tabular-nums text-primary"
+                  : "font-medium tabular-nums"
+              }
+            >
+              {formatarDinheiro(paragem.pendente ?? 0)}
+            </p>
+          </div>
+        </div>
+        {(paragem.desconto_entrega ?? 0) > 0 && (
+          <p className="text-xs text-muted-foreground">
+            Desconto dado na entrega: {formatarDinheiro(paragem.desconto_entrega ?? 0)}
+          </p>
+        )}
+
         {morada && (
           <p className="flex items-start gap-2 text-sm text-muted-foreground">
             <MapPin className="mt-0.5 h-4 w-4 shrink-0" /> {morada}
