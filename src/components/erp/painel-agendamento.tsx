@@ -104,7 +104,7 @@ export function PainelAgendamento({ pedido }: { pedido: Pedido }) {
         <DialogoAgendar
           pedidoId={pedido.id}
           onFechar={() => setAberto(false)}
-          onFeito={recarregar}
+          onAgendado={recarregar}
         />
       )}
     </Card>
