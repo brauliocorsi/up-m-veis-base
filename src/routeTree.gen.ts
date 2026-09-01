@@ -16,6 +16,7 @@ import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAssistenciasRouteImport } from './routes/_authenticated/assistencias'
 import { Route as AuthenticatedCaixaRouteImport } from './routes/_authenticated/caixa'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
+import { Route as AuthenticatedCentrosTrabalhoRouteImport } from './routes/_authenticated/centros-trabalho'
 import { Route as AuthenticatedChaoFabricaRouteImport } from './routes/_authenticated/chao-fabrica'
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
 import { Route as AuthenticatedComponentesRouteImport } from './routes/_authenticated/componentes'
@@ -102,6 +103,12 @@ const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
   path: '/categorias',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCentrosTrabalhoRoute =
+  AuthenticatedCentrosTrabalhoRouteImport.update({
+    id: '/centros-trabalho',
+    path: '/centros-trabalho',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedChaoFabricaRoute =
   AuthenticatedChaoFabricaRouteImport.update({
     id: '/chao-fabrica',
@@ -394,6 +401,7 @@ export interface FileRoutesByFullPath {
   '/assistencias': typeof AuthenticatedAssistenciasRoute
   '/caixa': typeof AuthenticatedCaixaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
+  '/centros-trabalho': typeof AuthenticatedCentrosTrabalhoRoute
   '/chao-fabrica': typeof AuthenticatedChaoFabricaRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/componentes': typeof AuthenticatedComponentesRoute
@@ -452,6 +460,7 @@ export interface FileRoutesByTo {
   '/assistencias': typeof AuthenticatedAssistenciasRoute
   '/caixa': typeof AuthenticatedCaixaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
+  '/centros-trabalho': typeof AuthenticatedCentrosTrabalhoRoute
   '/chao-fabrica': typeof AuthenticatedChaoFabricaRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/componentes': typeof AuthenticatedComponentesRoute
@@ -513,6 +522,7 @@ export interface FileRoutesById {
   '/_authenticated/assistencias': typeof AuthenticatedAssistenciasRoute
   '/_authenticated/caixa': typeof AuthenticatedCaixaRoute
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
+  '/_authenticated/centros-trabalho': typeof AuthenticatedCentrosTrabalhoRoute
   '/_authenticated/chao-fabrica': typeof AuthenticatedChaoFabricaRoute
   '/_authenticated/clientes': typeof AuthenticatedClientesRoute
   '/_authenticated/componentes': typeof AuthenticatedComponentesRoute
@@ -573,6 +583,7 @@ export interface FileRouteTypes {
     | '/assistencias'
     | '/caixa'
     | '/categorias'
+    | '/centros-trabalho'
     | '/chao-fabrica'
     | '/clientes'
     | '/componentes'
@@ -631,6 +642,7 @@ export interface FileRouteTypes {
     | '/assistencias'
     | '/caixa'
     | '/categorias'
+    | '/centros-trabalho'
     | '/chao-fabrica'
     | '/clientes'
     | '/componentes'
@@ -691,6 +703,7 @@ export interface FileRouteTypes {
     | '/_authenticated/assistencias'
     | '/_authenticated/caixa'
     | '/_authenticated/categorias'
+    | '/_authenticated/centros-trabalho'
     | '/_authenticated/chao-fabrica'
     | '/_authenticated/clientes'
     | '/_authenticated/componentes'
@@ -800,6 +813,13 @@ declare module '@tanstack/react-router' {
       path: '/categorias'
       fullPath: '/categorias'
       preLoaderRoute: typeof AuthenticatedCategoriasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/centros-trabalho': {
+      id: '/_authenticated/centros-trabalho'
+      path: '/centros-trabalho'
+      fullPath: '/centros-trabalho'
+      preLoaderRoute: typeof AuthenticatedCentrosTrabalhoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/chao-fabrica': {
@@ -1204,6 +1224,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAssistenciasRoute: typeof AuthenticatedAssistenciasRoute
   AuthenticatedCaixaRoute: typeof AuthenticatedCaixaRoute
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
+  AuthenticatedCentrosTrabalhoRoute: typeof AuthenticatedCentrosTrabalhoRoute
   AuthenticatedChaoFabricaRoute: typeof AuthenticatedChaoFabricaRoute
   AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
   AuthenticatedComponentesRoute: typeof AuthenticatedComponentesRoute
@@ -1248,6 +1269,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAssistenciasRoute: AuthenticatedAssistenciasRoute,
   AuthenticatedCaixaRoute: AuthenticatedCaixaRoute,
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
+  AuthenticatedCentrosTrabalhoRoute: AuthenticatedCentrosTrabalhoRoute,
   AuthenticatedChaoFabricaRoute: AuthenticatedChaoFabricaRoute,
   AuthenticatedClientesRoute: AuthenticatedClientesRoute,
   AuthenticatedComponentesRoute: AuthenticatedComponentesRoute,
