@@ -1831,6 +1831,12 @@ export interface OrdemProducao {
   prioridade: number;
   observacoes: string | null;
   dias_atraso: number;
+  destino: "cliente" | "stock";
+  plano_id: string | null;
+  plano_nome: string | null;
+  op_pai_id: string | null;
+  op_pai_numero: string | null;
+  sub_ops: number;
   necessidades: number;
   consumos_em_falta: number;
   criado_em: string;
