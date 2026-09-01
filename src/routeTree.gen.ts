@@ -64,6 +64,7 @@ import { Route as AuthenticatedOrdensProducaoIndexRouteImport } from './routes/_
 import { Route as AuthenticatedOrdensProducaoOpIdRouteImport } from './routes/_authenticated/ordens-producao.$opId'
 import { Route as AuthenticatedPedidosIndexRouteImport } from './routes/_authenticated/pedidos.index'
 import { Route as AuthenticatedPedidosPedidoIdRouteImport } from './routes/_authenticated/pedidos.$pedidoId'
+import { Route as AuthenticatedPlanosProducaoIndexRouteImport } from './routes/_authenticated/planos-producao.index'
 import { Route as AuthenticatedRotasIndexRouteImport } from './routes/_authenticated/rotas.index'
 import { Route as AuthenticatedRotasRotaIdRouteImport } from './routes/_authenticated/rotas.$rotaId'
 import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
@@ -372,6 +373,12 @@ const AuthenticatedPedidosPedidoIdRoute =
     path: '/pedidos/$pedidoId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPlanosProducaoIndexRoute =
+  AuthenticatedPlanosProducaoIndexRouteImport.update({
+    id: '/planos-producao/',
+    path: '/planos-producao/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedRotasIndexRoute = AuthenticatedRotasIndexRouteImport.update({
   id: '/rotas/',
   path: '/rotas/',
@@ -457,6 +464,7 @@ export interface FileRoutesByFullPath {
   '/ordens-compra/': typeof AuthenticatedOrdensCompraIndexRoute
   '/ordens-producao/': typeof AuthenticatedOrdensProducaoIndexRoute
   '/pedidos/': typeof AuthenticatedPedidosIndexRoute
+  '/planos-producao/': typeof AuthenticatedPlanosProducaoIndexRoute
   '/rotas/': typeof AuthenticatedRotasIndexRoute
   '/stock/': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
@@ -517,6 +525,7 @@ export interface FileRoutesByTo {
   '/ordens-compra': typeof AuthenticatedOrdensCompraIndexRoute
   '/ordens-producao': typeof AuthenticatedOrdensProducaoIndexRoute
   '/pedidos': typeof AuthenticatedPedidosIndexRoute
+  '/planos-producao': typeof AuthenticatedPlanosProducaoIndexRoute
   '/rotas': typeof AuthenticatedRotasIndexRoute
   '/stock': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
@@ -580,6 +589,7 @@ export interface FileRoutesById {
   '/_authenticated/ordens-compra/': typeof AuthenticatedOrdensCompraIndexRoute
   '/_authenticated/ordens-producao/': typeof AuthenticatedOrdensProducaoIndexRoute
   '/_authenticated/pedidos/': typeof AuthenticatedPedidosIndexRoute
+  '/_authenticated/planos-producao/': typeof AuthenticatedPlanosProducaoIndexRoute
   '/_authenticated/rotas/': typeof AuthenticatedRotasIndexRoute
   '/_authenticated/stock/': typeof AuthenticatedStockIndexRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
@@ -642,6 +652,7 @@ export interface FileRouteTypes {
     | '/ordens-compra/'
     | '/ordens-producao/'
     | '/pedidos/'
+    | '/planos-producao/'
     | '/rotas/'
     | '/stock/'
     | '/api/public/hooks/sync-contagem'
@@ -702,6 +713,7 @@ export interface FileRouteTypes {
     | '/ordens-compra'
     | '/ordens-producao'
     | '/pedidos'
+    | '/planos-producao'
     | '/rotas'
     | '/stock'
     | '/api/public/hooks/sync-contagem'
@@ -764,6 +776,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ordens-compra/'
     | '/_authenticated/ordens-producao/'
     | '/_authenticated/pedidos/'
+    | '/_authenticated/planos-producao/'
     | '/_authenticated/rotas/'
     | '/_authenticated/stock/'
     | '/api/public/hooks/sync-contagem'
@@ -1163,6 +1176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPedidosPedidoIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/planos-producao/': {
+      id: '/_authenticated/planos-producao/'
+      path: '/planos-producao'
+      fullPath: '/planos-producao/'
+      preLoaderRoute: typeof AuthenticatedPlanosProducaoIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/rotas/': {
       id: '/_authenticated/rotas/'
       path: '/rotas'
@@ -1280,6 +1300,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOrdensCompraIndexRoute: typeof AuthenticatedOrdensCompraIndexRoute
   AuthenticatedOrdensProducaoIndexRoute: typeof AuthenticatedOrdensProducaoIndexRoute
   AuthenticatedPedidosIndexRoute: typeof AuthenticatedPedidosIndexRoute
+  AuthenticatedPlanosProducaoIndexRoute: typeof AuthenticatedPlanosProducaoIndexRoute
   AuthenticatedRotasIndexRoute: typeof AuthenticatedRotasIndexRoute
   AuthenticatedStockIndexRoute: typeof AuthenticatedStockIndexRoute
 }
@@ -1327,6 +1348,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOrdensCompraIndexRoute: AuthenticatedOrdensCompraIndexRoute,
   AuthenticatedOrdensProducaoIndexRoute: AuthenticatedOrdensProducaoIndexRoute,
   AuthenticatedPedidosIndexRoute: AuthenticatedPedidosIndexRoute,
+  AuthenticatedPlanosProducaoIndexRoute: AuthenticatedPlanosProducaoIndexRoute,
   AuthenticatedRotasIndexRoute: AuthenticatedRotasIndexRoute,
   AuthenticatedStockIndexRoute: AuthenticatedStockIndexRoute,
 }
