@@ -1,0 +1,1 @@
+alter type erp.perfil add value if not exists 'producao';

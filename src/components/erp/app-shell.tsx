@@ -18,6 +18,9 @@ import {
   Boxes,
   Contact,
   Factory,
+  Hammer,
+  Layers,
+  Workflow,
   FileQuestion,
   FolderTree,
   History,
@@ -237,6 +240,41 @@ const NAVEGACAO: GrupoNav[] = [
     ],
   },
   {
+    etiqueta: "Produção",
+    itens: [
+      {
+        para: "/chao-fabrica",
+        etiqueta: "Chão de fábrica",
+        icone: Hammer,
+        perfis: ["producao", "adm", "escritorio", "compras"],
+      },
+      {
+        para: "/necessidades-producao",
+        etiqueta: "Necessidades de produção",
+        icone: ClipboardCheck,
+        perfis: ["adm", "escritorio", "compras", "financeiro"],
+      },
+      {
+        para: "/ordens-producao",
+        etiqueta: "Ordens de produção",
+        icone: Factory,
+        perfis: ["producao", "adm", "escritorio", "compras", "financeiro"],
+      },
+      {
+        para: "/componentes",
+        etiqueta: "Componentes",
+        icone: Layers,
+        perfis: ["producao", "adm", "escritorio", "compras"],
+      },
+      {
+        para: "/etapas-producao",
+        etiqueta: "Etapas de fabrico",
+        icone: Workflow,
+        perfis: ["producao", "adm", "escritorio", "compras"],
+      },
+    ],
+  },
+  {
     etiqueta: "Administração",
     itens: [
       { para: "/utilizadores", etiqueta: "Utilizadores", icone: Users, perfis: ["adm"] },
@@ -334,8 +372,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     ? NAVEGACAO.map((grupo) => ({
         ...grupo,
         itens: grupo.itens.filter((item) =>
-          utilizador.perfil === "entregador"
-            ? Boolean(item.perfis?.includes("entregador"))
+          utilizador.perfil === "entregador" || utilizador.perfil === "producao"
+            ? Boolean(item.perfis?.includes(utilizador.perfil))
             : !item.perfis || item.perfis.includes(utilizador.perfil),
         ),
       })).filter((grupo) => grupo.itens.length > 0)

@@ -4,6 +4,7 @@ export type Perfil =
   | "compras"
   | "financeiro"
   | "entregador"
+  | "producao"
   | "adm";
 
 export const PERFIS: Array<{ valor: Perfil; etiqueta: string }> = [
@@ -12,6 +13,7 @@ export const PERFIS: Array<{ valor: Perfil; etiqueta: string }> = [
   { valor: "compras", etiqueta: "Compras" },
   { valor: "financeiro", etiqueta: "Financeiro" },
   { valor: "entregador", etiqueta: "Entregador" },
+  { valor: "producao", etiqueta: "Produção" },
   { valor: "adm", etiqueta: "Administração" },
 ];
 
@@ -21,6 +23,7 @@ export const ETIQUETA_PERFIL: Record<Perfil, string> = {
   compras: "Compras",
   financeiro: "Financeiro",
   entregador: "Entregador",
+  producao: "Produção",
   adm: "Administração",
 };
 
@@ -1755,4 +1758,174 @@ export interface ConciliacaoDia {
   entradas: number;
   saidas: number;
   saldo: number;
+}
+
+// ================================================= Fase 11 — produção
+
+export type EstadoOp = "planeada" | "em_curso" | "concluida" | "cancelada";
+
+export const ETIQUETA_ESTADO_OP: Record<EstadoOp, string> = {
+  planeada: "planeada",
+  em_curso: "em curso",
+  concluida: "concluída",
+  cancelada: "cancelada",
+};
+
+export type EstadoOpEtapa = "pendente" | "em_curso" | "concluida" | "bloqueada";
+
+export const ETIQUETA_ESTADO_ETAPA: Record<EstadoOpEtapa, string> = {
+  pendente: "por fazer",
+  em_curso: "em curso",
+  concluida: "concluída",
+  bloqueada: "bloqueada",
+};
+
+export interface EtapaProducao {
+  id: string;
+  codigo: string;
+  nome: string;
+  ordem: number;
+  permite_stock_intermedio: boolean;
+  exige_conferencia: boolean;
+  ativo: boolean;
+  criado_em: string;
+  atualizado_em: string | null;
+}
+
+export interface NecessidadeProducao {
+  id: string;
+  produto_id: string;
+  produto_nome: string;
+  cod_barras: string | null;
+  quantidade: number;
+  quantidade_reservada: number;
+  falta: number;
+  data_necessaria: string | null;
+  estado: "aberta" | "convertida" | "produzida" | "cancelada";
+  origem: string;
+  op_id: string | null;
+  op_numero: string | null;
+  pedido_id: string | null;
+  pedido_numero: string | null;
+  cliente_nome: string | null;
+  item_id: string | null;
+  criado_em: string;
+}
+
+export interface OrdemProducao {
+  id: string;
+  numero: string;
+  produto_id: string;
+  produto_nome: string;
+  cod_barras: string | null;
+  quantidade: number;
+  quantidade_produzida: number;
+  quantidade_refugo: number;
+  falta: number;
+  estado: EstadoOp;
+  etapa_atual_id: string | null;
+  etapa_atual_nome: string | null;
+  data_prevista: string | null;
+  data_inicio: string | null;
+  data_conclusao: string | null;
+  prioridade: number;
+  observacoes: string | null;
+  dias_atraso: number;
+  necessidades: number;
+  consumos_em_falta: number;
+  criado_em: string;
+  atualizado_em: string | null;
+}
+
+export interface OpEtapa {
+  id: string;
+  op_id: string;
+  op_numero: string;
+  op_quantidade: number;
+  produto_id: string;
+  produto_nome: string;
+  etapa_id: string;
+  etapa_codigo: string;
+  etapa_nome: string;
+  exige_conferencia: boolean;
+  permite_stock_intermedio: boolean;
+  ordem: number;
+  estado: EstadoOpEtapa;
+  quantidade_ok: number;
+  quantidade_refugo: number;
+  motivo_refugo: string | null;
+  operador_id: string | null;
+  operador_nome: string | null;
+  conferida_por: string | null;
+  conferida_por_nome: string | null;
+  conferida_em: string | null;
+  iniciada_em: string | null;
+  concluida_em: string | null;
+  observacoes: string | null;
+}
+
+export interface Componente {
+  id: string;
+  produto_id: string;
+  produto_nome: string;
+  componente_id: string;
+  componente_nome: string;
+  componente_cod_barras: string | null;
+  componente_tipo: string;
+  quantidade: number;
+  unidade: string;
+  etapa_id: string | null;
+  etapa_nome: string | null;
+  observacoes: string | null;
+  componente_stock: number;
+  tem_subcomponentes: boolean;
+  criado_em: string;
+  atualizado_em: string | null;
+}
+
+export interface OpConsumo {
+  id: string;
+  op_id: string;
+  op_numero: string;
+  op_etapa_id: string | null;
+  etapa_nome: string | null;
+  componente_id: string;
+  componente_nome: string;
+  quantidade_prevista: number;
+  quantidade_consumida: number;
+  quantidade_falta: number;
+  regularizado_em: string | null;
+  criado_em: string;
+}
+
+export interface ChaoFabricaLinha {
+  op_etapa_id: string;
+  op_id: string;
+  op_numero: string;
+  produto_id: string;
+  produto_nome: string;
+  cod_barras: string | null;
+  quantidade: number;
+  quantidade_produzida: number;
+  prioridade: number;
+  data_prevista: string | null;
+  etapa_id: string;
+  etapa_codigo: string;
+  etapa_nome: string;
+  exige_conferencia: boolean;
+  ordem: number;
+  estado: EstadoOpEtapa;
+  quantidade_ok: number;
+  quantidade_refugo: number;
+  operador_id: string | null;
+  operador_nome: string | null;
+  iniciada_em: string | null;
+  etapas_anteriores_pendentes: number;
+}
+
+export interface ProdutoOpcao {
+  id: string;
+  nome_cliente: string;
+  cod_barras: string | null;
+  tipo_fornecimento: string;
 }
