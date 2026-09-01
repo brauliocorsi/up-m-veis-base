@@ -1831,6 +1831,12 @@ export interface OrdemProducao {
   prioridade: number;
   observacoes: string | null;
   dias_atraso: number;
+  destino: "cliente" | "stock";
+  plano_id: string | null;
+  plano_nome: string | null;
+  op_pai_id: string | null;
+  op_pai_numero: string | null;
+  sub_ops: number;
   necessidades: number;
   consumos_em_falta: number;
   criado_em: string;
@@ -1921,6 +1927,11 @@ export interface ChaoFabricaLinha {
   operador_nome: string | null;
   iniciada_em: string | null;
   etapas_anteriores_pendentes: number;
+  centro_id: string | null;
+  centro_nome: string | null;
+  minutos_previstos: number | null;
+  minutos_reais: number | null;
+  sub_ops_pendentes: number;
 }
 
 export interface ProdutoOpcao {
@@ -1928,4 +1939,177 @@ export interface ProdutoOpcao {
   nome_cliente: string;
   cod_barras: string | null;
   tipo_fornecimento: string;
+}
+
+// ================================================= Fase 11b — MRP
+
+export interface UtilizadorOpcao {
+  id: string;
+  nome: string;
+  perfil: Perfil;
+}
+
+export interface CentroTrabalho {
+  id: string;
+  codigo: string;
+  nome: string;
+  responsavel_id: string | null;
+  responsavel_nome: string | null;
+  capacidade_min_dia: number;
+  n_postos: number;
+  eficiencia_pct: number;
+  ativo: boolean;
+  operadores: number;
+  capacidade_dia: number | null;
+  etapas: number;
+  criado_em: string;
+  atualizado_em: string | null;
+}
+
+export interface CentroOperador {
+  id: string;
+  centro_id: string;
+  centro_nome: string;
+  utilizador_id: string;
+  utilizador_nome: string;
+  utilizador_perfil: string;
+  minutos_dia: number;
+  criado_em: string;
+}
+
+export interface RoteiroLinha {
+  id: string;
+  produto_id: string;
+  produto_nome: string;
+  etapa_id: string;
+  etapa_nome: string;
+  centro_id: string | null;
+  centro_nome: string | null;
+  ordem: number;
+  tempo_setup_min: number;
+  tempo_unitario_min: number;
+  instrucoes: string | null;
+  criado_em: string;
+  atualizado_em: string | null;
+}
+
+export type RotaBom = "stock" | "comprar" | "produzir";
+
+export const ETIQUETA_ROTA_BOM: Record<RotaBom, string> = {
+  stock: "há em stock",
+  comprar: "comprar",
+  produzir: "fabricar",
+};
+
+export interface LinhaBom {
+  nivel: number;
+  produto_id: string;
+  nome: string;
+  quantidade_necessaria: number;
+  stock_vendavel: number;
+  em_falta: number;
+  rota: RotaBom;
+}
+
+export type EstadoPlano =
+  | "rascunho"
+  | "simulado"
+  | "aprovado"
+  | "em_producao"
+  | "concluido"
+  | "cancelado";
+
+export const ETIQUETA_ESTADO_PLANO: Record<EstadoPlano, string> = {
+  rascunho: "rascunho",
+  simulado: "simulado",
+  aprovado: "aprovado",
+  em_producao: "em produção",
+  concluido: "concluído",
+  cancelado: "cancelado",
+};
+
+export interface PlanoProducao {
+  id: string;
+  nome: string;
+  data_inicio: string;
+  data_fim: string;
+  estado: EstadoPlano;
+  viavel: boolean | null;
+  simulado_em: string | null;
+  aprovado_em: string | null;
+  forcado: boolean;
+  justificacao_forcado: string | null;
+  notas: string | null;
+  dias_uteis: number;
+  linhas: number;
+  unidades: number;
+  centros_em_excesso: number;
+  criado_em: string;
+  atualizado_em: string | null;
+}
+
+export interface PlanoLinha {
+  id: string;
+  plano_id: string;
+  produto_id: string;
+  produto_nome: string;
+  cod_barras: string | null;
+  quantidade: number;
+  prioridade: number;
+  urgente: boolean;
+  data_necessaria: string | null;
+  vendas: number;
+  necessidade_ids: string[] | null;
+  op_id: string | null;
+  op_numero: string | null;
+  criado_em: string;
+}
+
+export interface PlanoCarga {
+  id: string;
+  plano_id: string;
+  centro_id: string;
+  centro_codigo: string;
+  centro_nome: string;
+  minutos_necessarios: number;
+  minutos_disponiveis: number;
+  ocupacao_pct: number;
+  excesso_minutos: number;
+  acima_capacidade: boolean;
+}
+
+export interface ResultadoSimulacao {
+  viavel: boolean | null;
+  centros: Array<{
+    centro: string;
+    minutos_necessarios: number;
+    minutos_disponiveis: number;
+    ocupacao_pct: number;
+    excesso: number;
+  }>;
+}
+
+export interface ResultadoAprovacao {
+  ops: number;
+  sub_ops: number;
+  compras: number;
+  forcado: boolean;
+}
+
+export interface ConsumoFalta {
+  id: string;
+  op_id: string;
+  op_numero: string;
+  op_estado: EstadoOp;
+  componente_id: string;
+  componente_nome: string;
+  componente_tipo: string;
+  quantidade_prevista: number;
+  quantidade_consumida: number;
+  quantidade_falta: number;
+  etapa_nome: string | null;
+  stock_vendavel: number;
+  tem_sub_op: boolean;
+  tem_necessidade_compra: boolean;
+  criado_em: string;
 }
