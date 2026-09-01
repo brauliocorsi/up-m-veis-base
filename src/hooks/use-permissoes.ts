@@ -14,6 +14,14 @@ export function usePermissoes() {
     adm: é("adm"),
     /** O entregador vive na área da rota e não entra no resto do ERP. */
     entregador: é("entregador"),
+    /** O operador de fábrica vive no chão de fábrica. */
+    operadorProducao: é("producao"),
+    /** Ver ordens de produção, etapas e lista de materiais. */
+    verProducao: é("adm", "escritorio", "compras", "producao", "financeiro"),
+    /** Planear: abrir ordens, configurar etapas e componentes. */
+    gerirProducao: é("adm", "escritorio", "compras"),
+    /** Registar trabalho de fábrica: iniciar, concluir e conferir etapas. */
+    registarProducao: é("adm", "escritorio", "compras", "producao"),
     editarCatalogo: é("adm", "compras"),
     editarClientes: é("adm", "vendedora", "escritorio"),
     /** Compras e Administração emitem e recebem ordens de compra. */

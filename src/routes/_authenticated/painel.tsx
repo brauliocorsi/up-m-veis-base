@@ -38,10 +38,12 @@ function Painel() {
   const eAdm = utilizador?.perfil === "adm";
   // O entregador trabalha só na sua rota do dia.
   const eEntregador = utilizador?.perfil === "entregador";
+  // O operador de fábrica trabalha no chão de fábrica.
+  const eProducao = utilizador?.perfil === "producao";
 
   const { data: totais } = useQuery({
     queryKey: ["painel-totais", eAdm],
-    enabled: Boolean(utilizador) && !eEntregador,
+    enabled: Boolean(utilizador) && !eEntregador && !eProducao,
     queryFn: async () => ({
       utilizadores: eAdm ? await contar("v_utilizadores") : 0,
       formas: await contar("v_formas_pagamento"),
@@ -70,6 +72,7 @@ function Painel() {
   ].filter((c) => eAdm || c.etiqueta !== "Utilizadores");
 
   if (eEntregador) return <Navigate to="/rota" replace />;
+  if (eProducao) return <Navigate to="/chao-fabrica" replace />;
 
   return (
 
