@@ -1927,6 +1927,11 @@ export interface ChaoFabricaLinha {
   operador_nome: string | null;
   iniciada_em: string | null;
   etapas_anteriores_pendentes: number;
+  centro_id: string | null;
+  centro_nome: string | null;
+  minutos_previstos: number | null;
+  minutos_reais: number | null;
+  sub_ops_pendentes: number;
 }
 
 export interface ProdutoOpcao {
