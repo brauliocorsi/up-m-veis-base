@@ -82,8 +82,8 @@ declare v_f text;
 begin
   foreach v_f in array array['gerar_rotas_templates','criar_rota','agendar_entrega',
                              'desagendar_entrega','reordenar_paragens','arrancar_rota',
-                             'cancelar_rota','recalcular_previsto_rota','rotas_sugeridas',
-                             'datas_template']
+                             'cancelar_rota','recalcular_previsto_rota','rotas_sugeridas']
+  -- erp.datas_template é cálculo puro de datas (não lê tabelas): basta search_path fixo
   loop
     if not exists (
       select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
@@ -93,19 +93,27 @@ begin
       raise exception '[T10] erp.% não é security definer com search_path fixo', v_f;
     end if;
   end loop;
+  if not exists (
+    select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+     where n.nspname='erp' and p.proname='datas_template'
+       and array_to_string(coalesce(p.proconfig,'{}'::text[]),',') like '%search_path%') then
+    raise exception '[T10] erp.datas_template não tem search_path fixo';
+  end if;
   raise notice '[T10.3] funções críticas OK';
 end $$;
 
 -- T10.4 geração idempotente das rotas dos modelos ----------------------------
 do $$
-declare v_viatura uuid; v_template uuid; v_1 int; v_2 int;
+declare v_viatura uuid; v_template uuid; v_1 int; v_2 int; v_resp uuid;
 begin
   insert into erp.viaturas (nome, matricula, cubicagem_m3, peso_max_kg)
   values ('[T10] Camião', 'AA-01-AA', 20, 3500)
   returning id into v_viatura;
 
-  insert into erp.rota_templates (nome, periodicidade, dias_semana, viatura_id, max_entregas, max_minutos_montagem)
-  values ('[T10] Norte', 'semanal', array[3], v_viatura, 8, 300)
+  select id into v_resp from erp.utilizadores where ativo order by criado_em limit 1;
+
+  insert into erp.rota_templates (nome, periodicidade, dias_semana, viatura_id, responsavel_id, max_entregas, max_minutos_montagem)
+  values ('[T10] Norte', 'semanal', array[3], v_viatura, v_resp, 8, 300)
   returning id into v_template;
 
   select erp.gerar_rotas_templates(6) into v_1;
@@ -130,18 +138,25 @@ do $$
 declare
   v_rota uuid;
   v_pedido uuid;
+  v_pedido2 uuid;
   v_res jsonb;
 begin
   select id into v_rota from erp.rotas
    where estado='planeada' and eliminado_em is null order by data limit 1;
   select id into v_pedido from erp.pedidos
-   where estado in ('confirmado','em_preparacao','pronto') and eliminado_em is null limit 1;
-  if v_rota is null or v_pedido is null then
+   where estado in ('confirmado','em_preparacao','pronto') and eliminado_em is null
+   order by criado_em limit 1;
+  select id into v_pedido2 from erp.pedidos
+   where estado in ('confirmado','em_preparacao','pronto') and eliminado_em is null
+     and id <> coalesce(v_pedido, id) order by criado_em offset 1 limit 1;
+  if v_rota is null or v_pedido is null or v_pedido2 is null then
     raise notice '[T10.5] sem dados de teste — bloco ignorado';
     return;
   end if;
 
-  update erp.rotas set max_entregas = 0 where id = v_rota;
+  -- capacidade de uma entrega: a segunda paragem passa do limite
+  update erp.rotas set max_entregas = 1 where id = v_rota;
+  perform erp.agendar_entrega(v_pedido2, v_rota, false);
   select erp.agendar_entrega(v_pedido, v_rota, false) into v_res;
 
   if (v_res->>'excedeu_capacidade')::boolean is not true then

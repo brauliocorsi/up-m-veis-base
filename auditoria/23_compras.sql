@@ -9,7 +9,7 @@ declare prod uuid; cli uuid; ped uuid; nec uuid; oc uuid; forn uuid;
 begin
   perform pg_temp.entra('adm');
   select id into prod from erp.produtos where cod_barras = 'P-AUD-COMPRA';
-  select id into forn from erp.fornecedores where codigo = 'FOR-AUD';
+  select id into forn from erp.fornecedores where nome = 'Fornecedor Auditoria';
   select id into cli  from erp.clientes where nome = 'Cliente Auditoria';
 
   -- venda de produto sem stock gera necessidade de compra
@@ -26,6 +26,9 @@ begin
   -- ordem de compra
   oc := erp.criar_oc(forn, array[nec]);
   perform pg_temp.ok(oc is not null, 'K2: necessidade vira ordem de compra');
+
+  -- as compras preenchem o custo de cada linha antes de finalizar
+  update erp.oc_itens set custo_unitario = 50 where oc_id = oc and eliminado_em is null;
 
   r := erp.finalizar_oc(oc);
   perform pg_temp.ok(r ->> 'numero' is not null, 'K3: finalizar a OC atribui número');

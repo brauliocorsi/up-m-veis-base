@@ -25,9 +25,9 @@ insert into erp.categorias (codigo, nome)
 select 'AUD', 'Categoria Auditoria'
 where not exists (select 1 from erp.categorias where codigo = 'AUD');
 
-insert into erp.fornecedores (nome, codigo, prazo_dias)
-select 'Fornecedor Auditoria', 'FOR-AUD', 10
-where not exists (select 1 from erp.fornecedores where codigo = 'FOR-AUD');
+insert into erp.fornecedores (nome, prazo_dias)
+select 'Fornecedor Auditoria', 10
+where not exists (select 1 from erp.fornecedores where nome = 'Fornecedor Auditoria');
 
 insert into erp.produtos (cod_barras, categoria_id, nome_cliente, tipo_fornecimento, preco_base)
 select 'P-AUD-STOCK', c.id, 'Produto Auditoria Stock', 'stock', 100
@@ -35,17 +35,17 @@ from erp.categorias c where c.codigo = 'AUD'
   and not exists (select 1 from erp.produtos where cod_barras = 'P-AUD-STOCK');
 
 insert into erp.produtos (cod_barras, categoria_id, nome_cliente, tipo_fornecimento,
-                          fornecedor_id, prazo_fornecedor_dias, preco_base, custo_ultimo)
-select 'P-AUD-COMPRA', c.id, 'Produto Auditoria Compra', 'compra', f.id, 10, 100, 50
+                          fornecedor_id, prazo_fornecedor_dias, preco_base)
+select 'P-AUD-COMPRA', c.id, 'Produto Auditoria Compra', 'compra', f.id, 10, 100
 from erp.categorias c, erp.fornecedores f
-where c.codigo = 'AUD' and f.codigo = 'FOR-AUD'
+where c.codigo = 'AUD' and f.nome = 'Fornecedor Auditoria'
   and not exists (select 1 from erp.produtos where cod_barras = 'P-AUD-COMPRA');
 
 insert into erp.produtos (cod_barras, categoria_id, nome_cliente, tipo_fornecimento,
-                          fornecedor_id, prazo_fornecedor_dias, preco_base, custo_ultimo)
-select 'P-AUD-K', c.id, 'Produto Auditoria K', 'compra', f.id, 10, 100, 50
+                          fornecedor_id, prazo_fornecedor_dias, preco_base)
+select 'P-AUD-K', c.id, 'Produto Auditoria K', 'compra', f.id, 10, 100
 from erp.categorias c, erp.fornecedores f
-where c.codigo = 'AUD' and f.codigo = 'FOR-AUD'
+where c.codigo = 'AUD' and f.nome = 'Fornecedor Auditoria'
   and not exists (select 1 from erp.produtos where cod_barras = 'P-AUD-K');
 
 insert into erp.clientes (nome, telefone_e164)

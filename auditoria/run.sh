@@ -78,7 +78,7 @@ echo
 echo "── COMPORTAMENTO ──"
 # executar UMA vez e reutilizar: correr duas vezes na mesma base gera falhas falsas
 RES=$(mktemp)
-for t in "$AQUI"/2*_*.sql; do PSQL -f "$t"; done > "$RES" 2>&1
+for t in "$AQUI"/[23]*_*.sql; do PSQL -f "$t"; done > "$RES" 2>&1
 grep -E "PASSA|FALHA" "$RES" | sed 's/.*NOTICE:  //' | sed 's/^/  /'
 
 # ---------- 5. Código ----------

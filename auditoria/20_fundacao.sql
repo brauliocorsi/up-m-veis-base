@@ -27,10 +27,9 @@ end $$;
 -- DELETE físico proibido para a aplicação
 do $$
 begin
-  delete from erp.motivos where false; -- chega para testar o privilégio? não...
-  -- teste real: tentar apagar um motivo
+  -- tentar apagar um motivo: o DELETE físico está revogado à aplicação
   begin
-    delete from erp.motivos where contexto = 'cancelamento' limit 1;
+    delete from erp.motivos where id in (select id from erp.motivos where contexto = 'cancelamento' limit 1);
     raise notice 'FALHA F6: authenticated consegue apagar motivos';
   exception
     when insufficient_privilege then raise notice 'PASSA F6: DELETE revogado a authenticated';
@@ -47,7 +46,7 @@ begin
   select count(*) into n1 from erp.eventos where tabela = 'motivos' and registo_id = m;
   update erp.motivos set descricao = 'Motivo Auditoria F7b' where id = m;
   select count(*) into n2 from erp.eventos
-   where tabela = 'motivos' and registo_id = m and operacao = 'ATUALIZACAO'
+   where tabela = 'motivos' and registo_id = m and operacao = 'UPDATE'
      and alteracoes ? 'descricao';
   perform pg_temp.ok(n1 >= 1, 'F7: INSERT gera evento de auditoria');
   perform pg_temp.ok(n2 >= 1, 'F8: UPDATE grava só os campos alterados');
