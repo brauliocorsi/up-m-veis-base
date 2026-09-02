@@ -3,7 +3,11 @@
 -- Testes [T11]. Executar numa base descartável.
 -- ============================================================
 \set ON_ERROR_STOP on
+\ir 00_setup.sql
 set search_path = erp, public;
+
+-- entrar como Administração: abrir e planear ordens é trabalho de escritório
+select pg_temp.entra('adm');
 
 -- T11.0 estrutura -------------------------------------------------------------
 do $$
