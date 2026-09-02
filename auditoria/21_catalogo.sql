@@ -5,7 +5,7 @@
 
 -- validação de NIF português
 select pg_temp.ok(erp.nif_valido('999999990'), 'C1: NIF de teste válido aceite');
-select pg_temp.ok(not erp.nif_valido('123456789'), 'C2: NIF inválido recusado');
+select pg_temp.ok(not erp.nif_valido('123456788'), 'C2: NIF inválido recusado');
 
 -- normalização de telefone para E.164
 do $$

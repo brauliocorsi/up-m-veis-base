@@ -46,7 +46,7 @@ begin
   select count(*) into n1 from erp.eventos where tabela = 'motivos' and registo_id = m;
   update erp.motivos set descricao = 'Motivo Auditoria F7b' where id = m;
   select count(*) into n2 from erp.eventos
-   where tabela = 'motivos' and registo_id = m and operacao = 'ATUALIZACAO'
+   where tabela = 'motivos' and registo_id = m and operacao = 'UPDATE'
      and alteracoes ? 'descricao';
   perform pg_temp.ok(n1 >= 1, 'F7: INSERT gera evento de auditoria');
   perform pg_temp.ok(n2 >= 1, 'F8: UPDATE grava só os campos alterados');
