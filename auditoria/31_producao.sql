@@ -229,7 +229,7 @@ begin
   loop
     perform erp.concluir_etapa(v_e.id, 3, 0, null, null);
   end loop;
-  for v_e in select id from erp.op_etapas oe
+  for v_e in select oe.id from erp.op_etapas oe
               join erp.etapas_producao e on e.id=oe.etapa_id
              where oe.op_id=v_op and e.exige_conferencia and oe.conferida_por is null
   loop
