@@ -93,6 +93,12 @@ begin
       raise exception '[T10] erp.% não é security definer com search_path fixo', v_f;
     end if;
   end loop;
+  if not exists (
+    select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+     where n.nspname='erp' and p.proname='datas_template'
+       and array_to_string(coalesce(p.proconfig,'{}'::text[]),',') like '%search_path%') then
+    raise exception '[T10] erp.datas_template não tem search_path fixo';
+  end if;
   raise notice '[T10.3] funções críticas OK';
 end $$;
 
