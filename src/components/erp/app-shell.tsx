@@ -6,6 +6,9 @@ import {
   CalendarClock,
   CalendarDays,
   CalendarRange,
+  Clock,
+  Gauge,
+  PackageX,
 
   ChevronDown,
   ChevronRight,
@@ -253,6 +256,30 @@ const NAVEGACAO: GrupoNav[] = [
         etiqueta: "Necessidades de produção",
         icone: ClipboardCheck,
         perfis: ["adm", "escritorio", "compras", "financeiro"],
+      },
+      {
+        para: "/planos-producao",
+        etiqueta: "Planos de produção",
+        icone: CalendarRange,
+        perfis: ["adm", "escritorio", "compras"],
+      },
+      {
+        para: "/consumos-falta",
+        etiqueta: "Material em falta",
+        icone: PackageX,
+        perfis: ["producao", "adm", "escritorio", "compras"],
+      },
+      {
+        para: "/centros-trabalho",
+        etiqueta: "Centros de trabalho",
+        icone: Gauge,
+        perfis: ["adm", "escritorio", "compras"],
+      },
+      {
+        para: "/roteiros",
+        etiqueta: "Roteiros de fabrico",
+        icone: Clock,
+        perfis: ["adm", "escritorio", "compras"],
       },
       {
         para: "/ordens-producao",

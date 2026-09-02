@@ -21,6 +21,7 @@ import { Route as AuthenticatedChaoFabricaRouteImport } from './routes/_authenti
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
 import { Route as AuthenticatedComponentesRouteImport } from './routes/_authenticated/componentes'
 import { Route as AuthenticatedConciliacaoRouteImport } from './routes/_authenticated/conciliacao'
+import { Route as AuthenticatedConsumosFaltaRouteImport } from './routes/_authenticated/consumos-falta'
 import { Route as AuthenticatedContasPagarRouteImport } from './routes/_authenticated/contas-pagar'
 import { Route as AuthenticatedContasReceberRouteImport } from './routes/_authenticated/contas-receber'
 import { Route as AuthenticatedDespesasRouteImport } from './routes/_authenticated/despesas'
@@ -133,6 +134,12 @@ const AuthenticatedConciliacaoRoute =
   AuthenticatedConciliacaoRouteImport.update({
     id: '/conciliacao',
     path: '/conciliacao',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedConsumosFaltaRoute =
+  AuthenticatedConsumosFaltaRouteImport.update({
+    id: '/consumos-falta',
+    path: '/consumos-falta',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedContasPagarRoute =
@@ -426,6 +433,7 @@ export interface FileRoutesByFullPath {
   '/clientes': typeof AuthenticatedClientesRoute
   '/componentes': typeof AuthenticatedComponentesRoute
   '/conciliacao': typeof AuthenticatedConciliacaoRoute
+  '/consumos-falta': typeof AuthenticatedConsumosFaltaRoute
   '/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/contas-receber': typeof AuthenticatedContasReceberRoute
   '/despesas': typeof AuthenticatedDespesasRoute
@@ -488,6 +496,7 @@ export interface FileRoutesByTo {
   '/clientes': typeof AuthenticatedClientesRoute
   '/componentes': typeof AuthenticatedComponentesRoute
   '/conciliacao': typeof AuthenticatedConciliacaoRoute
+  '/consumos-falta': typeof AuthenticatedConsumosFaltaRoute
   '/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/contas-receber': typeof AuthenticatedContasReceberRoute
   '/despesas': typeof AuthenticatedDespesasRoute
@@ -553,6 +562,7 @@ export interface FileRoutesById {
   '/_authenticated/clientes': typeof AuthenticatedClientesRoute
   '/_authenticated/componentes': typeof AuthenticatedComponentesRoute
   '/_authenticated/conciliacao': typeof AuthenticatedConciliacaoRoute
+  '/_authenticated/consumos-falta': typeof AuthenticatedConsumosFaltaRoute
   '/_authenticated/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/_authenticated/contas-receber': typeof AuthenticatedContasReceberRoute
   '/_authenticated/despesas': typeof AuthenticatedDespesasRoute
@@ -617,6 +627,7 @@ export interface FileRouteTypes {
     | '/clientes'
     | '/componentes'
     | '/conciliacao'
+    | '/consumos-falta'
     | '/contas-pagar'
     | '/contas-receber'
     | '/despesas'
@@ -679,6 +690,7 @@ export interface FileRouteTypes {
     | '/clientes'
     | '/componentes'
     | '/conciliacao'
+    | '/consumos-falta'
     | '/contas-pagar'
     | '/contas-receber'
     | '/despesas'
@@ -743,6 +755,7 @@ export interface FileRouteTypes {
     | '/_authenticated/clientes'
     | '/_authenticated/componentes'
     | '/_authenticated/conciliacao'
+    | '/_authenticated/consumos-falta'
     | '/_authenticated/contas-pagar'
     | '/_authenticated/contas-receber'
     | '/_authenticated/despesas'
@@ -886,6 +899,13 @@ declare module '@tanstack/react-router' {
       path: '/conciliacao'
       fullPath: '/conciliacao'
       preLoaderRoute: typeof AuthenticatedConciliacaoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/consumos-falta': {
+      id: '/_authenticated/consumos-falta'
+      path: '/consumos-falta'
+      fullPath: '/consumos-falta'
+      preLoaderRoute: typeof AuthenticatedConsumosFaltaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/contas-pagar': {
@@ -1288,6 +1308,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
   AuthenticatedComponentesRoute: typeof AuthenticatedComponentesRoute
   AuthenticatedConciliacaoRoute: typeof AuthenticatedConciliacaoRoute
+  AuthenticatedConsumosFaltaRoute: typeof AuthenticatedConsumosFaltaRoute
   AuthenticatedContasPagarRoute: typeof AuthenticatedContasPagarRoute
   AuthenticatedContasReceberRoute: typeof AuthenticatedContasReceberRoute
   AuthenticatedDespesasRoute: typeof AuthenticatedDespesasRoute
@@ -1336,6 +1357,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedClientesRoute: AuthenticatedClientesRoute,
   AuthenticatedComponentesRoute: AuthenticatedComponentesRoute,
   AuthenticatedConciliacaoRoute: AuthenticatedConciliacaoRoute,
+  AuthenticatedConsumosFaltaRoute: AuthenticatedConsumosFaltaRoute,
   AuthenticatedContasPagarRoute: AuthenticatedContasPagarRoute,
   AuthenticatedContasReceberRoute: AuthenticatedContasReceberRoute,
   AuthenticatedDespesasRoute: AuthenticatedDespesasRoute,

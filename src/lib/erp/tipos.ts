@@ -1788,6 +1788,8 @@ export interface EtapaProducao {
   permite_stock_intermedio: boolean;
   exige_conferencia: boolean;
   ativo: boolean;
+  centro_id: string | null;
+  centro_nome: string | null;
   criado_em: string;
   atualizado_em: string | null;
 }
