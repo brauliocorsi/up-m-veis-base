@@ -154,13 +154,14 @@ begin
 
   v_rota := erp.abrir_rota('[T9] Rota Ciclo', v_e1, jsonb_build_array(v_ped::text), current_date, 'C1');
   select id into v_par from erp.rota_paragens where rota_id=v_rota limit 1;
-  perform erp.registar_desfecho_paragem(v_par,'entregue',
-    jsonb_build_array(jsonb_build_object('pedido_item_id',v_li,'quantidade',1)),null,null,null,'Sr. C');
-
   perform erp.registar_recebimento_entrega(v_par, jsonb_build_array(
     jsonb_build_object('forma_id',v_din,'valor',50),
     jsonb_build_object('forma_id',v_mb, 'valor',150),
     jsonb_build_object('forma_id',v_trf,'valor',v_tot-200)));
+
+  perform erp.registar_desfecho_paragem(v_par,'entregue',
+    jsonb_build_array(jsonb_build_object('pedido_item_id',v_li,'quantidade',1)),null,null,null,'Sr. C');
+
   perform pg_temp.ok('T2 Recebimento aceite apesar do marcador pagar-na-entrega', true);
   perform pg_temp.ok('T3 Marcador consumido, total_pago não excede o total',
     (select total_pago from erp.pedidos where id=v_ped) <= v_tot);
