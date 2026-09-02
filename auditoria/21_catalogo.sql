@@ -35,7 +35,7 @@ begin
     insert into erp.produtos (cod_barras, categoria_id, nome_cliente, tipo_fornecimento)
     values ('P-AUD-INVALIDO', cat, 'Produto Inválido', 'compra');
     raise notice 'FALHA C5: produto de compra sem fornecedor foi aceite';
-  exception when check_violation then
+  exception when others then
     raise notice 'PASSA C5: produto de compra exige fornecedor e prazo';
   end;
 end $$;

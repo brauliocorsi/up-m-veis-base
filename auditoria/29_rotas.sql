@@ -54,7 +54,7 @@ do $$
 declare n int;
 begin
   select count(*) into n from erp.rotas r
-   where r.nome like '[T9]%' and r.responsavel_id <> erp.utilizador_id();
+   where r.nome like '[T9]%' and r.responsavel_id <> erp.utilizador_atual();
   perform pg_temp.ok('R2 Entregador não vê NENHUMA rota de outro ('||n||')', n = 0);
 
   select count(*) into n from erp.rotas r

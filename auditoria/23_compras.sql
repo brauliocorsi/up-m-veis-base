@@ -9,7 +9,7 @@ declare prod uuid; cli uuid; ped uuid; nec uuid; oc uuid; forn uuid;
 begin
   perform pg_temp.entra('adm');
   select id into prod from erp.produtos where cod_barras = 'P-AUD-COMPRA';
-  select id into forn from erp.fornecedores where codigo = 'FOR-AUD';
+  select id into forn from erp.fornecedores where nome = 'Fornecedor Auditoria';
   select id into cli  from erp.clientes where nome = 'Cliente Auditoria';
 
   -- venda de produto sem stock gera necessidade de compra

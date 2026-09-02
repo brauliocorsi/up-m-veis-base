@@ -104,14 +104,16 @@ end $$;
 
 -- T10.4 geração idempotente das rotas dos modelos ----------------------------
 do $$
-declare v_viatura uuid; v_template uuid; v_1 int; v_2 int;
+declare v_viatura uuid; v_template uuid; v_1 int; v_2 int; v_resp uuid;
 begin
   insert into erp.viaturas (nome, matricula, cubicagem_m3, peso_max_kg)
   values ('[T10] Camião', 'AA-01-AA', 20, 3500)
   returning id into v_viatura;
 
-  insert into erp.rota_templates (nome, periodicidade, dias_semana, viatura_id, max_entregas, max_minutos_montagem)
-  values ('[T10] Norte', 'semanal', array[3], v_viatura, 8, 300)
+  select id into v_resp from erp.utilizadores where ativo order by criado_em limit 1;
+
+  insert into erp.rota_templates (nome, periodicidade, dias_semana, viatura_id, responsavel_id, max_entregas, max_minutos_montagem)
+  values ('[T10] Norte', 'semanal', array[3], v_viatura, v_resp, 8, 300)
   returning id into v_template;
 
   select erp.gerar_rotas_templates(6) into v_1;

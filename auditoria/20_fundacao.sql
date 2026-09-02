@@ -30,7 +30,7 @@ begin
   delete from erp.motivos where false; -- chega para testar o privilégio? não...
   -- teste real: tentar apagar um motivo
   begin
-    delete from erp.motivos where contexto = 'cancelamento' limit 1;
+    delete from erp.motivos where id in (select id from erp.motivos where contexto = 'cancelamento' limit 1);
     raise notice 'FALHA F6: authenticated consegue apagar motivos';
   exception
     when insufficient_privilege then raise notice 'PASSA F6: DELETE revogado a authenticated';
