@@ -82,8 +82,8 @@ declare v_f text;
 begin
   foreach v_f in array array['gerar_rotas_templates','criar_rota','agendar_entrega',
                              'desagendar_entrega','reordenar_paragens','arrancar_rota',
-                             'cancelar_rota','recalcular_previsto_rota','rotas_sugeridas',
-                             'datas_template']
+                             'cancelar_rota','recalcular_previsto_rota','rotas_sugeridas']
+  -- erp.datas_template é cálculo puro de datas (não lê tabelas): basta search_path fixo
   loop
     if not exists (
       select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
