@@ -138,18 +138,25 @@ do $$
 declare
   v_rota uuid;
   v_pedido uuid;
+  v_pedido2 uuid;
   v_res jsonb;
 begin
   select id into v_rota from erp.rotas
    where estado='planeada' and eliminado_em is null order by data limit 1;
   select id into v_pedido from erp.pedidos
-   where estado in ('confirmado','em_preparacao','pronto') and eliminado_em is null limit 1;
-  if v_rota is null or v_pedido is null then
+   where estado in ('confirmado','em_preparacao','pronto') and eliminado_em is null
+   order by criado_em limit 1;
+  select id into v_pedido2 from erp.pedidos
+   where estado in ('confirmado','em_preparacao','pronto') and eliminado_em is null
+     and id <> coalesce(v_pedido, id) order by criado_em offset 1 limit 1;
+  if v_rota is null or v_pedido is null or v_pedido2 is null then
     raise notice '[T10.5] sem dados de teste — bloco ignorado';
     return;
   end if;
 
-  update erp.rotas set max_entregas = 0 where id = v_rota;
+  -- capacidade de uma entrega: a segunda paragem passa do limite
+  update erp.rotas set max_entregas = 1 where id = v_rota;
+  perform erp.agendar_entrega(v_pedido2, v_rota, false);
   select erp.agendar_entrega(v_pedido, v_rota, false) into v_res;
 
   if (v_res->>'excedeu_capacidade')::boolean is not true then

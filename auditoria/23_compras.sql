@@ -27,6 +27,9 @@ begin
   oc := erp.criar_oc(forn, array[nec]);
   perform pg_temp.ok(oc is not null, 'K2: necessidade vira ordem de compra');
 
+  -- as compras preenchem o custo de cada linha antes de finalizar
+  update erp.oc_itens set custo_unitario = 50 where oc_id = oc and eliminado_em is null;
+
   r := erp.finalizar_oc(oc);
   perform pg_temp.ok(r ->> 'numero' is not null, 'K3: finalizar a OC atribui número');
 

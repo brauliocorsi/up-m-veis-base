@@ -27,8 +27,7 @@ end $$;
 -- DELETE físico proibido para a aplicação
 do $$
 begin
-  delete from erp.motivos where false; -- chega para testar o privilégio? não...
-  -- teste real: tentar apagar um motivo
+  -- tentar apagar um motivo: o DELETE físico está revogado à aplicação
   begin
     delete from erp.motivos where id in (select id from erp.motivos where contexto = 'cancelamento' limit 1);
     raise notice 'FALHA F6: authenticated consegue apagar motivos';

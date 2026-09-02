@@ -287,7 +287,8 @@ begin
     if not exists (
       select 1 from pg_policies
        where schemaname='erp' and tablename=v_p
-         and (qual like '%perfil%' or qual like '%tem_perfil%' or qual like '%perfil_atual%')) then
+         and (qual like '%perfil%' or qual like '%tem_perfil%' or qual like '%perfil_atual%'
+              or qual like '%pode_%')) then
       raise exception '[T11] % sem política por perfil', v_p;
     end if;
     if exists (
