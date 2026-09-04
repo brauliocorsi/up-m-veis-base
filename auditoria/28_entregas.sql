@@ -119,9 +119,7 @@ begin
   -- o cliente paga por transferência antes da entrega final
   perform erp.registar_pagamento(
     v_pedido,
-    (select id from erp.formas_pagamento
-      where not coalesce(e_numerario, false) and ativo and eliminado_em is null
-      order by ordem limit 1),
+    (select id from erp.formas_pagamento where codigo = 'TRANSFERENCIA'),
     (select erp.por_registar_pedido(v_pedido)),
     'TRF-AUD8', null, null, 'pagamento de auditoria fase 8');
 
