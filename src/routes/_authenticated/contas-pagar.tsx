@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { BadgeEuro, CalendarClock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -141,7 +141,20 @@ function PaginaContas() {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">
                 {c.fornecedor_nome}
-                {c.oc_numero ? ` · ${c.oc_numero}` : ""}
+                {c.oc_id && c.oc_numero ? (
+                  <>
+                    {" · "}
+                    <Link
+                      to="/ordens-compra/$ocId"
+                      params={{ ocId: c.oc_id }}
+                      className="hover:underline"
+                    >
+                      {c.oc_numero}
+                    </Link>
+                  </>
+                ) : (
+                  ""
+                )}
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {c.descricao} · vence {formatarData(c.data_vencimento)}
