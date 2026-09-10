@@ -34,7 +34,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useSessao } from "@/hooks/use-sessao";
 import { mensagemErro } from "@/lib/erp/db";
 import { lerLinhasEntrega } from "@/lib/erp/entregas";
-import { lerFormasAtivas } from "@/lib/erp/pagamentos";
+import { abrirCaixaRota, lerCaixaDeRota, lerFormasAtivas } from "@/lib/erp/pagamentos";
 import {
   abrirAssistencia,
   aplicarDescontoEntrega,
