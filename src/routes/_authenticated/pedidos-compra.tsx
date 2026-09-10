@@ -139,14 +139,15 @@ function PaginaPedidosCompra() {
 
   const criar = useMutation({
     mutationFn: async () => {
-      const validas = linhas.filter((l) => l.descricao.trim());
-      if (validas.length === 0) throw new Error("Escreva pelo menos um artigo a comprar.");
+      const validas = linhas.filter((l) => l.produto_id || l.descricao.trim());
+      if (validas.length === 0) throw new Error("Escolha ou escreva pelo menos um artigo.");
       if (!justificacao.trim()) throw new Error("Explique porque é precisa esta compra.");
       const id = await criarPedidoCompra({ destino, justificacao, urgencia });
       for (const l of validas) {
         await adicionarItemPedidoCompra({
           pedido_compra_id: id,
-          descricao_livre: l.descricao.trim(),
+          produto_id: l.produto_id || null,
+          descricao_livre: l.produto_id ? null : l.descricao.trim(),
           quantidade: Number(l.quantidade.replace(",", ".")) || 1,
           custo_estimado: Number(l.custo.replace(",", ".")) || 0,
           fornecedor_sugerido_id: fornecedorSugerido || null,
@@ -158,7 +159,8 @@ function PaginaPedidosCompra() {
       setACriar(false);
       setJustificacao("");
       setFornecedorSugerido("");
-      setLinhas([{ descricao: "", quantidade: "1", custo: "0" }]);
+      setLinhas([{ ...LINHA_VAZIA }]);
+
       await invalidar();
       toast.success("Pedido criado em rascunho. Submeta para aprovação.");
     },
