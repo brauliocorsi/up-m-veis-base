@@ -10,6 +10,30 @@ import {
 export interface ContextoFornecimento {
   ocs: FornecimentoLinha[];
   necessidades: Necessidade[];
+  /** Quantidade vendável em stock por produto (opcional). */
+  stock?: Record<string, number>;
+  /** Todas as linhas da venda, para repartir o stock disponível entre elas. */
+  linhas?: PedidoItem[];
+}
+
+/**
+ * Linhas ainda não reservadas que já têm stock disponível suficiente,
+ * repartindo o stock vendável pela ordem das linhas da venda.
+ */
+function linhasCobertasPorStock(ctx: ContextoFornecimento): Set<string> {
+  const cobertas = new Set<string>();
+  if (!ctx.stock || !ctx.linhas) return cobertas;
+  const restante: Record<string, number> = { ...ctx.stock };
+  for (const linha of ctx.linhas) {
+    if (linha.estado === "cancelado" || !linha.produto_id) continue;
+    const disponivel = restante[linha.produto_id] ?? 0;
+    const precisa = Number(linha.quantidade);
+    if (disponivel >= precisa) {
+      restante[linha.produto_id] = disponivel - precisa;
+      if (linha.estado === "pendente") cobertas.add(linha.id);
+    }
+  }
+  return cobertas;
 }
 
 function ocsDaLinha(item: PedidoItem, ctx: ContextoFornecimento) {
