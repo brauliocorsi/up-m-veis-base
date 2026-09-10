@@ -351,6 +351,81 @@ export async function atualizarAssistencia(
   if (error) throw error;
 }
 
+export async function lerAssistencia(id: string): Promise<Assistencia | null> {
+  const { data, error } = await erp()
+    .from("v_assistencias")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return (data ?? null) as Assistencia | null;
+}
+
+export async function lerPecasAssistencia(id: string) {
+  const { data, error } = await erp()
+    .from("v_assistencia_pecas")
+    .select("*")
+    .eq("assistencia_id", id)
+    .order("criado_em", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as import("./tipos").AssistenciaPeca[];
+}
+
+/** Dá baixa de uma peça do stock para a assistência. */
+export async function consumirPecaAssistencia(params: {
+  assistencia_id: string;
+  produto_id: string;
+  quantidade: number;
+  motivo?: string | null;
+}) {
+  const { error } = await erp().rpc("consumir_peca_assistencia", {
+    p_assistencia_id: params.assistencia_id,
+    p_produto_id: params.produto_id,
+    p_quantidade: params.quantidade,
+    p_motivo: params.motivo ?? null,
+  });
+  if (error) throw error;
+}
+
+/** Agenda a assistência numa data, como serviço ou como entrega. */
+export async function agendarAssistencia(
+  id: string,
+  data: string,
+  tipo: "servico" | "entrega" = "servico",
+) {
+  const { error } = await erp().rpc("agendar_assistencia", {
+    p_assistencia_id: id,
+    p_data: data,
+    p_tipo: tipo,
+  });
+  if (error) throw error;
+}
+
+/** Coloca a assistência como paragem numa rota, identificada pelo número da assistência. */
+export async function agendarAssistenciaRota(id: string, rotaId: string): Promise<string> {
+  const { data, error } = await erp().rpc("agendar_assistencia_rota", {
+    p_assistencia_id: id,
+    p_rota_id: rotaId,
+  });
+  if (error) throw error;
+  return data as string;
+}
+
+/** Fecha a paragem de assistência da rota (resolvida ou não). */
+export async function concluirParagemAssistencia(
+  paragemId: string,
+  resolvida: boolean,
+  nota?: string | null,
+) {
+  const { error } = await erp().rpc("concluir_paragem_assistencia", {
+    p_paragem_id: paragemId,
+    p_resolvida: resolvida,
+    p_nota: nota ?? null,
+  });
+  if (error) throw error;
+}
+
+
 // ------------------------------------------------- envelopes na caixa da loja
 export async function lerEnvelopes(params?: { porReceber?: boolean }) {
   let consulta = erp().from("v_envelopes_rota").select("*").limit(200);

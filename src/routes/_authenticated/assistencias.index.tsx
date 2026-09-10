@@ -29,7 +29,7 @@ import {
   type EstadoAssistencia,
 } from "@/lib/erp/tipos";
 
-export const Route = createFileRoute("/_authenticated/assistencias")({
+export const Route = createFileRoute("/_authenticated/assistencias/")({
   head: () => ({
     meta: [
       { title: "Assistências — UP Vendas" },
