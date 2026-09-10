@@ -351,6 +351,19 @@ function Pagina() {
         />
       )}
 
+      {assistenciaAberta && (
+        <DialogoAssistenciaParagem
+          paragem={assistenciaAberta}
+          onFechar={() => setAssistenciaAberta(null)}
+          onFeito={() => {
+            setAssistenciaAberta(null);
+            atualizar();
+          }}
+        />
+      )}
+
+
+
       {saidaAberta && (
         <DialogoSaida rotaId={rota.id} onFechar={() => setSaidaAberta(false)} onFeito={atualizar} />
       )}
