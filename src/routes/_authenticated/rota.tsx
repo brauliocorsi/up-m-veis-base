@@ -721,6 +721,12 @@ function DialogoParagem({
       }),
     onSuccess: (res, d) => {
       if (d === "entregue" || d === "parcial") {
+        // Se o dinheiro já está todo registado, a paragem fecha logo.
+        if (faltaReceber <= 0.004) {
+          toast.success("Entrega registada. Paragem fechada.");
+          onFeito();
+          return;
+        }
         setEntregaId(res.entrega_id ?? null);
         toast.success("Entrega registada. Falta receber o dinheiro.");
         setPasso("recebimento");
