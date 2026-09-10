@@ -408,6 +408,7 @@ export interface LinhaStock {
   vendavel: number;
   prometivel: number;
   encomendado: number;
+  entregue: number;
   atualizado_em: string | null;
 }
 
