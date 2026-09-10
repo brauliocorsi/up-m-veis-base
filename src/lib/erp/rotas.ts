@@ -40,21 +40,43 @@ export async function lerRota(rotaId: string): Promise<Rota | null> {
   return (data ?? null) as Rota | null;
 }
 
-/** A rota de hoje do entregador que está a usar a aplicação. */
+/** Data local (não UTC) em formato AAAA-MM-DD. */
+function dataLocal(deslocamentoDias = 0): string {
+  const d = new Date();
+  d.setDate(d.getDate() + deslocamentoDias);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+    d.getDate(),
+  ).padStart(2, "0")}`;
+}
+
+/**
+ * A rota atual do entregador: prioriza a rota em curso ou planeada de hoje,
+ * depois a de amanhã, e só no fim mostra a de ontem/hoje já encerrada.
+ */
 export async function lerRotaDeHoje(responsavelId: string): Promise<Rota | null> {
-  const hoje = new Date().toISOString().slice(0, 10);
+  const ontem = dataLocal(-1);
+  const hoje = dataLocal();
+  const amanha = dataLocal(1);
   const { data, error } = await erp()
     .from("v_rotas")
     .select("*")
     .eq("responsavel_id", responsavelId)
-    .eq("data", hoje)
+    .gte("data", ontem)
+    .lte("data", amanha)
     .in("estado", ["planeada", "em_curso", "fechada", "conferida", "concluida"])
-    .order("criado_em", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .order("criado_em", { ascending: false });
   if (error) throw error;
-  return (data ?? null) as Rota | null;
+  const rotas = (data ?? []) as Rota[];
+  const aberta = (r: Rota) => r.estado === "em_curso" || r.estado === "planeada";
+  return (
+    rotas.find((r) => r.data === hoje && aberta(r)) ??
+    rotas.find((r) => r.data === amanha && aberta(r)) ??
+    rotas.find((r) => r.data === ontem && aberta(r)) ??
+    rotas.find((r) => r.data === hoje) ??
+    null
+  );
 }
+
 
 export async function lerParagens(rotaId: string): Promise<RotaParagem[]> {
   const { data, error } = await erp()
