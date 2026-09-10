@@ -38,7 +38,9 @@ import { abrirCaixaRota, lerCaixaDeRota, lerFormasAtivas } from "@/lib/erp/pagam
 import {
   abrirAssistencia,
   aplicarDescontoEntrega,
+  concluirParagemAssistencia,
   fecharRota,
+
   lerContasDaRota,
   lerMotivosDe,
   lerMovimentosDaRota,
