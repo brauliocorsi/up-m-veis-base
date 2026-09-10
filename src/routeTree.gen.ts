@@ -59,6 +59,7 @@ import { Route as AuthenticatedAdmSincronizacaoRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
 import { Route as AuthenticatedAssistenciasIndexRouteImport } from './routes/_authenticated/assistencias.index'
+import { Route as AuthenticatedAssistenciasAssistenciaIdRouteImport } from './routes/_authenticated/assistencias.$assistenciaId'
 import { Route as AuthenticatedOrdensCompraIndexRouteImport } from './routes/_authenticated/ordens-compra.index'
 import { Route as AuthenticatedOrdensCompraOcIdRouteImport } from './routes/_authenticated/ordens-compra.$ocId'
 import { Route as AuthenticatedOrdensProducaoIndexRouteImport } from './routes/_authenticated/ordens-producao.index'
@@ -345,6 +346,12 @@ const AuthenticatedAssistenciasIndexRoute =
     path: '/assistencias/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAssistenciasAssistenciaIdRoute =
+  AuthenticatedAssistenciasAssistenciaIdRouteImport.update({
+    id: '/assistencias/$assistenciaId',
+    path: '/assistencias/$assistenciaId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOrdensCompraIndexRoute =
   AuthenticatedOrdensCompraIndexRouteImport.update({
     id: '/ordens-compra/',
@@ -470,6 +477,7 @@ export interface FileRoutesByFullPath {
   '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/assistencias/$assistenciaId': typeof AuthenticatedAssistenciasAssistenciaIdRoute
   '/ordens-compra/$ocId': typeof AuthenticatedOrdensCompraOcIdRoute
   '/ordens-producao/$opId': typeof AuthenticatedOrdensProducaoOpIdRoute
   '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
@@ -533,6 +541,7 @@ export interface FileRoutesByTo {
   '/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/assistencias/$assistenciaId': typeof AuthenticatedAssistenciasAssistenciaIdRoute
   '/ordens-compra/$ocId': typeof AuthenticatedOrdensCompraOcIdRoute
   '/ordens-producao/$opId': typeof AuthenticatedOrdensProducaoOpIdRoute
   '/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
@@ -599,6 +608,7 @@ export interface FileRoutesById {
   '/_authenticated/_adm/sincronizacao': typeof AuthenticatedAdmSincronizacaoRoute
   '/_authenticated/_adm/utilizadores': typeof AuthenticatedAdmUtilizadoresRoute
   '/_authenticated/_adm/zonas-entrega': typeof AuthenticatedAdmZonasEntregaRoute
+  '/_authenticated/assistencias/$assistenciaId': typeof AuthenticatedAssistenciasAssistenciaIdRoute
   '/_authenticated/ordens-compra/$ocId': typeof AuthenticatedOrdensCompraOcIdRoute
   '/_authenticated/ordens-producao/$opId': typeof AuthenticatedOrdensProducaoOpIdRoute
   '/_authenticated/pedidos/$pedidoId': typeof AuthenticatedPedidosPedidoIdRoute
@@ -664,6 +674,7 @@ export interface FileRouteTypes {
     | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/assistencias/$assistenciaId'
     | '/ordens-compra/$ocId'
     | '/ordens-producao/$opId'
     | '/pedidos/$pedidoId'
@@ -727,6 +738,7 @@ export interface FileRouteTypes {
     | '/sincronizacao'
     | '/utilizadores'
     | '/zonas-entrega'
+    | '/assistencias/$assistenciaId'
     | '/ordens-compra/$ocId'
     | '/ordens-producao/$opId'
     | '/pedidos/$pedidoId'
@@ -792,6 +804,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_adm/sincronizacao'
     | '/_authenticated/_adm/utilizadores'
     | '/_authenticated/_adm/zonas-entrega'
+    | '/_authenticated/assistencias/$assistenciaId'
     | '/_authenticated/ordens-compra/$ocId'
     | '/_authenticated/ordens-producao/$opId'
     | '/_authenticated/pedidos/$pedidoId'
@@ -1167,6 +1180,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssistenciasIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/assistencias/$assistenciaId': {
+      id: '/_authenticated/assistencias/$assistenciaId'
+      path: '/assistencias/$assistenciaId'
+      fullPath: '/assistencias/$assistenciaId'
+      preLoaderRoute: typeof AuthenticatedAssistenciasAssistenciaIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/ordens-compra/': {
       id: '/_authenticated/ordens-compra/'
       path: '/ordens-compra'
@@ -1332,6 +1352,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRoteirosRoute: typeof AuthenticatedRoteirosRoute
   AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
   AuthenticatedViaturasRoute: typeof AuthenticatedViaturasRoute
+  AuthenticatedAssistenciasAssistenciaIdRoute: typeof AuthenticatedAssistenciasAssistenciaIdRoute
   AuthenticatedOrdensCompraOcIdRoute: typeof AuthenticatedOrdensCompraOcIdRoute
   AuthenticatedOrdensProducaoOpIdRoute: typeof AuthenticatedOrdensProducaoOpIdRoute
   AuthenticatedPedidosPedidoIdRoute: typeof AuthenticatedPedidosPedidoIdRoute
@@ -1382,6 +1403,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRoteirosRoute: AuthenticatedRoteirosRoute,
   AuthenticatedServicosRoute: AuthenticatedServicosRoute,
   AuthenticatedViaturasRoute: AuthenticatedViaturasRoute,
+  AuthenticatedAssistenciasAssistenciaIdRoute:
+    AuthenticatedAssistenciasAssistenciaIdRoute,
   AuthenticatedOrdensCompraOcIdRoute: AuthenticatedOrdensCompraOcIdRoute,
   AuthenticatedOrdensProducaoOpIdRoute: AuthenticatedOrdensProducaoOpIdRoute,
   AuthenticatedPedidosPedidoIdRoute: AuthenticatedPedidosPedidoIdRoute,
