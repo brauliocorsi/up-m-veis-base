@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { BadgeEuro, CalendarClock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -83,6 +83,8 @@ function PaginaContas() {
     onSuccess: async () => {
       setEmPagamento(null);
       await queryClient.invalidateQueries({ queryKey: ["contas-pagar"] });
+      await queryClient.invalidateQueries({ queryKey: ["ordens-compra"] });
+      await queryClient.invalidateQueries({ queryKey: ["oc"] });
       toast.success("Pagamento registado.");
     },
     onError: (erro) => toast.error(primeiraMensagem(erro)),
@@ -141,7 +143,20 @@ function PaginaContas() {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">
                 {c.fornecedor_nome}
-                {c.oc_numero ? ` · ${c.oc_numero}` : ""}
+                {c.oc_id && c.oc_numero ? (
+                  <>
+                    {" · "}
+                    <Link
+                      to="/ordens-compra/$ocId"
+                      params={{ ocId: c.oc_id }}
+                      className="hover:underline"
+                    >
+                      {c.oc_numero}
+                    </Link>
+                  </>
+                ) : (
+                  ""
+                )}
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {c.descricao} · vence {formatarData(c.data_vencimento)}
@@ -154,9 +169,7 @@ function PaginaContas() {
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <p className="text-sm font-medium">{formatarDinheiro(c.em_divida)}</p>
-                <p className="text-[11px] text-muted-foreground">
-                  de {formatarDinheiro(c.valor)}
-                </p>
+                <p className="text-[11px] text-muted-foreground">de {formatarDinheiro(c.valor)}</p>
               </div>
               <Badge variant="secondary" className="text-[11px]">
                 {ETIQUETA_CONTA[c.estado] ?? c.estado}
