@@ -15,6 +15,7 @@ import type {
   RelCupao,
   RelRecebimento,
   RelVenda,
+  RotaContas,
 } from "./tipos";
 
 // ------------------------------------------------------------- contas a receber
@@ -280,4 +281,21 @@ export async function lerDiasConciliacao(params?: {
   const { data, error } = await consulta;
   if (error) throw error;
   return (data ?? []) as ConciliacaoDia[];
+}
+
+/** Rotas com o previsto face ao realmente recebido e fechado. */
+export async function lerRotasContas(params?: {
+  de?: string;
+  ate?: string;
+}): Promise<RotaContas[]> {
+  let consulta = erp()
+    .from("v_rota_contas")
+    .select("*")
+    .order("data", { ascending: false })
+    .limit(200);
+  if (params?.de) consulta = consulta.gte("data", params.de);
+  if (params?.ate) consulta = consulta.lte("data", params.ate);
+  const { data, error } = await consulta;
+  if (error) throw error;
+  return (data ?? []) as RotaContas[];
 }
