@@ -39,6 +39,7 @@ import {
   formatarDataCurta,
   formatarDinheiro,
   type ConciliacaoMovimento,
+  type ConciliacaoVenda,
 } from "@/lib/erp/tipos";
 
 export const Route = createFileRoute("/_authenticated/conciliacao")({
