@@ -113,11 +113,24 @@ function PaginaConciliacao() {
       <Tabs defaultValue="dinheiro">
         <TabsList className="mb-4 flex-wrap">
           <TabsTrigger value="dinheiro">Entradas e saídas</TabsTrigger>
+          <TabsTrigger value="rotas">Rotas</TabsTrigger>
+          <TabsTrigger value="por-receber">Por receber</TabsTrigger>
           <TabsTrigger value="caixa">Caixa</TabsTrigger>
           <TabsTrigger value="vendas">Vendas vs recebimentos</TabsTrigger>
           <TabsTrigger value="fluxo">Fluxo de caixa</TabsTrigger>
           <TabsTrigger value="fechos">Fechos</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="rotas">
+          <RotasFinanceiro />
+        </TabsContent>
+
+        <TabsContent value="por-receber">
+          <VendasPorReceber
+            linhas={vendas.data ?? []}
+            aCarregar={vendas.isPending}
+          />
+        </TabsContent>
 
         <TabsContent value="dinheiro">
           <EntradasSaidas />
