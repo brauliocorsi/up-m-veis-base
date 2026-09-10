@@ -275,6 +275,21 @@ function PaginaOc() {
             dados.enviada_em ? `${formatarData(dados.enviada_em)} · ${dados.enviada_para ?? ""}` : "—"
           }
         />
+        <Caixa
+          titulo="Unidades"
+          valor={`${Number(dados.unidades_recebidas)} de ${Number(dados.unidades_pedidas)} recebidas`}
+        />
+        <Caixa titulo="A caminho" valor={`${Number(dados.unidades_em_falta)} unidade(s)`} />
+        <Caixa
+          titulo="Pagamento"
+          valor={
+            dados.estado_pagamento === "sem_conta"
+              ? "Sem conta a pagar"
+              : dados.estado_pagamento === "pago"
+                ? `Pago · ${formatarDinheiro(dados.valor_pago)}`
+                : `${formatarDinheiro(dados.valor_pago)} pago · falta ${formatarDinheiro(dados.valor_em_divida)}`
+          }
+        />
       </section>
 
       <section className="mb-4 overflow-hidden rounded-lg border bg-card">
