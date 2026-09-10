@@ -449,3 +449,205 @@ function EntradasSaidas() {
     </div>
   );
 }
+
+/** Vendas confirmadas que ainda têm dinheiro por receber. */
+function VendasPorReceber({
+  linhas,
+  aCarregar,
+}: {
+  linhas: ConciliacaoVenda[];
+  aCarregar: boolean;
+}) {
+  const [apenasAbertas, setApenasAbertas] = useState(true);
+  const confirmadas = linhas.filter((v) => v.estado !== "orcamento");
+  const abertas = confirmadas.filter((v) => !v.fechada);
+  const lista = apenasAbertas ? abertas : confirmadas;
+  const total = abertas.reduce((s, v) => s + Number(v.por_registar), 0);
+  const naEntrega = abertas.reduce((s, v) => s + Number(v.a_receber_entrega), 0);
+  const porConfirmar = abertas.reduce((s, v) => s + Number(v.pendente_confirmacao), 0);
+
+  if (aCarregar) return <Skeleton className="h-64 w-full rounded-lg" />;
+
+  return (
+    <div>
+      <div className="mb-4 grid gap-2 sm:grid-cols-3">
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">Falta receber</p>
+          <p className="text-lg font-semibold">{formatarDinheiro(total)}</p>
+        </div>
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">Aguarda confirmação</p>
+          <p className="text-lg font-semibold">{formatarDinheiro(porConfirmar)}</p>
+        </div>
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">A cobrar na entrega</p>
+          <p className="text-lg font-semibold">{formatarDinheiro(naEntrega)}</p>
+        </div>
+      </div>
+
+      <div className="mb-3 flex flex-wrap items-center gap-3">
+        <Button
+          variant={apenasAbertas ? "default" : "outline"}
+          size="sm"
+          onClick={() => setApenasAbertas(true)}
+        >
+          Em aberto ({abertas.length})
+        </Button>
+        <Button
+          variant={apenasAbertas ? "outline" : "default"}
+          size="sm"
+          onClick={() => setApenasAbertas(false)}
+        >
+          Todas ({confirmadas.length})
+        </Button>
+      </div>
+
+      {lista.length === 0 ? (
+        <div className="rounded-lg border bg-card p-10 text-center text-muted-foreground">
+          Todas as vendas confirmadas estão liquidadas.
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {lista.map((v) => (
+            <li
+              key={v.pedido_id}
+              className="flex flex-wrap items-center gap-3 rounded-lg border bg-card px-4 py-3"
+            >
+              <div className="min-w-0 flex-1">
+                <Link
+                  to="/pedidos/$pedidoId"
+                  params={{ pedidoId: v.pedido_id }}
+                  className="truncate text-sm font-medium hover:underline"
+                >
+                  {v.numero} · {v.cliente_nome ?? "—"}
+                </Link>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  total {formatarDinheiro(v.total)} · recebido{" "}
+                  {formatarDinheiro(v.recebido_confirmado)} · por confirmar{" "}
+                  {formatarDinheiro(v.pendente_confirmacao)} · na entrega{" "}
+                  {formatarDinheiro(v.a_receber_entrega)}
+                  {v.confirmado_em ? ` · venda de ${formatarDataCurta(v.confirmado_em)}` : ""}
+                </p>
+              </div>
+              <p className="text-sm font-semibold tabular-nums">
+                {formatarDinheiro(v.por_registar)}
+              </p>
+              <Badge
+                variant={v.fechada ? "secondary" : "destructive"}
+                className="gap-1 text-[11px]"
+              >
+                {v.fechada ? (
+                  <>
+                    <CheckCircle2 className="h-3 w-3" /> Fechada
+                  </>
+                ) : v.estado_recebimento === "parcial" ? (
+                  "Recebida em parte"
+                ) : (
+                  "Sem recebimento"
+                )}
+              </Badge>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/** Rotas: o que estava previsto receber face ao que entrou e foi conferido. */
+function RotasFinanceiro() {
+  const rotas = useQuery({ queryKey: ["rotas-financeiro"], queryFn: () => lerRotasContas() });
+  const linhas = rotas.data ?? [];
+  const previsto = linhas.reduce((s, r) => s + Number(r.previsto_receber ?? 0), 0);
+  const recebido = linhas.reduce((s, r) => s + Number(r.recebido ?? 0), 0);
+  const comDivergencia = linhas.filter((r) => Math.abs(Number(r.divergencia_previsto)) >= 0.01);
+
+  if (rotas.isPending) return <Skeleton className="h-64 w-full rounded-lg" />;
+
+  return (
+    <div>
+      <div className="mb-4 grid gap-2 sm:grid-cols-3">
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">Previsto nas rotas</p>
+          <p className="text-lg font-semibold">{formatarDinheiro(previsto)}</p>
+        </div>
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">Recebido nas rotas</p>
+          <p className="text-lg font-semibold">{formatarDinheiro(recebido)}</p>
+        </div>
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">Rotas com divergência</p>
+          <p
+            className={`text-lg font-semibold ${comDivergencia.length > 0 ? "text-destructive" : ""}`}
+          >
+            {comDivergencia.length}
+          </p>
+        </div>
+      </div>
+
+      {linhas.length === 0 ? (
+        <div className="rounded-lg border bg-card p-10 text-center text-muted-foreground">
+          Ainda não há rotas para conferir.
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {linhas.map((r) => {
+            const dif = Number(r.divergencia_previsto);
+            const difEnvelope = r.diferenca === null ? null : Number(r.diferenca);
+            return (
+              <li
+                key={r.rota_id}
+                className={`flex flex-wrap items-center gap-3 rounded-lg border bg-card px-4 py-3 ${
+                  Math.abs(dif) >= 0.01 ? "border-destructive/60" : ""
+                }`}
+              >
+                <Truck className="h-4 w-4 shrink-0 text-primary" />
+                <div className="min-w-0 flex-1">
+                  <Link
+                    to="/rotas/$rotaId"
+                    params={{ rotaId: r.rota_id }}
+                    className="truncate text-sm font-medium hover:underline"
+                  >
+                    {formatarData(r.data)} · {r.nome}
+                  </Link>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    previsto {formatarDinheiro(r.previsto_receber ?? 0)} · recebido{" "}
+                    {formatarDinheiro(r.recebido ?? 0)} · dinheiro{" "}
+                    {formatarDinheiro(r.dinheiro ?? 0)} · saídas {formatarDinheiro(r.saidas ?? 0)}
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    entregas {r.entregas_feitas ?? 0}/{r.previsto_entregas ?? 0} · envelope
+                    esperado {formatarDinheiro(r.esperado_envelope ?? 0)} · conferido{" "}
+                    {r.valor_conferido === null ? "—" : formatarDinheiro(r.valor_conferido)}
+                    {r.justificacao_diferenca ? ` · ${r.justificacao_diferenca}` : ""}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <span
+                    className={`text-sm font-semibold tabular-nums ${
+                      Math.abs(dif) >= 0.01 ? "text-destructive" : ""
+                    }`}
+                  >
+                    {formatarDinheiro(dif)}
+                  </span>
+                  <Badge
+                    variant={
+                      r.conferida
+                        ? difEnvelope !== null && Math.abs(difEnvelope) >= 0.01
+                          ? "destructive"
+                          : "secondary"
+                        : "outline"
+                    }
+                    className="text-[11px]"
+                  >
+                    {r.conferida ? "Conferida" : r.fechada ? "Fechada" : "Em curso"}
+                  </Badge>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
