@@ -90,13 +90,15 @@ function Pagina() {
             <CardContent className="flex flex-wrap items-start justify-between gap-3 p-4">
               <div className="min-w-0">
                 <p className="truncate font-medium">
-                  {a.pedido_numero} · {a.cliente ?? "Cliente"}
+                  {a.numero} · {a.pedido_numero} · {a.cliente ?? "Cliente"}
                 </p>
                 <p className="text-sm">{a.motivo}</p>
                 <p className="text-xs text-muted-foreground">
                   {formatarDataCurta(a.criado_em)}
                   {a.peca_afetada ? ` · ${a.peca_afetada}` : ""}
                   {a.aberta_por_nome ? ` · ${a.aberta_por_nome}` : ""}
+                  {a.agendada_para ? ` · agendada ${formatarDataCurta(a.agendada_para)}` : ""}
+                  {(a.n_pecas ?? 0) > 0 ? ` · ${a.n_pecas} peça(s)` : ""}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">{a.descricao}</p>
               </div>
@@ -104,12 +106,18 @@ function Pagina() {
                 <Badge variant={a.estado === "resolvida" ? "outline" : "secondary"}>
                   {ETIQUETA_ASSISTENCIA[a.estado]}
                 </Badge>
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/assistencias/$assistenciaId" params={{ assistenciaId: a.id }}>
+                    Ver detalhe
+                  </Link>
+                </Button>
                 {perms.tratarAssistencias && (
                   <Button variant="outline" size="sm" onClick={() => setATratar(a)}>
                     Atualizar
                   </Button>
                 )}
               </div>
+
             </CardContent>
           </Card>
         ))}
