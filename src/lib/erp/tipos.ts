@@ -671,6 +671,10 @@ export interface Pedido extends CamposComuns {
   disponivel_entrega?: boolean;
   pendente_confirmacao?: number;
   a_receber_entrega?: number;
+  /** Reagendamentos de entrega (vem de v_pedidos) */
+  reagendamentos?: number;
+  data_reagendamento?: string | null;
+  precisa_remarcacao?: boolean;
 
 }
 
