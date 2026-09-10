@@ -46,6 +46,7 @@ export const Route = createFileRoute("/_authenticated/ordens-compra/")({
 
 function PaginaOrdens() {
   const [estado, setEstado] = useState<string>("abertas");
+  const [pagamento, setPagamento] = useState<string>("todos");
   const [pesquisa, setPesquisa] = useState("");
 
   const { data, isPending } = useQuery({
@@ -74,11 +75,22 @@ function PaginaOrdens() {
   });
 
   const termo = pesquisa.trim().toLowerCase();
-  const linhas = (data ?? []).filter(
+  const todas = (data ?? []).filter(
     (oc) =>
       !termo ||
       oc.numero.toLowerCase().includes(termo) ||
       (oc.fornecedor_nome ?? "").toLowerCase().includes(termo),
+  );
+  const linhas =
+    pagamento === "todos"
+      ? todas
+      : pagamento === "por_pagar"
+        ? todas.filter((oc) => oc.estado_pagamento === "pendente" || oc.estado_pagamento === "parcial")
+        : todas.filter((oc) => oc.estado_pagamento === pagamento);
+  const soma = (lista: OrdemCompra[], f: (oc: OrdemCompra) => number) =>
+    lista.reduce((t, oc) => t + Number(f(oc) ?? 0), 0);
+  const aCaminho = todas.filter(
+    (oc) => oc.estado === "enviada" || oc.estado === "confirmada" || oc.estado === "recebida_parcial",
   );
 
   return (
