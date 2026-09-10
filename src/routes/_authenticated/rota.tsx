@@ -110,6 +110,30 @@ function Pagina() {
     enabled: Boolean(rota?.id),
   });
 
+  const caixaQ = useQuery({
+    queryKey: ["caixa-da-rota", rota?.id],
+    queryFn: () => lerCaixaDeRota(rota!.id),
+    enabled: Boolean(rota?.id),
+  });
+  const caixa = caixaQ.data ?? null;
+  const [troco, setTroco] = useState("");
+
+  const abrirCaixa = useMutation({
+    mutationFn: async () => {
+      const valor = Number((troco || "0").replace(",", "."));
+      if (!Number.isFinite(valor) || valor < 0) throw new Error("Indique um troco válido.");
+      await abrirCaixaRota(rota!.id, Number(valor.toFixed(2)));
+    },
+    onSuccess: () => {
+      toast.success("Caixa da rota aberto.");
+      setTroco("");
+      clientQuery.invalidateQueries({ queryKey: ["caixa-da-rota"] });
+      clientQuery.invalidateQueries({ queryKey: ["meu-caixa"] });
+      clientQuery.invalidateQueries({ queryKey: ["rota-hoje"] });
+    },
+    onError: (erro) => toast.error(mensagemErro(erro)),
+  });
+
   const [paragemAberta, setParagemAberta] = useState<RotaParagem | null>(null);
   const [saidaAberta, setSaidaAberta] = useState(false);
   const [fechoAberto, setFechoAberto] = useState(false);
