@@ -141,6 +141,8 @@ function Pagina() {
   });
 
   const [paragemAberta, setParagemAberta] = useState<RotaParagem | null>(null);
+  const [assistenciaAberta, setAssistenciaAberta] = useState<RotaParagem | null>(null);
+
   const [saidaAberta, setSaidaAberta] = useState(false);
   const [fechoAberto, setFechoAberto] = useState(false);
 
@@ -275,14 +277,23 @@ function Pagina() {
         <h2 className="text-sm font-semibold text-muted-foreground">
           Por fazer ({pendentes.length})
         </h2>
-        {pendentes.map((p) => (
-          <CartaoParagem
-            key={p.id}
-            paragem={p}
-            onAbrir={() => setParagemAberta(p)}
-            ativa={Boolean(podeTrabalhar)}
-          />
-        ))}
+        {pendentes.map((p) =>
+          p.tipo === "assistencia" ? (
+            <CartaoAssistencia
+              key={p.id}
+              paragem={p}
+              ativa={Boolean(podeTrabalhar)}
+              onAbrir={() => setAssistenciaAberta(p)}
+            />
+          ) : (
+            <CartaoParagem
+              key={p.id}
+              paragem={p}
+              onAbrir={() => setParagemAberta(p)}
+              ativa={Boolean(podeTrabalhar)}
+            />
+          ),
+        )}
         {pendentes.length === 0 && (
           <p className="text-sm text-muted-foreground">Todas as paragens estão fechadas.</p>
         )}
@@ -292,11 +303,16 @@ function Pagina() {
             <h2 className="pt-3 text-sm font-semibold text-muted-foreground">
               Fechadas ({fechadas.length})
             </h2>
-            {fechadas.map((p) => (
-              <CartaoParagem key={p.id} paragem={p} onAbrir={() => setParagemAberta(p)} ativa={false} />
-            ))}
+            {fechadas.map((p) =>
+              p.tipo === "assistencia" ? (
+                <CartaoAssistencia key={p.id} paragem={p} ativa={false} onAbrir={() => {}} />
+              ) : (
+                <CartaoParagem key={p.id} paragem={p} onAbrir={() => setParagemAberta(p)} ativa={false} />
+              ),
+            )}
           </>
         )}
+
       </section>
 
       {(movimentosQ.data ?? []).length > 0 && (
