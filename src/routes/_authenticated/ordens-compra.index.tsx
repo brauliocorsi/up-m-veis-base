@@ -100,6 +100,27 @@ function PaginaOrdens() {
         descricao="O que já foi encomendado aos fornecedores e em que ponto está."
       />
 
+      <div className="mb-4 grid gap-2 sm:grid-cols-3">
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">Unidades a caminho</p>
+          <p className="text-lg font-semibold">
+            {soma(aCaminho, (oc) => oc.unidades_em_falta)}
+          </p>
+        </div>
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">Unidades recebidas</p>
+          <p className="text-lg font-semibold">
+            {soma(todas, (oc) => oc.unidades_recebidas)}
+          </p>
+        </div>
+        <div className="rounded-lg border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground">Por pagar</p>
+          <p className="text-lg font-semibold">
+            {formatarDinheiro(soma(todas, (oc) => oc.valor_em_divida))}
+          </p>
+        </div>
+      </div>
+
       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
         <Input
           value={pesquisa}
@@ -108,7 +129,7 @@ function PaginaOrdens() {
           aria-label="Pesquisar ordens de compra"
         />
         <Select value={estado} onValueChange={setEstado}>
-          <SelectTrigger className="sm:w-64" aria-label="Filtrar por estado">
+          <SelectTrigger className="sm:w-56" aria-label="Filtrar por estado">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -119,6 +140,18 @@ function PaginaOrdens() {
                 {e.etiqueta}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+        <Select value={pagamento} onValueChange={setPagamento}>
+          <SelectTrigger className="sm:w-56" aria-label="Filtrar por pagamento">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Qualquer pagamento</SelectItem>
+            <SelectItem value="por_pagar">Por pagar</SelectItem>
+            <SelectItem value="parcial">Pagas em parte</SelectItem>
+            <SelectItem value="pago">Pagas</SelectItem>
+            <SelectItem value="sem_conta">Sem conta a pagar</SelectItem>
           </SelectContent>
         </Select>
       </div>
