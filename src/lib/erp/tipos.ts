@@ -942,6 +942,12 @@ export interface OrdemCompra extends CamposComuns {
   n_itens: number;
   unidades_em_falta: number;
   atrasada: boolean;
+  unidades_pedidas: number;
+  unidades_recebidas: number;
+  valor_faturado: number;
+  valor_pago: number;
+  valor_em_divida: number;
+  estado_pagamento: "sem_conta" | "pendente" | "parcial" | "pago";
 }
 
 export interface OcItem extends CamposComuns {
@@ -1188,6 +1194,9 @@ export interface ConciliacaoVenda {
   pendente_confirmacao: number;
   a_receber_entrega: number;
   divergencia: number;
+  por_registar: number;
+  fechada: boolean;
+  estado_recebimento: "liquidada" | "parcial" | "sem_recebimento";
 }
 
 export interface FluxoSemana {
@@ -1687,6 +1696,9 @@ export interface RotaContas {
   justificacao_diferenca: string | null;
   fechada_em: string | null;
   conferida_em: string | null;
+  divergencia_previsto: number;
+  fechada: boolean;
+  conferida: boolean;
 }
 
 export type EstadoAssistencia =
