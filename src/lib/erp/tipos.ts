@@ -1657,7 +1657,15 @@ export interface RotaParagem extends CamposComuns {
   desconto_entrega?: number;
   /** Fase 10 — a paragem entrou acima dos limites da rota. */
   excedeu_capacidade?: boolean;
+  /** Paragem de entrega normal ou visita de assistência. */
+  tipo?: "entrega" | "assistencia";
+  assistencia_id?: string | null;
+  assistencia_numero?: string | null;
+  assistencia_motivo?: string | null;
+  assistencia_descricao?: string | null;
+  assistencia_estado?: string | null;
 }
+
 
 export interface RotaMovimento {
   id: string;
@@ -1723,6 +1731,7 @@ export const ESTADOS_ASSISTENCIA: Array<{ valor: EstadoAssistencia; etiqueta: st
 ).map((valor) => ({ valor, etiqueta: ETIQUETA_ASSISTENCIA[valor] }));
 
 export interface Assistencia extends CamposComuns {
+  numero: string;
   pedido_id: string;
   pedido_item_id: string | null;
   entrega_id: string | null;
@@ -1736,11 +1745,37 @@ export interface Assistencia extends CamposComuns {
   aberta_por: string | null;
   resolvida_em: string | null;
   nota_resolucao: string | null;
+  agendada_para: string | null;
+  agendamento_tipo: "servico" | "entrega" | null;
+  rota_id: string | null;
+  paragem_agendada_id: string | null;
   pedido_numero?: string;
+  pedido_estado?: string | null;
+  pedido_total?: number | null;
   cliente?: string | null;
+  cliente_telefone?: string | null;
+  morada_entrega?: string | null;
+  localidade_entrega?: string | null;
   item_descricao?: string | null;
   aberta_por_nome?: string | null;
+  rota_nome?: string | null;
+  rota_data?: string | null;
+  rota_estado?: string | null;
+  n_pecas?: number;
 }
+
+export interface AssistenciaPeca {
+  id: string;
+  criado_em: string;
+  assistencia_id: string;
+  produto_id: string;
+  quantidade: number;
+  motivo: string | null;
+  movimento_id: number | null;
+  produto_nome: string | null;
+  produto_codigo: string | null;
+}
+
 
 // ------------------------------------------------- conciliação de entradas/saídas
 export interface ConciliacaoMovimento {

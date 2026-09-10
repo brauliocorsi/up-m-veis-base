@@ -38,7 +38,9 @@ import { abrirCaixaRota, lerCaixaDeRota, lerFormasAtivas } from "@/lib/erp/pagam
 import {
   abrirAssistencia,
   aplicarDescontoEntrega,
+  concluirParagemAssistencia,
   fecharRota,
+
   lerContasDaRota,
   lerMotivosDe,
   lerMovimentosDaRota,
@@ -141,6 +143,8 @@ function Pagina() {
   });
 
   const [paragemAberta, setParagemAberta] = useState<RotaParagem | null>(null);
+  const [assistenciaAberta, setAssistenciaAberta] = useState<RotaParagem | null>(null);
+
   const [saidaAberta, setSaidaAberta] = useState(false);
   const [fechoAberto, setFechoAberto] = useState(false);
 
@@ -275,14 +279,23 @@ function Pagina() {
         <h2 className="text-sm font-semibold text-muted-foreground">
           Por fazer ({pendentes.length})
         </h2>
-        {pendentes.map((p) => (
-          <CartaoParagem
-            key={p.id}
-            paragem={p}
-            onAbrir={() => setParagemAberta(p)}
-            ativa={Boolean(podeTrabalhar)}
-          />
-        ))}
+        {pendentes.map((p) =>
+          p.tipo === "assistencia" ? (
+            <CartaoAssistencia
+              key={p.id}
+              paragem={p}
+              ativa={Boolean(podeTrabalhar)}
+              onAbrir={() => setAssistenciaAberta(p)}
+            />
+          ) : (
+            <CartaoParagem
+              key={p.id}
+              paragem={p}
+              onAbrir={() => setParagemAberta(p)}
+              ativa={Boolean(podeTrabalhar)}
+            />
+          ),
+        )}
         {pendentes.length === 0 && (
           <p className="text-sm text-muted-foreground">Todas as paragens estão fechadas.</p>
         )}
@@ -292,11 +305,16 @@ function Pagina() {
             <h2 className="pt-3 text-sm font-semibold text-muted-foreground">
               Fechadas ({fechadas.length})
             </h2>
-            {fechadas.map((p) => (
-              <CartaoParagem key={p.id} paragem={p} onAbrir={() => setParagemAberta(p)} ativa={false} />
-            ))}
+            {fechadas.map((p) =>
+              p.tipo === "assistencia" ? (
+                <CartaoAssistencia key={p.id} paragem={p} ativa={false} onAbrir={() => {}} />
+              ) : (
+                <CartaoParagem key={p.id} paragem={p} onAbrir={() => setParagemAberta(p)} ativa={false} />
+              ),
+            )}
           </>
         )}
+
       </section>
 
       {(movimentosQ.data ?? []).length > 0 && (
@@ -334,6 +352,19 @@ function Pagina() {
           }}
         />
       )}
+
+      {assistenciaAberta && (
+        <DialogoAssistenciaParagem
+          paragem={assistenciaAberta}
+          onFechar={() => setAssistenciaAberta(null)}
+          onFeito={() => {
+            setAssistenciaAberta(null);
+            atualizar();
+          }}
+        />
+      )}
+
+
 
       {saidaAberta && (
         <DialogoSaida rotaId={rota.id} onFechar={() => setSaidaAberta(false)} onFeito={atualizar} />
@@ -485,6 +516,136 @@ function CartaoParagem({
     </Card>
   );
 }
+
+// -------------------------------------------------------- paragem de assistência
+function CartaoAssistencia({
+  paragem,
+  ativa,
+  onAbrir,
+}: {
+  paragem: RotaParagem;
+  ativa: boolean;
+  onAbrir: () => void;
+}) {
+  const morada = [paragem.morada_entrega, paragem.localidade_entrega].filter(Boolean).join(", ");
+  const telefone = paragem.contacto_entrega || paragem.cliente_telefone;
+  return (
+    <Card className="border-primary/40">
+      <CardContent className="space-y-2 p-4">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="truncate font-medium">
+              {paragem.ordem}. {paragem.cliente ?? "Cliente"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {paragem.assistencia_numero} · {paragem.pedido_numero}
+            </p>
+          </div>
+          {paragem.desfecho ? (
+            <Badge variant={COR_DESFECHO[paragem.desfecho]}>
+              {ETIQUETA_DESFECHO[paragem.desfecho]}
+            </Badge>
+          ) : (
+            <Badge>Assistência</Badge>
+          )}
+        </div>
+
+        <p className="text-sm font-medium">{paragem.assistencia_motivo}</p>
+        {paragem.assistencia_descricao && (
+          <p className="text-sm text-muted-foreground">{paragem.assistencia_descricao}</p>
+        )}
+        {morada && (
+          <p className="flex items-start gap-2 text-sm text-muted-foreground">
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0" /> {morada}
+          </p>
+        )}
+
+        <div className="flex flex-wrap gap-2 pt-1">
+          {telefone && (
+            <Button asChild variant="outline" size="sm">
+              <a href={`tel:${telefone}`}>
+                <Phone className="mr-2 h-4 w-4" /> Ligar
+              </a>
+            </Button>
+          )}
+          {morada && (
+            <Button asChild variant="outline" size="sm">
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(morada)}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <MapPin className="mr-2 h-4 w-4" /> Mapa
+              </a>
+            </Button>
+          )}
+          {ativa && (
+            <Button size="sm" onClick={onAbrir}>
+              Fechar assistência
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function DialogoAssistenciaParagem({
+  paragem,
+  onFechar,
+  onFeito,
+}: {
+  paragem: RotaParagem;
+  onFechar: () => void;
+  onFeito: () => void;
+}) {
+  const [resolvida, setResolvida] = useState(true);
+  const [nota, setNota] = useState("");
+
+  const guardar = useMutation({
+    mutationFn: () => concluirParagemAssistencia(paragem.id, resolvida, nota || null),
+    onSuccess: () => {
+      toast.success("Assistência registada.");
+      onFeito();
+    },
+    onError: (e) => toast.error(mensagemErro(e)),
+  });
+
+  return (
+    <DialogoForm
+      aberto
+      onFechar={onFechar}
+      titulo={`Assistência ${paragem.assistencia_numero ?? ""}`}
+      descricao={paragem.assistencia_motivo ?? "Visita de assistência"}
+      aGuardar={guardar.isPending}
+      onGuardar={() => guardar.mutate()}
+    >
+      <div>
+        <Label>Resultado</Label>
+        <Select value={resolvida ? "sim" : "nao"} onValueChange={(v) => setResolvida(v === "sim")}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="sim">Resolvida no local</SelectItem>
+            <SelectItem value="nao">Não resolvida</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label htmlFor="nota-assist-rota">Nota</Label>
+        <Textarea
+          id="nota-assist-rota"
+          rows={3}
+          value={nota}
+          onChange={(e) => setNota(e.target.value)}
+          placeholder="O que foi feito ou o que falta."
+        />
+      </div>
+    </DialogoForm>
+  );
+}
+
 
 // ------------------------------------------------------------------- paragem
 function DialogoParagem({
