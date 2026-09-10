@@ -664,6 +664,9 @@ export interface Pedido extends CamposComuns {
   estado_fiscal?: "sem_documento" | "guia_emitida" | "faturado" | "nota_credito";
   data_entrega_efetiva?: string | null;
   unidades_por_entregar?: number;
+  linhas_ativas?: number;
+  linhas_prontas?: number;
+  disponivel_entrega?: boolean;
   pendente_confirmacao?: number;
   a_receber_entrega?: number;
 
