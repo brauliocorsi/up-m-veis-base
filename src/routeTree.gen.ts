@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdmRouteRouteImport } from './routes/_authenticated/_adm/route'
-import { Route as AuthenticatedAssistenciasRouteImport } from './routes/_authenticated/assistencias'
 import { Route as AuthenticatedCaixaRouteImport } from './routes/_authenticated/caixa'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedCentrosTrabalhoRouteImport } from './routes/_authenticated/centros-trabalho'
@@ -59,6 +58,7 @@ import { Route as AuthenticatedAdmRegrasDescontoRouteImport } from './routes/_au
 import { Route as AuthenticatedAdmSincronizacaoRouteImport } from './routes/_authenticated/_adm/sincronizacao'
 import { Route as AuthenticatedAdmUtilizadoresRouteImport } from './routes/_authenticated/_adm/utilizadores'
 import { Route as AuthenticatedAdmZonasEntregaRouteImport } from './routes/_authenticated/_adm/zonas-entrega'
+import { Route as AuthenticatedAssistenciasIndexRouteImport } from './routes/_authenticated/assistencias.index'
 import { Route as AuthenticatedOrdensCompraIndexRouteImport } from './routes/_authenticated/ordens-compra.index'
 import { Route as AuthenticatedOrdensCompraOcIdRouteImport } from './routes/_authenticated/ordens-compra.$ocId'
 import { Route as AuthenticatedOrdensProducaoIndexRouteImport } from './routes/_authenticated/ordens-producao.index'
@@ -91,12 +91,6 @@ const AuthenticatedAdmRouteRoute = AuthenticatedAdmRouteRouteImport.update({
   id: '/_adm',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAssistenciasRoute =
-  AuthenticatedAssistenciasRouteImport.update({
-    id: '/assistencias',
-    path: '/assistencias',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedCaixaRoute = AuthenticatedCaixaRouteImport.update({
   id: '/caixa',
   path: '/caixa',
@@ -345,6 +339,12 @@ const AuthenticatedAdmZonasEntregaRoute =
     path: '/zonas-entrega',
     getParentRoute: () => AuthenticatedAdmRouteRoute,
   } as any)
+const AuthenticatedAssistenciasIndexRoute =
+  AuthenticatedAssistenciasIndexRouteImport.update({
+    id: '/assistencias/',
+    path: '/assistencias/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOrdensCompraIndexRoute =
   AuthenticatedOrdensCompraIndexRouteImport.update({
     id: '/ordens-compra/',
@@ -425,7 +425,6 @@ const ApiPublicHooksSyncContagemRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/assistencias': typeof AuthenticatedAssistenciasRoute
   '/caixa': typeof AuthenticatedCaixaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/centros-trabalho': typeof AuthenticatedCentrosTrabalhoRoute
@@ -477,6 +476,7 @@ export interface FileRoutesByFullPath {
   '/planos-producao/$planoId': typeof AuthenticatedPlanosProducaoPlanoIdRoute
   '/rotas/$rotaId': typeof AuthenticatedRotasRotaIdRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/assistencias/': typeof AuthenticatedAssistenciasIndexRoute
   '/ordens-compra/': typeof AuthenticatedOrdensCompraIndexRoute
   '/ordens-producao/': typeof AuthenticatedOrdensProducaoIndexRoute
   '/pedidos/': typeof AuthenticatedPedidosIndexRoute
@@ -488,7 +488,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/assistencias': typeof AuthenticatedAssistenciasRoute
   '/caixa': typeof AuthenticatedCaixaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/centros-trabalho': typeof AuthenticatedCentrosTrabalhoRoute
@@ -540,6 +539,7 @@ export interface FileRoutesByTo {
   '/planos-producao/$planoId': typeof AuthenticatedPlanosProducaoPlanoIdRoute
   '/rotas/$rotaId': typeof AuthenticatedRotasRotaIdRoute
   '/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/assistencias': typeof AuthenticatedAssistenciasIndexRoute
   '/ordens-compra': typeof AuthenticatedOrdensCompraIndexRoute
   '/ordens-producao': typeof AuthenticatedOrdensProducaoIndexRoute
   '/pedidos': typeof AuthenticatedPedidosIndexRoute
@@ -554,7 +554,6 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/_adm': typeof AuthenticatedAdmRouteRouteWithChildren
-  '/_authenticated/assistencias': typeof AuthenticatedAssistenciasRoute
   '/_authenticated/caixa': typeof AuthenticatedCaixaRoute
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/centros-trabalho': typeof AuthenticatedCentrosTrabalhoRoute
@@ -606,6 +605,7 @@ export interface FileRoutesById {
   '/_authenticated/planos-producao/$planoId': typeof AuthenticatedPlanosProducaoPlanoIdRoute
   '/_authenticated/rotas/$rotaId': typeof AuthenticatedRotasRotaIdRoute
   '/_authenticated/stock/$produtoId': typeof AuthenticatedStockProdutoIdRoute
+  '/_authenticated/assistencias/': typeof AuthenticatedAssistenciasIndexRoute
   '/_authenticated/ordens-compra/': typeof AuthenticatedOrdensCompraIndexRoute
   '/_authenticated/ordens-producao/': typeof AuthenticatedOrdensProducaoIndexRoute
   '/_authenticated/pedidos/': typeof AuthenticatedPedidosIndexRoute
@@ -619,7 +619,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/assistencias'
     | '/caixa'
     | '/categorias'
     | '/centros-trabalho'
@@ -671,6 +670,7 @@ export interface FileRouteTypes {
     | '/planos-producao/$planoId'
     | '/rotas/$rotaId'
     | '/stock/$produtoId'
+    | '/assistencias/'
     | '/ordens-compra/'
     | '/ordens-producao/'
     | '/pedidos/'
@@ -682,7 +682,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/assistencias'
     | '/caixa'
     | '/categorias'
     | '/centros-trabalho'
@@ -734,6 +733,7 @@ export interface FileRouteTypes {
     | '/planos-producao/$planoId'
     | '/rotas/$rotaId'
     | '/stock/$produtoId'
+    | '/assistencias'
     | '/ordens-compra'
     | '/ordens-producao'
     | '/pedidos'
@@ -747,7 +747,6 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/_adm'
-    | '/_authenticated/assistencias'
     | '/_authenticated/caixa'
     | '/_authenticated/categorias'
     | '/_authenticated/centros-trabalho'
@@ -799,6 +798,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planos-producao/$planoId'
     | '/_authenticated/rotas/$rotaId'
     | '/_authenticated/stock/$produtoId'
+    | '/_authenticated/assistencias/'
     | '/_authenticated/ordens-compra/'
     | '/_authenticated/ordens-producao/'
     | '/_authenticated/pedidos/'
@@ -843,13 +843,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedAdmRouteRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/assistencias': {
-      id: '/_authenticated/assistencias'
-      path: '/assistencias'
-      fullPath: '/assistencias'
-      preLoaderRoute: typeof AuthenticatedAssistenciasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/caixa': {
@@ -1167,6 +1160,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdmZonasEntregaRouteImport
       parentRoute: typeof AuthenticatedAdmRouteRoute
     }
+    '/_authenticated/assistencias/': {
+      id: '/_authenticated/assistencias/'
+      path: '/assistencias'
+      fullPath: '/assistencias/'
+      preLoaderRoute: typeof AuthenticatedAssistenciasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/ordens-compra/': {
       id: '/_authenticated/ordens-compra/'
       path: '/ordens-compra'
@@ -1300,7 +1300,6 @@ const AuthenticatedAdmRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdmRouteRoute: typeof AuthenticatedAdmRouteRouteWithChildren
-  AuthenticatedAssistenciasRoute: typeof AuthenticatedAssistenciasRoute
   AuthenticatedCaixaRoute: typeof AuthenticatedCaixaRoute
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedCentrosTrabalhoRoute: typeof AuthenticatedCentrosTrabalhoRoute
@@ -1339,6 +1338,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlanosProducaoPlanoIdRoute: typeof AuthenticatedPlanosProducaoPlanoIdRoute
   AuthenticatedRotasRotaIdRoute: typeof AuthenticatedRotasRotaIdRoute
   AuthenticatedStockProdutoIdRoute: typeof AuthenticatedStockProdutoIdRoute
+  AuthenticatedAssistenciasIndexRoute: typeof AuthenticatedAssistenciasIndexRoute
   AuthenticatedOrdensCompraIndexRoute: typeof AuthenticatedOrdensCompraIndexRoute
   AuthenticatedOrdensProducaoIndexRoute: typeof AuthenticatedOrdensProducaoIndexRoute
   AuthenticatedPedidosIndexRoute: typeof AuthenticatedPedidosIndexRoute
@@ -1349,7 +1349,6 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdmRouteRoute: AuthenticatedAdmRouteRouteWithChildren,
-  AuthenticatedAssistenciasRoute: AuthenticatedAssistenciasRoute,
   AuthenticatedCaixaRoute: AuthenticatedCaixaRoute,
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedCentrosTrabalhoRoute: AuthenticatedCentrosTrabalhoRoute,
@@ -1390,6 +1389,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedPlanosProducaoPlanoIdRoute,
   AuthenticatedRotasRotaIdRoute: AuthenticatedRotasRotaIdRoute,
   AuthenticatedStockProdutoIdRoute: AuthenticatedStockProdutoIdRoute,
+  AuthenticatedAssistenciasIndexRoute: AuthenticatedAssistenciasIndexRoute,
   AuthenticatedOrdensCompraIndexRoute: AuthenticatedOrdensCompraIndexRoute,
   AuthenticatedOrdensProducaoIndexRoute: AuthenticatedOrdensProducaoIndexRoute,
   AuthenticatedPedidosIndexRoute: AuthenticatedPedidosIndexRoute,
