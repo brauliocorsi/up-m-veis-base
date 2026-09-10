@@ -340,7 +340,13 @@ function PaginaPedidosCompra() {
 
         <div className="space-y-2">
           <Label>Fornecedor sugerido</Label>
-          <Select value={fornecedorSugerido} onValueChange={setFornecedorSugerido}>
+          <Select
+            value={fornecedorSugerido}
+            onValueChange={(v) => {
+              setFornecedorSugerido(v);
+              setLinhas((atual) => atual.map((x) => ({ ...x, produto_id: "", descricao: "" })));
+            }}
+          >
             <SelectTrigger aria-label="Fornecedor sugerido">
               <SelectValue placeholder="Sem sugestão" />
             </SelectTrigger>
@@ -356,19 +362,64 @@ function PaginaPedidosCompra() {
 
         <div className="space-y-2">
           <Label>Artigos</Label>
+          {!fornecedorSugerido && (
+            <p className="text-xs text-muted-foreground">
+              Escolha o fornecedor para ver os artigos dele, ou escreva à mão.
+            </p>
+          )}
+          {fornecedorSugerido && !produtosFornecedor.isPending && (produtosFornecedor.data ?? []).length === 0 && (
+            <p className="text-xs text-muted-foreground">
+              Este fornecedor ainda não tem artigos no catálogo. Escreva à mão.
+            </p>
+          )}
           {linhas.map((l, indice) => (
             <div key={indice} className="grid grid-cols-6 gap-2">
-              <Input
-                className="col-span-4"
-                placeholder="O que é preciso"
-                aria-label={`Artigo ${indice + 1}`}
-                value={l.descricao}
-                onChange={(e) =>
-                  setLinhas((atual) =>
-                    atual.map((x, i) => (i === indice ? { ...x, descricao: e.target.value } : x)),
-                  )
-                }
-              />
+              {fornecedorSugerido && (produtosFornecedor.data ?? []).length > 0 ? (
+                <div className="col-span-4">
+                  <Select
+                    value={l.produto_id}
+                    onValueChange={(v) =>
+                      setLinhas((atual) =>
+                        atual.map((x, i) =>
+                          i === indice
+                            ? {
+                                ...x,
+                                produto_id: v,
+                                descricao:
+                                  (produtosFornecedor.data ?? []).find((p) => p.id === v)
+                                    ?.nome_cliente ?? x.descricao,
+                              }
+                            : x,
+                        ),
+                      )
+                    }
+                  >
+                    <SelectTrigger aria-label={`Artigo ${indice + 1}`}>
+                      <SelectValue placeholder="Escolha o artigo do fornecedor" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(produtosFornecedor.data ?? []).map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.nome_cliente}
+                          {p.cod_barras ? ` · ${p.cod_barras}` : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <Input
+                  className="col-span-4"
+                  placeholder="O que é preciso"
+                  aria-label={`Artigo ${indice + 1}`}
+                  value={l.descricao}
+                  onChange={(e) =>
+                    setLinhas((atual) =>
+                      atual.map((x, i) => (i === indice ? { ...x, descricao: e.target.value } : x)),
+                    )
+                  }
+                />
+              )}
               <Input
                 inputMode="decimal"
                 aria-label={`Quantidade do artigo ${indice + 1}`}
@@ -395,9 +446,8 @@ function PaginaPedidosCompra() {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() =>
-              setLinhas((atual) => [...atual, { descricao: "", quantidade: "1", custo: "0" }])
-            }
+            onClick={() => setLinhas((atual) => [...atual, { ...LINHA_VAZIA }])}
+
           >
             <Plus className="mr-2 h-4 w-4" /> Outro artigo
           </Button>
