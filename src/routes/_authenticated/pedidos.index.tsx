@@ -218,6 +218,20 @@ function Pedidos() {
           return <span className="text-xs text-muted-foreground">—</span>;
         }
         const ativas = Number(p.linhas_ativas ?? 0);
+        if (p.precisa_remarcacao) {
+          return (
+            <div className="space-y-1">
+              <Badge className="bg-amber-500 text-white hover:bg-amber-500">
+                Reagendada — marcar nova entrega
+              </Badge>
+              {p.data_reagendamento && (
+                <p className="text-xs text-muted-foreground">
+                  Pedida para {formatarDataCurta(p.data_reagendamento)}
+                </p>
+              )}
+            </div>
+          );
+        }
         if (ativas === 0) return <span className="text-xs text-muted-foreground">—</span>;
         if (p.disponivel_entrega) {
           return (
