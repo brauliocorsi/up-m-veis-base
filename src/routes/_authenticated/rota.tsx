@@ -175,6 +175,57 @@ function Pagina() {
       </div>
 
       {podeTrabalhar && (
+        <Card className="mb-4">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Wallet className="h-4 w-4 text-primary" /> Caixa da rota
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            {caixaQ.isLoading ? (
+              <p className="text-muted-foreground">A carregar…</p>
+            ) : caixa?.estado === "aberto" ? (
+              <p className="text-muted-foreground">
+                Caixa aberto com troco de {formatarDinheiro(caixa.saldo_abertura)}. Todo o dinheiro
+                desta rota entra aqui.
+              </p>
+            ) : caixa ? (
+              <p className="text-muted-foreground">
+                O caixa desta rota já foi fechado. Fale com a loja para o reabrir.
+              </p>
+            ) : (
+              <>
+                <p className="text-muted-foreground">
+                  Abra o caixa antes de receber dinheiro. Indique o troco que leva na mão.
+                </p>
+                <div className="flex flex-wrap items-end gap-2">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="troco-rota">Troco inicial (€)</Label>
+                    <Input
+                      id="troco-rota"
+                      inputMode="decimal"
+                      className="w-32"
+                      value={troco}
+                      onChange={(e) => setTroco(e.target.value)}
+                      placeholder="0,00"
+                    />
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => abrirCaixa.mutate()}
+                    disabled={abrirCaixa.isPending}
+                  >
+                    <Wallet className="mr-2 h-4 w-4" />
+                    {abrirCaixa.isPending ? "A abrir…" : "Abrir caixa da rota"}
+                  </Button>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {podeTrabalhar && (
         <div className="mb-4 flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => setSaidaAberta(true)}>
             <Wallet className="mr-2 h-4 w-4" /> Registar despesa
