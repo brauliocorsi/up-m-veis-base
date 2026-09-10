@@ -140,6 +140,29 @@ export async function abrirCaixa(saldoInicial?: number | null): Promise<string> 
   return data as string;
 }
 
+/** O entregador abre o caixa da sua rota, com o troco que leva na mão. */
+export async function abrirCaixaRota(rotaId: string, saldoInicial = 0): Promise<string> {
+  const { data, error } = await erp().rpc("abrir_caixa_rota", {
+    p_rota_id: rotaId,
+    p_saldo_inicial: saldoInicial,
+  });
+  if (error) throw error;
+  return data as string;
+}
+
+/** Caixa ligado a uma rota (aberto ou já fechado). */
+export async function lerCaixaDeRota(rotaId: string): Promise<Caixa | null> {
+  const { data, error } = await erp()
+    .from("v_caixas")
+    .select("*")
+    .eq("rota_id", rotaId)
+    .order("criado_em", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return (data ?? null) as Caixa | null;
+}
+
 export async function fecharCaixa(caixaId: string, saldoContado: number, justificacao?: string) {
   const { data, error } = await erp().rpc("fechar_caixa", {
     p_caixa_id: caixaId,
