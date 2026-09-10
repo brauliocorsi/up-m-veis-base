@@ -407,6 +407,7 @@ export interface LinhaStock {
   margem_seguranca: number;
   vendavel: number;
   prometivel: number;
+  encomendado: number;
   atualizado_em: string | null;
 }
 
