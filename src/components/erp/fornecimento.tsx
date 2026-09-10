@@ -96,6 +96,17 @@ export function BadgeFornecimento({
     );
   }
 
+  if (linhasCobertasPorStock(contexto).has(item.id)) {
+    return (
+      <div className="text-xs">
+        <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">🟢 Em stock</Badge>
+        <span className="ml-2 text-muted-foreground">
+          disponível · reserva na confirmação da venda
+        </span>
+      </div>
+    );
+  }
+
   const necessidade = necessidadeDaLinha(item, contexto);
   return (
     <div className="text-xs">
