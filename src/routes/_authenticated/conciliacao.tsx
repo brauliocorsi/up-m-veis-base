@@ -127,10 +127,7 @@ function PaginaConciliacao() {
         </TabsContent>
 
         <TabsContent value="por-receber">
-          <VendasPorReceber
-            linhas={vendas.data ?? []}
-            aCarregar={vendas.isPending}
-          />
+          <VendasPorReceber linhas={vendas.data ?? []} aCarregar={vendas.isPending} />
         </TabsContent>
 
         <TabsContent value="dinheiro">
@@ -239,9 +236,7 @@ function PaginaConciliacao() {
                       entra {formatarDinheiro(s.a_receber)} · sai {formatarDinheiro(s.a_pagar)}
                     </p>
                   </div>
-                  <p
-                    className={`text-sm font-medium ${saldo < 0 ? "text-destructive" : ""}`}
-                  >
+                  <p className={`text-sm font-medium ${saldo < 0 ? "text-destructive" : ""}`}>
                     {formatarDinheiro(saldo)}
                   </p>
                 </li>
@@ -617,8 +612,8 @@ function RotasFinanceiro() {
                     {formatarDinheiro(r.dinheiro ?? 0)} · saídas {formatarDinheiro(r.saidas ?? 0)}
                   </p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
-                    entregas {r.entregas_feitas ?? 0}/{r.previsto_entregas ?? 0} · envelope
-                    esperado {formatarDinheiro(r.esperado_envelope ?? 0)} · conferido{" "}
+                    entregas {r.entregas_feitas ?? 0}/{r.previsto_entregas ?? 0} · envelope esperado{" "}
+                    {formatarDinheiro(r.esperado_envelope ?? 0)} · conferido{" "}
                     {r.valor_conferido === null ? "—" : formatarDinheiro(r.valor_conferido)}
                     {r.justificacao_diferenca ? ` · ${r.justificacao_diferenca}` : ""}
                   </p>

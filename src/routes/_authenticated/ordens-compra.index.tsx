@@ -85,12 +85,15 @@ function PaginaOrdens() {
     pagamento === "todos"
       ? todas
       : pagamento === "por_pagar"
-        ? todas.filter((oc) => oc.estado_pagamento === "pendente" || oc.estado_pagamento === "parcial")
+        ? todas.filter(
+            (oc) => oc.estado_pagamento === "pendente" || oc.estado_pagamento === "parcial",
+          )
         : todas.filter((oc) => oc.estado_pagamento === pagamento);
   const soma = (lista: OrdemCompra[], f: (oc: OrdemCompra) => number) =>
     lista.reduce((t, oc) => t + Number(f(oc) ?? 0), 0);
   const aCaminho = todas.filter(
-    (oc) => oc.estado === "enviada" || oc.estado === "confirmada" || oc.estado === "recebida_parcial",
+    (oc) =>
+      oc.estado === "enviada" || oc.estado === "confirmada" || oc.estado === "recebida_parcial",
   );
 
   return (
@@ -103,15 +106,11 @@ function PaginaOrdens() {
       <div className="mb-4 grid gap-2 sm:grid-cols-3">
         <div className="rounded-lg border bg-card px-4 py-3">
           <p className="text-xs text-muted-foreground">Unidades a caminho</p>
-          <p className="text-lg font-semibold">
-            {soma(aCaminho, (oc) => oc.unidades_em_falta)}
-          </p>
+          <p className="text-lg font-semibold">{soma(aCaminho, (oc) => oc.unidades_em_falta)}</p>
         </div>
         <div className="rounded-lg border bg-card px-4 py-3">
           <p className="text-xs text-muted-foreground">Unidades recebidas</p>
-          <p className="text-lg font-semibold">
-            {soma(todas, (oc) => oc.unidades_recebidas)}
-          </p>
+          <p className="text-lg font-semibold">{soma(todas, (oc) => oc.unidades_recebidas)}</p>
         </div>
         <div className="rounded-lg border bg-card px-4 py-3">
           <p className="text-xs text-muted-foreground">Por pagar</p>

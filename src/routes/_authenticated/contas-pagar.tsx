@@ -169,9 +169,7 @@ function PaginaContas() {
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <p className="text-sm font-medium">{formatarDinheiro(c.em_divida)}</p>
-                <p className="text-[11px] text-muted-foreground">
-                  de {formatarDinheiro(c.valor)}
-                </p>
+                <p className="text-[11px] text-muted-foreground">de {formatarDinheiro(c.valor)}</p>
               </div>
               <Badge variant="secondary" className="text-[11px]">
                 {ETIQUETA_CONTA[c.estado] ?? c.estado}
