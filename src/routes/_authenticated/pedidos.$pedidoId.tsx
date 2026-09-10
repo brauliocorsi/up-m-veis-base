@@ -115,9 +115,26 @@ function EcraVenda() {
     queryKey: ["pedido-necessidades", pedidoId],
     queryFn: () => necessidadesDoPedido(pedidoId),
   });
+  const idsProdutos = Array.from(
+    new Set((itens.data ?? []).map((i) => i.produto_id).filter((v): v is string => !!v)),
+  );
+  const stockItens = useQuery({
+    queryKey: ["pedido-stock", pedidoId, idsProdutos.join(",")],
+    enabled: idsProdutos.length > 0,
+    queryFn: async () => {
+      const { data } = await erp().from("v_stock").select("*").in("produto_id", idsProdutos);
+      const mapa: Record<string, number> = {};
+      for (const l of (data ?? []) as LinhaStock[]) {
+        mapa[l.produto_id] = Number(l.vendavel ?? 0);
+      }
+      return mapa;
+    },
+  });
   const contexto: ContextoFornecimento = {
     ocs: ocs.data ?? [],
     necessidades: necessidades.data ?? [],
+    stock: stockItens.data ?? {},
+    linhas: itens.data ?? [],
   };
 
   const nota = useMutation({

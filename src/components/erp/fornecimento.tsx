@@ -10,6 +10,30 @@ import {
 export interface ContextoFornecimento {
   ocs: FornecimentoLinha[];
   necessidades: Necessidade[];
+  /** Quantidade vendável em stock por produto (opcional). */
+  stock?: Record<string, number>;
+  /** Todas as linhas da venda, para repartir o stock disponível entre elas. */
+  linhas?: PedidoItem[];
+}
+
+/**
+ * Linhas ainda não reservadas que já têm stock disponível suficiente,
+ * repartindo o stock vendável pela ordem das linhas da venda.
+ */
+function linhasCobertasPorStock(ctx: ContextoFornecimento): Set<string> {
+  const cobertas = new Set<string>();
+  if (!ctx.stock || !ctx.linhas) return cobertas;
+  const restante: Record<string, number> = { ...ctx.stock };
+  for (const linha of ctx.linhas) {
+    if (linha.estado !== "pendente" || !linha.produto_id) continue;
+    const disponivel = restante[linha.produto_id] ?? 0;
+    const precisa = Number(linha.quantidade);
+    if (disponivel >= precisa) {
+      restante[linha.produto_id] = disponivel - precisa;
+      cobertas.add(linha.id);
+    }
+  }
+  return cobertas;
 }
 
 function ocsDaLinha(item: PedidoItem, ctx: ContextoFornecimento) {
@@ -67,6 +91,17 @@ export function BadgeFornecimento({
             ? ` · prevista ${formatarDataCurta(ocs[0].data_prevista_chegada)}`
             : ""}
           {falta > 0 ? ` · faltam ${falta}` : " · já recebido"}
+        </span>
+      </div>
+    );
+  }
+
+  if (linhasCobertasPorStock(contexto).has(item.id)) {
+    return (
+      <div className="text-xs">
+        <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">🟢 Em stock</Badge>
+        <span className="ml-2 text-muted-foreground">
+          disponível · reserva na confirmação da venda
         </span>
       </div>
     );
