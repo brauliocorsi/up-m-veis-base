@@ -211,6 +211,12 @@ function EcraVenda() {
         acao={
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary">{ETIQUETA_PEDIDO[p.estado]}</Badge>
+            {p.precisa_remarcacao && (
+              <Badge className="bg-amber-500 text-white hover:bg-amber-500">
+                Reagendada — marcar nova entrega
+                {p.data_reagendamento ? ` (${formatarDataCurta(p.data_reagendamento)})` : ""}
+              </Badge>
+            )}
             {editavel && (
               <Button onClick={() => setConfirmar(true)} disabled={linhas.length === 0}>
                 <Check className="mr-2 h-4 w-4" /> Confirmar venda
