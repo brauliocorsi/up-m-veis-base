@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   Download,
   Scale,
+  Truck,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -30,6 +31,7 @@ import {
   lerFechos,
   lerFluxoPrevisto,
   lerMovimentosConciliacao,
+  lerRotasContas,
 } from "@/lib/erp/financeiro";
 import {
   ETIQUETA_MOVIMENTO_CAIXA,
