@@ -207,6 +207,21 @@ function PaginaStock() {
         ),
     },
     {
+      chave: "entregue",
+      cabecalho: "Entregue",
+      ordenavel: true,
+      alinharDireita: true,
+      esconderMobile: true,
+      celula: (linha) =>
+        linha.entregue > 0 ? (
+          <Badge variant="outline" className="text-emerald-600">
+            {linha.entregue}
+          </Badge>
+        ) : (
+          numero(0)
+        ),
+    },
+    {
       chave: "margem_seguranca",
       cabecalho: "Margem",
       alinharDireita: true,
