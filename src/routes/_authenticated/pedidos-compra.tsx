@@ -61,10 +61,13 @@ export const Route = createFileRoute("/_authenticated/pedidos-compra")({
 });
 
 interface LinhaNova {
+  produto_id: string;
   descricao: string;
   quantidade: string;
   custo: string;
 }
+
+const LINHA_VAZIA: LinhaNova = { produto_id: "", descricao: "", quantidade: "1", custo: "0" };
 
 function PaginaPedidosCompra() {
   const { adm, comprar } = usePermissoes();
@@ -74,9 +77,8 @@ function PaginaPedidosCompra() {
   const [urgencia, setUrgencia] = useState("normal");
   const [justificacao, setJustificacao] = useState("");
   const [fornecedorSugerido, setFornecedorSugerido] = useState("");
-  const [linhas, setLinhas] = useState<LinhaNova[]>([
-    { descricao: "", quantidade: "1", custo: "0" },
-  ]);
+  const [linhas, setLinhas] = useState<LinhaNova[]>([{ ...LINHA_VAZIA }]);
+
   const [aRecusar, setARecusar] = useState<PedidoCompra | null>(null);
   const [motivoRecusa, setMotivoRecusa] = useState("");
   const [aConverter, setAConverter] = useState<PedidoCompra | null>(null);
