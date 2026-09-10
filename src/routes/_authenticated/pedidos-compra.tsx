@@ -134,7 +134,6 @@ function PaginaPedidosCompra() {
     enabled: Boolean(aberto),
   });
 
-
   const invalidar = () => queryClient.invalidateQueries({ queryKey: ["pedidos-compra"] });
 
   const criar = useMutation({
@@ -367,11 +366,13 @@ function PaginaPedidosCompra() {
               Escolha o fornecedor para ver os artigos dele, ou escreva à mão.
             </p>
           )}
-          {fornecedorSugerido && !produtosFornecedor.isPending && (produtosFornecedor.data ?? []).length === 0 && (
-            <p className="text-xs text-muted-foreground">
-              Este fornecedor ainda não tem artigos no catálogo. Escreva à mão.
-            </p>
-          )}
+          {fornecedorSugerido &&
+            !produtosFornecedor.isPending &&
+            (produtosFornecedor.data ?? []).length === 0 && (
+              <p className="text-xs text-muted-foreground">
+                Este fornecedor ainda não tem artigos no catálogo. Escreva à mão.
+              </p>
+            )}
           {linhas.map((l, indice) => (
             <div key={indice} className="grid grid-cols-6 gap-2">
               {fornecedorSugerido && (produtosFornecedor.data ?? []).length > 0 ? (
@@ -447,7 +448,6 @@ function PaginaPedidosCompra() {
             variant="outline"
             size="sm"
             onClick={() => setLinhas((atual) => [...atual, { ...LINHA_VAZIA }])}
-
           >
             <Plus className="mr-2 h-4 w-4" /> Outro artigo
           </Button>
