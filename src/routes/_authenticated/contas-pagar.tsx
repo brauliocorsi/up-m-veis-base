@@ -83,6 +83,8 @@ function PaginaContas() {
     onSuccess: async () => {
       setEmPagamento(null);
       await queryClient.invalidateQueries({ queryKey: ["contas-pagar"] });
+      await queryClient.invalidateQueries({ queryKey: ["ordens-compra"] });
+      await queryClient.invalidateQueries({ queryKey: ["oc"] });
       toast.success("Pagamento registado.");
     },
     onError: (erro) => toast.error(primeiraMensagem(erro)),
