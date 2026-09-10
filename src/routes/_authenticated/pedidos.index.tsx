@@ -211,6 +211,29 @@ function Pedidos() {
       ),
     },
     {
+      chave: "disponibilidade",
+      cabecalho: "Disponibilidade",
+      celula: (p) => {
+        if (p.estado === "orcamento" || p.estado === "cancelado") {
+          return <span className="text-xs text-muted-foreground">—</span>;
+        }
+        const ativas = Number(p.linhas_ativas ?? 0);
+        if (ativas === 0) return <span className="text-xs text-muted-foreground">—</span>;
+        if (p.disponivel_entrega) {
+          return (
+            <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">
+              Disponível para entrega
+            </Badge>
+          );
+        }
+        return (
+          <span className="text-xs text-muted-foreground">
+            {Number(p.linhas_prontas ?? 0)} de {ativas} prontas
+          </span>
+        );
+      },
+    },
+    {
       chave: "data_entrega_prevista",
       cabecalho: "Entrega",
       ordenavel: true,
