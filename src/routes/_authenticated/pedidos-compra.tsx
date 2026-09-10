@@ -111,11 +111,29 @@ function PaginaPedidosCompra() {
     },
   });
 
+  /** Só os produtos do fornecedor escolhido aparecem na lista de artigos. */
+  const produtosFornecedor = useQuery({
+    queryKey: ["produtos-do-fornecedor", fornecedorSugerido],
+    enabled: Boolean(fornecedorSugerido),
+    queryFn: async () => {
+      const { data, error } = await erp()
+        .from("v_produtos")
+        .select("id, nome_cliente, cod_barras")
+        .eq("fornecedor_id", fornecedorSugerido)
+        .eq("ativo", true)
+        .order("nome_cliente")
+        .limit(300);
+      if (error) throw error;
+      return (data ?? []) as Array<{ id: string; nome_cliente: string; cod_barras: string | null }>;
+    },
+  });
+
   const itens = useQuery({
     queryKey: ["pedido-compra-itens", aberto],
     queryFn: () => lerItensPedidoCompra(aberto!),
     enabled: Boolean(aberto),
   });
+
 
   const invalidar = () => queryClient.invalidateQueries({ queryKey: ["pedidos-compra"] });
 
