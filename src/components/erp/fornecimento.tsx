@@ -25,12 +25,12 @@ function linhasCobertasPorStock(ctx: ContextoFornecimento): Set<string> {
   if (!ctx.stock || !ctx.linhas) return cobertas;
   const restante: Record<string, number> = { ...ctx.stock };
   for (const linha of ctx.linhas) {
-    if (linha.estado === "cancelado" || !linha.produto_id) continue;
+    if (linha.estado !== "pendente" || !linha.produto_id) continue;
     const disponivel = restante[linha.produto_id] ?? 0;
     const precisa = Number(linha.quantidade);
     if (disponivel >= precisa) {
       restante[linha.produto_id] = disponivel - precisa;
-      if (linha.estado === "pendente") cobertas.add(linha.id);
+      cobertas.add(linha.id);
     }
   }
   return cobertas;
