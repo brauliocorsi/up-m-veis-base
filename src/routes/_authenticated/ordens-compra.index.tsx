@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertTriangle, ClipboardList } from "lucide-react";
+import { AlertTriangle, ClipboardList, PackageCheck, Truck } from "lucide-react";
 import { useState } from "react";
 
 import { CabecalhoPagina } from "@/components/erp/app-shell";
@@ -139,6 +139,24 @@ function PaginaOrdens() {
                     : ""}
                   {` · ${oc.n_itens} linhas`}
                 </p>
+                <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px]">
+                  <span className="rounded bg-muted px-1.5 py-0.5 text-muted-foreground">
+                    pedidas {Number(oc.unidades_pedidas)}
+                  </span>
+                  {Number(oc.unidades_em_falta) > 0 &&
+                    oc.estado !== "rascunho" &&
+                    oc.estado !== "cancelada" && (
+                      <span className="flex items-center gap-1 rounded bg-blue-500/10 px-1.5 py-0.5 text-blue-600 dark:text-blue-400">
+                        <Truck className="h-3 w-3" />a caminho {Number(oc.unidades_em_falta)}
+                      </span>
+                    )}
+                  {Number(oc.unidades_recebidas) > 0 && (
+                    <span className="flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-primary">
+                      <PackageCheck className="h-3 w-3" />
+                      recebidas {Number(oc.unidades_recebidas)}
+                    </span>
+                  )}
+                </p>
               </div>
               <div className="flex shrink-0 flex-col items-end gap-1">
                 <span className="text-sm font-medium">{formatarDinheiro(oc.total)}</span>
@@ -150,6 +168,18 @@ function PaginaOrdens() {
                     {ETIQUETA_OC[oc.estado]}
                   </Badge>
                 </span>
+                {oc.estado_pagamento !== "sem_conta" && (
+                  <Badge
+                    variant={oc.estado_pagamento === "pago" ? "secondary" : "outline"}
+                    className="text-[11px]"
+                  >
+                    {oc.estado_pagamento === "pago"
+                      ? "Pago"
+                      : oc.estado_pagamento === "parcial"
+                        ? `Pago em parte · falta ${formatarDinheiro(oc.valor_em_divida)}`
+                        : `Por pagar ${formatarDinheiro(oc.valor_em_divida)}`}
+                  </Badge>
+                )}
               </div>
             </Link>
           </li>
