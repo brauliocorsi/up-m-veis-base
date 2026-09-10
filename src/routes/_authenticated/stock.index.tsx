@@ -193,6 +193,20 @@ function PaginaStock() {
         ),
     },
     {
+      chave: "encomendado",
+      cabecalho: "Encomendado",
+      ordenavel: true,
+      alinharDireita: true,
+      celula: (linha) =>
+        linha.encomendado > 0 ? (
+          <Badge variant="outline" className="text-sky-600">
+            {linha.encomendado}
+          </Badge>
+        ) : (
+          numero(0)
+        ),
+    },
+    {
       chave: "margem_seguranca",
       cabecalho: "Margem",
       alinharDireita: true,
