@@ -32,9 +32,14 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
     if (!pedido) throw new Error("Pedido não encontrado.");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const adminErp = (supabaseAdmin as unknown as ClienteSchema & {
-      schema: (n: string) => { rpc: (n: string, a: Record<string, unknown>) => any };
-    }).schema("erp");
+    const adminErp = (
+      supabaseAdmin as unknown as {
+        schema: (n: string) => {
+          from: (t: string) => any;
+          rpc: (n: string, a: Record<string, unknown>) => any;
+        };
+      }
+    ).schema("erp");
 
     // Reimprimir devolve a última versão guardada; nunca reescreve versões antigas.
     if (!data.regenerar) {

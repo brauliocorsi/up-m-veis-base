@@ -49,12 +49,13 @@ end $$;
 
 -- D. fila: lease e backoff
 do $$
-declare ev uuid := gen_random_uuid(); ped uuid; it uuid; n int; o erp.fabrica_outbox%rowtype;
+declare ev uuid := gen_random_uuid(); ped uuid; it uuid; nec uuid; n int; o erp.fabrica_outbox%rowtype;
 begin
-  select pi.pedido_id, pi.id into ped, it from erp.pedido_itens pi limit 1;
+  select nc.pedido_id, nc.item_id, nc.id into ped, it, nec from erp.necessidades_compra nc
+   where nc.item_id is not null limit 1;
   if it is null then raise notice 'PASSA T14.D0: sem linhas de venda nas fixtures (ignorado)'; return; end if;
-  insert into erp.fabrica_outbox (event_id, pedido_id, item_id, revisao, quantidade, payload, estado)
-  values (ev, ped, it, 9901, 1, '{}', 'em_fila');
+  insert into erp.fabrica_outbox (event_id, necessidade_id, pedido_id, item_id, revisao, quantidade, payload, estado)
+  values (ev, nec, ped, it, 9901, 1, '{}', 'em_fila');
   select count(*) into n from erp.fabrica_outbox_reclamar(50) where event_id = ev;
   perform pg_temp.ok(n = 1, 'T14.D1: linha reclamada');
   select count(*) into n from erp.fabrica_outbox_reclamar(50) where event_id = ev;
@@ -76,15 +77,16 @@ end $$;
 
 -- E. Contagem não volta a contar entradas da fábrica
 do $$
-declare it uuid; prod uuid; cod text; antes int; depois int; r jsonb;
+declare it uuid; prod uuid; cod text; antes int; depois int; r jsonb; ev uuid := gen_random_uuid(); nec uuid; ped uuid;
 begin
-  select pi.id, pi.produto_id, p.cod_barras into it, prod, cod
-    from erp.pedido_itens pi join erp.produtos p on p.id = pi.produto_id
-   where p.cod_barras is not null limit 1;
+  select nc.item_id, nc.produto_id, p.cod_barras, nc.id, nc.pedido_id into it, prod, cod, nec, ped
+    from erp.necessidades_compra nc join erp.produtos p on p.id = nc.produto_id
+   where p.cod_barras is not null and nc.item_id is not null limit 1;
   if it is null then raise notice 'PASSA T14.E0: sem fixtures (ignorado)'; return; end if;
+  insert into erp.fabrica_outbox (event_id, necessidade_id, pedido_id, item_id, revisao, quantidade, payload, estado)
+  values (ev, nec, ped, it, 9902, 1, '{}', 'aceite');
   insert into erp.fabrica_ordens (event_id, pedido_id, item_id, unit_index, order_id, order_number, estado)
-  select gen_random_uuid(), pedido_id, id, 1, 'ORD-T14-1', 'FAB-T14-0001', 'warehouse_received'
-    from erp.pedido_itens where id = it;
+  values (ev, ped, it, 1, 'ORD-T14-1', 'FAB-T14-0001', 'warehouse_received');
   select count(*) into antes from erp.stock_movimentos where produto_id = prod;
   perform set_config('request.jwt.claim.role', 'service_role', true);
   r := erp.registar_movimentos_contagem(jsonb_build_array(
@@ -98,4 +100,5 @@ begin
   perform set_config('request.jwt.claim.role', '', true);
   delete from erp.contagem_fabrica_ignorados where contagem_id = '990001';
   delete from erp.fabrica_ordens where order_id = 'ORD-T14-1';
+  delete from erp.fabrica_outbox where event_id = ev;
 end $$;
