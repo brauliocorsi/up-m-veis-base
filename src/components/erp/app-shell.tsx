@@ -215,6 +215,12 @@ const NAVEGACAO: GrupoNav[] = [
     etiqueta: "Compras",
     itens: [
       {
+        para: "/compras",
+        etiqueta: "Compras",
+        icone: PackageSearch,
+        perfis: ["adm", "compras", "escritorio", "financeiro"],
+      },
+      {
         para: "/necessidades",
         etiqueta: "Necessidades",
         icone: ClipboardCheck,

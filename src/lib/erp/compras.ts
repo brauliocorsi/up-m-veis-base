@@ -320,3 +320,63 @@ export async function converterPedidoCompra(id: string, fornecedorId: string): P
   if (error) throw error;
   return data as string;
 }
+
+// ---------------- vista simples de compras ----------------
+
+/** Ordens de compra num conjunto de estados (para os separadores Encomendado/Receber/Histórico). */
+export async function lerOcsPorEstados(estados: string[]): Promise<OrdemCompra[]> {
+  const { data, error } = await erp()
+    .from("v_ordens_compra")
+    .select("*")
+    .in("estado", estados)
+    .order("data_emissao", { ascending: false })
+    .limit(300);
+  if (error) throw error;
+  return (data ?? []) as OrdemCompra[];
+}
+
+export interface LinhaFornecimentoVenda {
+  pedido_item_id: string;
+  pedido_id: string;
+  produto_id: string;
+  descricao: string | null;
+  nota: string | null;
+  quantidade: number;
+  tipo_fornecimento: string | null;
+  estado_item: string;
+  recebido: number;
+  falta: number;
+  oc_raiz: string | null;
+  oc_atual: string | null;
+  oc_atual_id: string | null;
+  eta: string | null;
+}
+
+/** Por linha da venda: recebido, falta, OC raiz e atual (após diferimentos) e data prevista. */
+export async function lerFornecimentoVenda(pedidoId: string): Promise<LinhaFornecimentoVenda[]> {
+  const { data, error } = await erp()
+    .from("v_linha_fornecimento")
+    .select("*")
+    .eq("pedido_id", pedidoId);
+  if (error) throw error;
+  return (data ?? []) as LinhaFornecimentoVenda[];
+}
+
+export interface CartoesStock {
+  produto_id: string;
+  fisico: number;
+  reservado: number;
+  disponivel: number;
+  a_receber: number;
+  a_fabricar: number;
+}
+
+export async function lerCartoesStock(produtoId: string): Promise<CartoesStock | null> {
+  const { data, error } = await erp()
+    .from("v_stock_cartoes")
+    .select("*")
+    .eq("produto_id", produtoId)
+    .maybeSingle();
+  if (error) throw error;
+  return (data ?? null) as CartoesStock | null;
+}
