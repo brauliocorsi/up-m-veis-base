@@ -19,6 +19,7 @@ import { Route as AuthenticatedCentrosTrabalhoRouteImport } from './routes/_auth
 import { Route as AuthenticatedChaoFabricaRouteImport } from './routes/_authenticated/chao-fabrica'
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
 import { Route as AuthenticatedComponentesRouteImport } from './routes/_authenticated/componentes'
+import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedConciliacaoRouteImport } from './routes/_authenticated/conciliacao'
 import { Route as AuthenticatedConsumosFaltaRouteImport } from './routes/_authenticated/consumos-falta'
 import { Route as AuthenticatedContasPagarRouteImport } from './routes/_authenticated/contas-pagar'
@@ -129,6 +130,11 @@ const AuthenticatedComponentesRoute =
     path: '/componentes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedComprasRoute = AuthenticatedComprasRouteImport.update({
+  id: '/compras',
+  path: '/compras',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedConciliacaoRoute =
   AuthenticatedConciliacaoRouteImport.update({
     id: '/conciliacao',
@@ -466,6 +472,7 @@ export interface FileRoutesByFullPath {
   '/chao-fabrica': typeof AuthenticatedChaoFabricaRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/componentes': typeof AuthenticatedComponentesRoute
+  '/compras': typeof AuthenticatedComprasRoute
   '/conciliacao': typeof AuthenticatedConciliacaoRoute
   '/consumos-falta': typeof AuthenticatedConsumosFaltaRoute
   '/contas-pagar': typeof AuthenticatedContasPagarRoute
@@ -534,6 +541,7 @@ export interface FileRoutesByTo {
   '/chao-fabrica': typeof AuthenticatedChaoFabricaRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/componentes': typeof AuthenticatedComponentesRoute
+  '/compras': typeof AuthenticatedComprasRoute
   '/conciliacao': typeof AuthenticatedConciliacaoRoute
   '/consumos-falta': typeof AuthenticatedConsumosFaltaRoute
   '/contas-pagar': typeof AuthenticatedContasPagarRoute
@@ -605,6 +613,7 @@ export interface FileRoutesById {
   '/_authenticated/chao-fabrica': typeof AuthenticatedChaoFabricaRoute
   '/_authenticated/clientes': typeof AuthenticatedClientesRoute
   '/_authenticated/componentes': typeof AuthenticatedComponentesRoute
+  '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/conciliacao': typeof AuthenticatedConciliacaoRoute
   '/_authenticated/consumos-falta': typeof AuthenticatedConsumosFaltaRoute
   '/_authenticated/contas-pagar': typeof AuthenticatedContasPagarRoute
@@ -675,6 +684,7 @@ export interface FileRouteTypes {
     | '/chao-fabrica'
     | '/clientes'
     | '/componentes'
+    | '/compras'
     | '/conciliacao'
     | '/consumos-falta'
     | '/contas-pagar'
@@ -743,6 +753,7 @@ export interface FileRouteTypes {
     | '/chao-fabrica'
     | '/clientes'
     | '/componentes'
+    | '/compras'
     | '/conciliacao'
     | '/consumos-falta'
     | '/contas-pagar'
@@ -813,6 +824,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chao-fabrica'
     | '/_authenticated/clientes'
     | '/_authenticated/componentes'
+    | '/_authenticated/compras'
     | '/_authenticated/conciliacao'
     | '/_authenticated/consumos-falta'
     | '/_authenticated/contas-pagar'
@@ -953,6 +965,13 @@ declare module '@tanstack/react-router' {
       path: '/componentes'
       fullPath: '/componentes'
       preLoaderRoute: typeof AuthenticatedComponentesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/compras': {
+      id: '/_authenticated/compras'
+      path: '/compras'
+      fullPath: '/compras'
+      preLoaderRoute: typeof AuthenticatedComprasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/conciliacao': {
@@ -1409,6 +1428,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChaoFabricaRoute: typeof AuthenticatedChaoFabricaRoute
   AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
   AuthenticatedComponentesRoute: typeof AuthenticatedComponentesRoute
+  AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedConciliacaoRoute: typeof AuthenticatedConciliacaoRoute
   AuthenticatedConsumosFaltaRoute: typeof AuthenticatedConsumosFaltaRoute
   AuthenticatedContasPagarRoute: typeof AuthenticatedContasPagarRoute
@@ -1460,6 +1480,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChaoFabricaRoute: AuthenticatedChaoFabricaRoute,
   AuthenticatedClientesRoute: AuthenticatedClientesRoute,
   AuthenticatedComponentesRoute: AuthenticatedComponentesRoute,
+  AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedConciliacaoRoute: AuthenticatedConciliacaoRoute,
   AuthenticatedConsumosFaltaRoute: AuthenticatedConsumosFaltaRoute,
   AuthenticatedContasPagarRoute: AuthenticatedContasPagarRoute,
