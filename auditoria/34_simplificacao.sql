@@ -3,6 +3,7 @@
 -- Fixtures isoladas; sem chamadas externas.
 -- ============================================================
 \ir 00_setup.sql
+update erp.definicoes set valor = 'false' where chave = 'fabrica_execucao_interna';
 
 -- A. permissões de execução
 do $$
