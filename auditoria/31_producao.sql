@@ -1,4 +1,5 @@
 -- ============================================================
+update erp.definicoes set valor = 'true' where chave = 'fabrica_execucao_interna';
 -- Fase 11 — Produção
 -- Testes [T11]. Executar numa base descartável.
 -- ============================================================

@@ -24,6 +24,7 @@ import { Route as AuthenticatedConsumosFaltaRouteImport } from './routes/_authen
 import { Route as AuthenticatedContasPagarRouteImport } from './routes/_authenticated/contas-pagar'
 import { Route as AuthenticatedContasReceberRouteImport } from './routes/_authenticated/contas-receber'
 import { Route as AuthenticatedDespesasRouteImport } from './routes/_authenticated/despesas'
+import { Route as AuthenticatedEncomendasFabricaRouteImport } from './routes/_authenticated/encomendas-fabrica'
 import { Route as AuthenticatedEntregasRouteImport } from './routes/_authenticated/entregas'
 import { Route as AuthenticatedEntreguePorReceberRouteImport } from './routes/_authenticated/entregue-por-receber'
 import { Route as AuthenticatedEtapasProducaoRouteImport } from './routes/_authenticated/etapas-producao'
@@ -72,6 +73,7 @@ import { Route as AuthenticatedRotasIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedRotasRotaIdRouteImport } from './routes/_authenticated/rotas.$rotaId'
 import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
 import { Route as AuthenticatedStockProdutoIdRouteImport } from './routes/_authenticated/stock.$produtoId'
+import { Route as ApiIntegrationsFactoryEventsRouteImport } from './routes/api/integrations/factory/events'
 import { Route as ApiPublicHooksSyncContagemRouteImport } from './routes/api/public/hooks/sync-contagem'
 
 const IndexRoute = IndexRouteImport.update({
@@ -154,6 +156,12 @@ const AuthenticatedDespesasRoute = AuthenticatedDespesasRouteImport.update({
   path: '/despesas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEncomendasFabricaRoute =
+  AuthenticatedEncomendasFabricaRouteImport.update({
+    id: '/encomendas-fabrica',
+    path: '/encomendas-fabrica',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEntregasRoute = AuthenticatedEntregasRouteImport.update({
   id: '/entregas',
   path: '/entregas',
@@ -422,6 +430,12 @@ const AuthenticatedStockProdutoIdRoute =
     path: '/stock/$produtoId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiIntegrationsFactoryEventsRoute =
+  ApiIntegrationsFactoryEventsRouteImport.update({
+    id: '/api/integrations/factory/events',
+    path: '/api/integrations/factory/events',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksSyncContagemRoute =
   ApiPublicHooksSyncContagemRouteImport.update({
     id: '/api/public/hooks/sync-contagem',
@@ -443,6 +457,7 @@ export interface FileRoutesByFullPath {
   '/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/contas-receber': typeof AuthenticatedContasReceberRoute
   '/despesas': typeof AuthenticatedDespesasRoute
+  '/encomendas-fabrica': typeof AuthenticatedEncomendasFabricaRoute
   '/entregas': typeof AuthenticatedEntregasRoute
   '/entregue-por-receber': typeof AuthenticatedEntreguePorReceberRoute
   '/etapas-producao': typeof AuthenticatedEtapasProducaoRoute
@@ -491,6 +506,7 @@ export interface FileRoutesByFullPath {
   '/planos-producao/': typeof AuthenticatedPlanosProducaoIndexRoute
   '/rotas/': typeof AuthenticatedRotasIndexRoute
   '/stock/': typeof AuthenticatedStockIndexRoute
+  '/api/integrations/factory/events': typeof ApiIntegrationsFactoryEventsRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRoutesByTo {
@@ -507,6 +523,7 @@ export interface FileRoutesByTo {
   '/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/contas-receber': typeof AuthenticatedContasReceberRoute
   '/despesas': typeof AuthenticatedDespesasRoute
+  '/encomendas-fabrica': typeof AuthenticatedEncomendasFabricaRoute
   '/entregas': typeof AuthenticatedEntregasRoute
   '/entregue-por-receber': typeof AuthenticatedEntreguePorReceberRoute
   '/etapas-producao': typeof AuthenticatedEtapasProducaoRoute
@@ -555,6 +572,7 @@ export interface FileRoutesByTo {
   '/planos-producao': typeof AuthenticatedPlanosProducaoIndexRoute
   '/rotas': typeof AuthenticatedRotasIndexRoute
   '/stock': typeof AuthenticatedStockIndexRoute
+  '/api/integrations/factory/events': typeof ApiIntegrationsFactoryEventsRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRoutesById {
@@ -574,6 +592,7 @@ export interface FileRoutesById {
   '/_authenticated/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/_authenticated/contas-receber': typeof AuthenticatedContasReceberRoute
   '/_authenticated/despesas': typeof AuthenticatedDespesasRoute
+  '/_authenticated/encomendas-fabrica': typeof AuthenticatedEncomendasFabricaRoute
   '/_authenticated/entregas': typeof AuthenticatedEntregasRoute
   '/_authenticated/entregue-por-receber': typeof AuthenticatedEntreguePorReceberRoute
   '/_authenticated/etapas-producao': typeof AuthenticatedEtapasProducaoRoute
@@ -622,6 +641,7 @@ export interface FileRoutesById {
   '/_authenticated/planos-producao/': typeof AuthenticatedPlanosProducaoIndexRoute
   '/_authenticated/rotas/': typeof AuthenticatedRotasIndexRoute
   '/_authenticated/stock/': typeof AuthenticatedStockIndexRoute
+  '/api/integrations/factory/events': typeof ApiIntegrationsFactoryEventsRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRouteTypes {
@@ -640,6 +660,7 @@ export interface FileRouteTypes {
     | '/contas-pagar'
     | '/contas-receber'
     | '/despesas'
+    | '/encomendas-fabrica'
     | '/entregas'
     | '/entregue-por-receber'
     | '/etapas-producao'
@@ -688,6 +709,7 @@ export interface FileRouteTypes {
     | '/planos-producao/'
     | '/rotas/'
     | '/stock/'
+    | '/api/integrations/factory/events'
     | '/api/public/hooks/sync-contagem'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -704,6 +726,7 @@ export interface FileRouteTypes {
     | '/contas-pagar'
     | '/contas-receber'
     | '/despesas'
+    | '/encomendas-fabrica'
     | '/entregas'
     | '/entregue-por-receber'
     | '/etapas-producao'
@@ -752,6 +775,7 @@ export interface FileRouteTypes {
     | '/planos-producao'
     | '/rotas'
     | '/stock'
+    | '/api/integrations/factory/events'
     | '/api/public/hooks/sync-contagem'
   id:
     | '__root__'
@@ -770,6 +794,7 @@ export interface FileRouteTypes {
     | '/_authenticated/contas-pagar'
     | '/_authenticated/contas-receber'
     | '/_authenticated/despesas'
+    | '/_authenticated/encomendas-fabrica'
     | '/_authenticated/entregas'
     | '/_authenticated/entregue-por-receber'
     | '/_authenticated/etapas-producao'
@@ -818,6 +843,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planos-producao/'
     | '/_authenticated/rotas/'
     | '/_authenticated/stock/'
+    | '/api/integrations/factory/events'
     | '/api/public/hooks/sync-contagem'
   fileRoutesById: FileRoutesById
 }
@@ -825,6 +851,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiIntegrationsFactoryEventsRoute: typeof ApiIntegrationsFactoryEventsRoute
   ApiPublicHooksSyncContagemRoute: typeof ApiPublicHooksSyncContagemRoute
 }
 
@@ -933,6 +960,13 @@ declare module '@tanstack/react-router' {
       path: '/despesas'
       fullPath: '/despesas'
       preLoaderRoute: typeof AuthenticatedDespesasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/encomendas-fabrica': {
+      id: '/_authenticated/encomendas-fabrica'
+      path: '/encomendas-fabrica'
+      fullPath: '/encomendas-fabrica'
+      preLoaderRoute: typeof AuthenticatedEncomendasFabricaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/entregas': {
@@ -1271,6 +1305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStockProdutoIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/integrations/factory/events': {
+      id: '/api/integrations/factory/events'
+      path: '/api/integrations/factory/events'
+      fullPath: '/api/integrations/factory/events'
+      preLoaderRoute: typeof ApiIntegrationsFactoryEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sync-contagem': {
       id: '/api/public/hooks/sync-contagem'
       path: '/api/public/hooks/sync-contagem'
@@ -1331,6 +1372,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedContasPagarRoute: typeof AuthenticatedContasPagarRoute
   AuthenticatedContasReceberRoute: typeof AuthenticatedContasReceberRoute
   AuthenticatedDespesasRoute: typeof AuthenticatedDespesasRoute
+  AuthenticatedEncomendasFabricaRoute: typeof AuthenticatedEncomendasFabricaRoute
   AuthenticatedEntregasRoute: typeof AuthenticatedEntregasRoute
   AuthenticatedEntreguePorReceberRoute: typeof AuthenticatedEntreguePorReceberRoute
   AuthenticatedEtapasProducaoRoute: typeof AuthenticatedEtapasProducaoRoute
@@ -1381,6 +1423,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedContasPagarRoute: AuthenticatedContasPagarRoute,
   AuthenticatedContasReceberRoute: AuthenticatedContasReceberRoute,
   AuthenticatedDespesasRoute: AuthenticatedDespesasRoute,
+  AuthenticatedEncomendasFabricaRoute: AuthenticatedEncomendasFabricaRoute,
   AuthenticatedEntregasRoute: AuthenticatedEntregasRoute,
   AuthenticatedEntreguePorReceberRoute: AuthenticatedEntreguePorReceberRoute,
   AuthenticatedEtapasProducaoRoute: AuthenticatedEtapasProducaoRoute,
@@ -1428,6 +1471,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiIntegrationsFactoryEventsRoute: ApiIntegrationsFactoryEventsRoute,
   ApiPublicHooksSyncContagemRoute: ApiPublicHooksSyncContagemRoute,
 }
 export const routeTree = rootRouteImport

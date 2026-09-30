@@ -40,6 +40,7 @@ import {
   lerOcItens,
   lerRecebimentos,
   receberOc,
+  diferirSaldoOc,
   registarEnvioOc,
 } from "@/lib/erp/compras";
 import { erp } from "@/lib/erp/db";
@@ -75,6 +76,7 @@ function PaginaOc() {
 
   const [eta, setEta] = useState("");
   const [aReceber, setAReceber] = useState(false);
+  const [chaveRececao, setChaveRececao] = useState<string>(() => crypto.randomUUID());
   const [quantidades, setQuantidades] = useState<Record<string, string>>({});
   const [docFornecedor, setDocFornecedor] = useState("");
   const [aCancelar, setACancelar] = useState(false);
@@ -178,14 +180,27 @@ function PaginaOc() {
         .map(([item_id, valor]) => ({ item_id, quantidade: Number(valor.replace(",", ".")) }))
         .filter((l) => l.quantidade > 0);
       if (linhas.length === 0) throw new Error("Indique as quantidades recebidas.");
-      return receberOc({ oc_id: ocId, linhas, doc: docFornecedor || null });
+      return receberOc({ oc_id: ocId, linhas, doc: docFornecedor || null, chave: chaveRececao });
     },
     onSuccess: async (resultado) => {
       setAReceber(false);
       setQuantidades({});
       setDocFornecedor("");
       await invalidar();
-      toast.success(`Recebidas ${resultado.unidades} unidades.`);
+      toast.success(
+        resultado.repetido
+          ? "Esta receção já estava registada."
+          : `Recebidas ${resultado.unidades} unidades.`,
+      );
+    },
+    onError: (erro) => toast.error(primeiraMensagem(erro)),
+  });
+
+  const diferir = useMutation({
+    mutationFn: () => diferirSaldoOc(ocId),
+    onSuccess: async () => {
+      await invalidar();
+      toast.success("Saldo em falta passou para uma nova ordem, ligada a esta. Sem nova dívida.");
     },
     onError: (erro) => toast.error(primeiraMensagem(erro)),
   });
@@ -434,8 +449,18 @@ function PaginaOc() {
 
           <div className="flex flex-wrap gap-2">
             {podeReceber && emFalta.length > 0 && (
-              <Button onClick={() => setAReceber(true)}>
+              <Button
+                onClick={() => {
+                  setChaveRececao(crypto.randomUUID());
+                  setAReceber(true);
+                }}
+              >
                 <PackageCheck className="mr-2 h-4 w-4" /> Receber mercadoria
+              </Button>
+            )}
+            {dados.estado === "recebida_parcial" && (
+              <Button variant="outline" onClick={() => diferir.mutate()} disabled={diferir.isPending}>
+                Fechar receção e passar saldo para nova ordem
               </Button>
             )}
             {dados.estado !== "cancelada" && dados.estado !== "recebida" && (
