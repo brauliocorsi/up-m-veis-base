@@ -24,6 +24,7 @@ import {
   type ContextoFornecimento,
 } from "@/components/erp/fornecimento";
 import { PainelAgendamento } from "@/components/erp/painel-agendamento";
+import { PainelFornecimentoVenda } from "@/components/erp/painel-fornecimento-venda";
 import { PainelEntrega } from "@/components/erp/painel-entrega";
 import { PainelPagamentos } from "@/components/erp/painel-pagamentos";
 import { Badge } from "@/components/ui/badge";
@@ -278,6 +279,7 @@ function EcraVenda() {
           <Descontos pedido={p} editavel={editavel} onGuardar={(c) => guardar.mutate(c)} />
           {p.tipo === "pedido" ? <PainelPagamentos pedido={p} /> : null}
           {p.tipo === "pedido" ? <PainelAgendamento pedido={p} /> : null}
+          {p.tipo === "pedido" ? <PainelFornecimentoVenda pedidoId={p.id} /> : null}
           {p.tipo === "pedido" ? <PainelEntrega pedido={p} /> : null}
 
           <Card>
