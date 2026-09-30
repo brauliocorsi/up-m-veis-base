@@ -31,20 +31,32 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
     if (erroPedido) throw new Error(erroPedido.message);
     if (!pedido) throw new Error("Pedido não encontrado.");
 
-    const caminho = `notas/${pedido.id}.pdf`;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const adminErp = (supabaseAdmin as unknown as ClienteSchema & {
+      schema: (n: string) => { rpc: (n: string, a: Record<string, unknown>) => any };
+    }).schema("erp");
 
-    // Reimprimir devolve sempre o mesmo ficheiro já guardado.
+    // Reimprimir devolve a última versão guardada; nunca reescreve versões antigas.
     if (!data.regenerar) {
-      const { data: existentes } = await supabaseAdmin.storage
-        .from("documentos")
-        .list("notas", { search: `${pedido.id}.pdf` });
-      if (existentes?.some((f) => f.name === `${pedido.id}.pdf`)) {
+      const { data: ultima } = await adminErp
+        .from("nota_versoes")
+        .select("caminho, versao")
+        .eq("pedido_id", pedido.id)
+        .order("versao", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const caminhoExistente = (ultima?.caminho as string | undefined) ?? null;
+      if (caminhoExistente) {
         const { data: assinado } = await supabaseAdmin.storage
           .from("documentos")
-          .createSignedUrl(caminho, 3600);
+          .createSignedUrl(caminhoExistente, 3600);
         if (assinado?.signedUrl) {
-          return { url: assinado.signedUrl, numero: pedido.numero as string, reutilizado: true };
+          return {
+            url: assinado.signedUrl,
+            numero: pedido.numero as string,
+            reutilizado: true,
+            versao: Number(ultima?.versao ?? 1),
+          };
         }
       }
     }
@@ -174,9 +186,22 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
       logotipo,
     });
 
+    const { data: versao, error: erroVersao } = await adminErp.rpc("registar_versao_nota", {
+      p_pedido_id: pedido.id,
+      p_caminho: `notas/${pedido.id}/pendente.pdf`,
+      p_motivo: data.regenerar ? "regenerada" : "primeira",
+    });
+    if (erroVersao) throw new Error("Não foi possível numerar a versão da nota.");
+    const caminho = `notas/${pedido.id}/v${versao}.pdf`;
+    await adminErp
+      .from("nota_versoes")
+      .update({ caminho })
+      .eq("pedido_id", pedido.id)
+      .eq("versao", versao);
+
     const { error: erroUpload } = await supabaseAdmin.storage
       .from("documentos")
-      .upload(caminho, bytes, { contentType: "application/pdf", upsert: true });
+      .upload(caminho, bytes, { contentType: "application/pdf", upsert: false });
     if (erroUpload) throw new Error(`Não foi possível guardar o PDF: ${erroUpload.message}`);
 
     const { data: assinado, error: erroUrl } = await supabaseAdmin.storage
@@ -184,5 +209,10 @@ export const gerarNotaEncomenda = createServerFn({ method: "POST" })
       .createSignedUrl(caminho, 3600);
     if (erroUrl || !assinado?.signedUrl) throw new Error("Não foi possível abrir o PDF gerado.");
 
-    return { url: assinado.signedUrl, numero: pedido.numero as string, reutilizado: false };
+    return {
+      url: assinado.signedUrl,
+      numero: pedido.numero as string,
+      reutilizado: false,
+      versao: Number(versao),
+    };
   });
