@@ -61,8 +61,8 @@ begin
   perform pg_temp.entra('adm');
   select id into cat from erp.categorias where codigo = 'AUD';
   select id into cli from erp.clientes where nome = 'Cliente Auditoria';
-  insert into erp.produtos (cod_barras, categoria_id, nome_cliente, tipo_fornecimento, preco_base)
-  values ('P-AUD-FAB-' || substr(gen_random_uuid()::text, 1, 6), cat, 'Cama Auditoria', 'producao', 500) returning id into prod;
+  insert into erp.produtos (cod_barras, categoria_id, nome_cliente, tipo_fornecimento, prazo_producao_dias, preco_base)
+  values ('P-AUD-FAB-' || substr(gen_random_uuid()::text, 1, 6), cat, 'Cama Auditoria', 'producao', 10, 500) returning id into prod;
   update erp.definicoes set valor = 'true' where chave = 'fabrica_integracao_ativa';
 
   insert into erp.pedidos (cliente_id, origem, entrega_domicilio) values (cli, 'loja', false) returning id into ped;
