@@ -125,3 +125,52 @@ export async function processarOutbox(testMode: boolean) {
   }
   return resultado;
 }
+
+const json = (corpo: unknown, status = 200) =>
+  new Response(JSON.stringify(corpo), {
+    status,
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+  });
+
+/**
+ * Callback Fábrica → ERP (contrato v1). Partilhado pelos dois endereços
+ * (/api/integrations/factory/events e o alias público /api/public/integrations/factory/events).
+ * ACK de sucesso: { accepted: true, event_id: <igual ao recebido>, result } — `result` é extra.
+ */
+export async function tratarEventoFabrica(request: Request): Promise<Response> {
+  const cfg = configFabrica();
+  if (!cfg.token) return json({ accepted: false, error: "not_configured" }, 503);
+  if (!tokenValido(request.headers.get("x-up-integration-token"), cfg.token)) {
+    return json({ accepted: false, error: "unauthorized" }, 401);
+  }
+  let corpo: unknown;
+  try {
+    corpo = await request.json();
+  } catch {
+    return json({ accepted: false, error: "invalid_json" }, 400);
+  }
+  const v = eventoFabrica.safeParse(corpo);
+  if (!v.success) return json({ accepted: false, error: "invalid_body" }, 422);
+
+  const erp = await clienteErpAdmin();
+  const { data, error } = await erp.rpc("fabrica_registar_evento", { p: v.data });
+  if (error) return json({ accepted: false, event_id: v.data.event_id, error: "internal" }, 500);
+  const r = data as { resultado: string };
+  if (r.resultado === "invalido" || r.resultado === "desconhecido") {
+    return json({ accepted: false, event_id: v.data.event_id, error: r.resultado }, 422);
+  }
+  // aplicado | duplicado | fora_de_ordem: todos ficam guardados → ACK positivo e idêntico.
+  return json({ accepted: true, event_id: v.data.event_id, result: r.resultado });
+}
+
+/** Tarefa agendável do envio da fila. Desligada por omissão (fabrica_worker_ativo=false). */
+export async function correrWorkerFabrica(): Promise<Record<string, unknown>> {
+  const cfg = configFabrica();
+  if (!cfg.configurada) return { ok: true, executado: false, motivo: "nao_configurado" };
+  const erp = await clienteErpAdmin();
+  const { data: pode, error } = await erp.rpc("fabrica_worker_pode_correr");
+  if (error) return { ok: false, executado: false, motivo: "erro_leitura" };
+  if (pode !== true) return { ok: true, executado: false, motivo: "desligado" };
+  const r = await processarOutbox(false);
+  return { ok: true, executado: true, ...r };
+}
