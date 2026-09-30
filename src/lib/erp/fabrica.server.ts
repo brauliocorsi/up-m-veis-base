@@ -16,6 +16,33 @@ export const respostaEncomenda = z.object({
     .min(1),
 });
 
+/** Corpo enviado ao receptor do UP Fábrica; validado antes de sair. */
+export const pedidoEncomenda = z.object({
+  schema_version: z.literal(1),
+  source_system: z.literal("up-moveis-base"),
+  event_id: z.string().uuid(),
+  sale_id: z.string().uuid(),
+  sale_number: z.string().min(1),
+  line_id: z.string().uuid(),
+  product_id: z.string().uuid(),
+  product_code: z.string().nullable(),
+  description: z.string().min(1),
+  quantity: z.number().int().positive().max(999),
+  due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
+  customization: z.record(z.string(), z.unknown()).nullable(),
+  test_mode: z.boolean(),
+});
+
+/** ACK não ambíguo: mesmo event_id, exatamente `quantity` ordens com unit_index 1..quantity. */
+export function ackValido(ack: unknown, eventId: string, quantidade: number) {
+  const v = respostaEncomenda.safeParse(ack);
+  if (!v.success || v.data.event_id !== eventId || v.data.orders.length !== quantidade) return null;
+  const indices = v.data.orders.map((o) => o.unit_index).sort((a, b) => a - b);
+  if (indices.some((u, i) => u !== i + 1)) return null;
+  if (new Set(v.data.orders.map((o) => o.id)).size !== quantidade) return null;
+  return v.data;
+}
+
 export const eventoFabrica = z.object({
   schema_version: z.literal(1),
   event_id: z.string().uuid(),
@@ -67,16 +94,31 @@ export async function processarOutbox(testMode: boolean) {
 
   const resultado = { aceites: 0, erros: 0, incertos: 0 };
   for (const l of (linhas ?? []) as LinhaOutbox[]) {
-    const corpo = {
+    const bruto = {
+      product_code: null,
+      due_date: null,
+      customization: null,
+      ...l.payload,
       schema_version: 1,
       source_system: "up-moveis-base",
       event_id: l.event_id,
       sale_id: l.pedido_id,
       line_id: l.item_id,
-      ...l.payload,
       quantity: l.quantidade,
       test_mode: testMode,
     };
+    const valido = pedidoEncomenda.safeParse(bruto);
+    if (!valido.success) {
+      await erp.rpc("fabrica_outbox_resultado", {
+        p_event_id: l.event_id,
+        p_estado: "erro",
+        p_resposta: null,
+        p_erro: "Mensagem fora do contrato v1; corrigir a linha antes de enviar.",
+      });
+      resultado.erros++;
+      continue;
+    }
+    const corpo = valido.data;
     let estado: "aceite" | "erro" | "incerto" = "erro";
     let resposta: unknown = null;
     let erro: string | null = null;
@@ -89,15 +131,16 @@ export async function processarOutbox(testMode: boolean) {
       });
       const texto = await r.text();
       if (r.ok) {
-        const v = respostaEncomenda.safeParse(JSON.parse(texto));
-        if (
-          v.success &&
-          v.data.event_id === l.event_id &&
-          v.data.orders.length === l.quantidade &&
-          new Set(v.data.orders.map((o) => o.unit_index)).size === l.quantidade
-        ) {
+        let ack: unknown = null;
+        try {
+          ack = JSON.parse(texto);
+        } catch {
+          ack = null;
+        }
+        const v = ackValido(ack, l.event_id, l.quantidade);
+        if (v) {
           estado = "aceite";
-          resposta = v.data;
+          resposta = v;
         } else {
           estado = "incerto";
           erro = "Resposta fora do contrato; reenvio com a mesma chave.";

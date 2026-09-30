@@ -74,7 +74,9 @@ import { Route as AuthenticatedRotasRotaIdRouteImport } from './routes/_authenti
 import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
 import { Route as AuthenticatedStockProdutoIdRouteImport } from './routes/_authenticated/stock.$produtoId'
 import { Route as ApiIntegrationsFactoryEventsRouteImport } from './routes/api/integrations/factory/events'
+import { Route as ApiPublicHooksFabricaOutboxRouteImport } from './routes/api/public/hooks/fabrica-outbox'
 import { Route as ApiPublicHooksSyncContagemRouteImport } from './routes/api/public/hooks/sync-contagem'
+import { Route as ApiPublicIntegrationsFactoryEventsRouteImport } from './routes/api/public/integrations/factory/events'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -436,10 +438,22 @@ const ApiIntegrationsFactoryEventsRoute =
     path: '/api/integrations/factory/events',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksFabricaOutboxRoute =
+  ApiPublicHooksFabricaOutboxRouteImport.update({
+    id: '/api/public/hooks/fabrica-outbox',
+    path: '/api/public/hooks/fabrica-outbox',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksSyncContagemRoute =
   ApiPublicHooksSyncContagemRouteImport.update({
     id: '/api/public/hooks/sync-contagem',
     path: '/api/public/hooks/sync-contagem',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicIntegrationsFactoryEventsRoute =
+  ApiPublicIntegrationsFactoryEventsRouteImport.update({
+    id: '/api/public/integrations/factory/events',
+    path: '/api/public/integrations/factory/events',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -507,7 +521,9 @@ export interface FileRoutesByFullPath {
   '/rotas/': typeof AuthenticatedRotasIndexRoute
   '/stock/': typeof AuthenticatedStockIndexRoute
   '/api/integrations/factory/events': typeof ApiIntegrationsFactoryEventsRoute
+  '/api/public/hooks/fabrica-outbox': typeof ApiPublicHooksFabricaOutboxRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
+  '/api/public/integrations/factory/events': typeof ApiPublicIntegrationsFactoryEventsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -573,7 +589,9 @@ export interface FileRoutesByTo {
   '/rotas': typeof AuthenticatedRotasIndexRoute
   '/stock': typeof AuthenticatedStockIndexRoute
   '/api/integrations/factory/events': typeof ApiIntegrationsFactoryEventsRoute
+  '/api/public/hooks/fabrica-outbox': typeof ApiPublicHooksFabricaOutboxRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
+  '/api/public/integrations/factory/events': typeof ApiPublicIntegrationsFactoryEventsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -642,7 +660,9 @@ export interface FileRoutesById {
   '/_authenticated/rotas/': typeof AuthenticatedRotasIndexRoute
   '/_authenticated/stock/': typeof AuthenticatedStockIndexRoute
   '/api/integrations/factory/events': typeof ApiIntegrationsFactoryEventsRoute
+  '/api/public/hooks/fabrica-outbox': typeof ApiPublicHooksFabricaOutboxRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
+  '/api/public/integrations/factory/events': typeof ApiPublicIntegrationsFactoryEventsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -710,7 +730,9 @@ export interface FileRouteTypes {
     | '/rotas/'
     | '/stock/'
     | '/api/integrations/factory/events'
+    | '/api/public/hooks/fabrica-outbox'
     | '/api/public/hooks/sync-contagem'
+    | '/api/public/integrations/factory/events'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -776,7 +798,9 @@ export interface FileRouteTypes {
     | '/rotas'
     | '/stock'
     | '/api/integrations/factory/events'
+    | '/api/public/hooks/fabrica-outbox'
     | '/api/public/hooks/sync-contagem'
+    | '/api/public/integrations/factory/events'
   id:
     | '__root__'
     | '/'
@@ -844,7 +868,9 @@ export interface FileRouteTypes {
     | '/_authenticated/rotas/'
     | '/_authenticated/stock/'
     | '/api/integrations/factory/events'
+    | '/api/public/hooks/fabrica-outbox'
     | '/api/public/hooks/sync-contagem'
+    | '/api/public/integrations/factory/events'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -852,7 +878,9 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiIntegrationsFactoryEventsRoute: typeof ApiIntegrationsFactoryEventsRoute
+  ApiPublicHooksFabricaOutboxRoute: typeof ApiPublicHooksFabricaOutboxRoute
   ApiPublicHooksSyncContagemRoute: typeof ApiPublicHooksSyncContagemRoute
+  ApiPublicIntegrationsFactoryEventsRoute: typeof ApiPublicIntegrationsFactoryEventsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1312,11 +1340,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiIntegrationsFactoryEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/fabrica-outbox': {
+      id: '/api/public/hooks/fabrica-outbox'
+      path: '/api/public/hooks/fabrica-outbox'
+      fullPath: '/api/public/hooks/fabrica-outbox'
+      preLoaderRoute: typeof ApiPublicHooksFabricaOutboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sync-contagem': {
       id: '/api/public/hooks/sync-contagem'
       path: '/api/public/hooks/sync-contagem'
       fullPath: '/api/public/hooks/sync-contagem'
       preLoaderRoute: typeof ApiPublicHooksSyncContagemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/integrations/factory/events': {
+      id: '/api/public/integrations/factory/events'
+      path: '/api/public/integrations/factory/events'
+      fullPath: '/api/public/integrations/factory/events'
+      preLoaderRoute: typeof ApiPublicIntegrationsFactoryEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -1472,7 +1514,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiIntegrationsFactoryEventsRoute: ApiIntegrationsFactoryEventsRoute,
+  ApiPublicHooksFabricaOutboxRoute: ApiPublicHooksFabricaOutboxRoute,
   ApiPublicHooksSyncContagemRoute: ApiPublicHooksSyncContagemRoute,
+  ApiPublicIntegrationsFactoryEventsRoute:
+    ApiPublicIntegrationsFactoryEventsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
