@@ -93,7 +93,7 @@ function PaginaContasReceber() {
   const devolver = useMutation({
     mutationFn: async () => {
       if (!aDevolver) return;
-      await devolverPagamento(aDevolver.id, motivo, chaveOp);
+      await devolverPagamento(aDevolver.id, motivo);
     },
     onSuccess: async () => {
       setADevolver(null);
