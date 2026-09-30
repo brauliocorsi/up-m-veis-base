@@ -36,6 +36,12 @@ echo "════════════════════════�
 echo " AUDITORIA DO ERP — $(date '+%Y-%m-%d %H:%M')"
 echo "════════════════════════════════════════════════════════"
 
+# ---------- 0. Base acessível? (sem ligação não há "migrações limpas") ----------
+if ! PSQL_ADMIN -Atqc "select 1" | grep -qx 1; then
+  echo "✗ Não consigo ligar à base de testes; nada foi verificado."
+  exit 2
+fi
+
 # ---------- 1. Base limpa ----------
 PSQL_ADMIN -q -c "drop database if exists $DB;" -c "create database $DB;" >/dev/null
 for c in "create schema auth" "create schema extensions" "create extension pgcrypto" \
