@@ -20,7 +20,11 @@ Sem URL/token: o ERP mostra "não configurado" e não envia nada. Nunca há suce
   — exatamente `quantity` ordens, `unit_index` distintos.
 - Só após validar a resposta o ERP marca **aceite**. "Em fila" ≠ aceite.
 - Timeout, rede, 5xx ou resposta fora do contrato → estado **incerto**; reenvia com o mesmo `event_id`.
-- 4xx → **erro** (revisão manual).
+- 4xx → **erro** (revisão manual; não há reenvio automático).
+- O ERP valida a mensagem antes de enviar (zod `pedidoEncomenda`) e o ACK exige `unit_index` = 1..quantity e `id` distintos.
+- Envio: `fabrica_outbox_reclamar` usa lease de 2 min (`for update skip locked`); `incerto` espera 2,4,8…60 min.
+- Envio automático: `POST /api/public/hooks/fabrica-outbox` (autenticado pelo segredo do agendador). Só corre com
+  `fabrica_integracao_ativa=true` **e** `fabrica_worker_ativo=true`. Nenhum agendamento está criado.
 - Transferência bancária pendente na venda → **bloqueado_pagamento** (não envia).
 
 ## 2. Fábrica → ERP: `POST {ERP}/api/integrations/factory/events`
@@ -31,8 +35,14 @@ Sem URL/token: o ERP mostra "não configurado" e não envia nada. Nunca há suce
   "status": "produced" | "warehouse_received", "quantity": 1, "occurred_at": "ISO-8601" }
 ```
 
-Respostas: 401 token inválido · 503 não configurado · 422 corpo/ordem inválida · 200 `{accepted:true,result}`
-com `result` ∈ `aplicado | duplicado | fora_de_ordem`.
+Endereços (mesmo tratamento, mesmo token):
+- `POST {ERP}/api/integrations/factory/events`
+- `POST {ERP}/api/public/integrations/factory/events` — alias fora da proteção de login do site, só com `x-up-integration-token` válido.
+
+Respostas: 401 token inválido · 503 não configurado · 422 corpo/ordem inválida ·
+**200 `{ "accepted": true, "event_id": "<igual ao recebido>", "result": "aplicado|duplicado|fora_de_ordem" }`**.
+O remetente da fábrica valida `accepted === true && event_id === <enviado>`; `result` é informativo.
+Duplicados e fora de ordem também recebem ACK positivo (ficam guardados sem efeito), para a fábrica não reenviar em ciclo.
 
 - Todos os eventos ficam guardados (`erp.fabrica_eventos`), únicos por `event_id`.
 - Monotonia: aceite → produced → warehouse_received. Estados anteriores ficam registados sem efeito.
@@ -43,6 +53,11 @@ com `result` ∈ `aplicado | duplicado | fora_de_ordem`.
 
 `erp.fabrica_definir_ativa(true)` recusa enquanto:
 1. a política de entrada não for `produced` ou `warehouse_received`;
-2. `fabrica_reconciliacao_contagem` não for `true` (garantia de que a sincronização Contagem não volta a contar estas entradas).
+2. existirem entradas do Contagem suspeitas (`v_contagem_fabrica_suspeitos`: entradas sem referência à ordem, em produtos
+   com ordens da fábrica próximas no tempo).
+
+Prevenção concreta de dupla entrada: `registar_movimentos_contagem` não dá stock a entradas cuja `referencia`
+(ou `fabrica_order_id`) corresponda a uma ordem da fábrica — ficam em `erp.contagem_fabrica_ignorados`.
+A fábrica (callback) é a única fonte dessas unidades.
 
 Vendas anteriores à ativação não são enviadas (a fila só nasce de necessidades novas).

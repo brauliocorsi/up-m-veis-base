@@ -16,6 +16,33 @@ export const respostaEncomenda = z.object({
     .min(1),
 });
 
+/** Corpo enviado ao receptor do UP Fábrica; validado antes de sair. */
+export const pedidoEncomenda = z.object({
+  schema_version: z.literal(1),
+  source_system: z.literal("up-moveis-base"),
+  event_id: z.string().uuid(),
+  sale_id: z.string().uuid(),
+  sale_number: z.string().min(1),
+  line_id: z.string().uuid(),
+  product_id: z.string().uuid(),
+  product_code: z.string().nullable(),
+  description: z.string().min(1),
+  quantity: z.number().int().positive().max(999),
+  due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
+  customization: z.record(z.string(), z.unknown()).nullable(),
+  test_mode: z.boolean(),
+});
+
+/** ACK não ambíguo: mesmo event_id, exatamente `quantity` ordens com unit_index 1..quantity. */
+export function ackValido(ack: unknown, eventId: string, quantidade: number) {
+  const v = respostaEncomenda.safeParse(ack);
+  if (!v.success || v.data.event_id !== eventId || v.data.orders.length !== quantidade) return null;
+  const indices = v.data.orders.map((o) => o.unit_index).sort((a, b) => a - b);
+  if (indices.some((u, i) => u !== i + 1)) return null;
+  if (new Set(v.data.orders.map((o) => o.id)).size !== quantidade) return null;
+  return v.data;
+}
+
 export const eventoFabrica = z.object({
   schema_version: z.literal(1),
   event_id: z.string().uuid(),
@@ -67,16 +94,31 @@ export async function processarOutbox(testMode: boolean) {
 
   const resultado = { aceites: 0, erros: 0, incertos: 0 };
   for (const l of (linhas ?? []) as LinhaOutbox[]) {
-    const corpo = {
+    const bruto = {
+      product_code: null,
+      due_date: null,
+      customization: null,
+      ...l.payload,
       schema_version: 1,
       source_system: "up-moveis-base",
       event_id: l.event_id,
       sale_id: l.pedido_id,
       line_id: l.item_id,
-      ...l.payload,
       quantity: l.quantidade,
       test_mode: testMode,
     };
+    const valido = pedidoEncomenda.safeParse(bruto);
+    if (!valido.success) {
+      await erp.rpc("fabrica_outbox_resultado", {
+        p_event_id: l.event_id,
+        p_estado: "erro",
+        p_resposta: null,
+        p_erro: "Mensagem fora do contrato v1; corrigir a linha antes de enviar.",
+      });
+      resultado.erros++;
+      continue;
+    }
+    const corpo = valido.data;
     let estado: "aceite" | "erro" | "incerto" = "erro";
     let resposta: unknown = null;
     let erro: string | null = null;
@@ -89,15 +131,16 @@ export async function processarOutbox(testMode: boolean) {
       });
       const texto = await r.text();
       if (r.ok) {
-        const v = respostaEncomenda.safeParse(JSON.parse(texto));
-        if (
-          v.success &&
-          v.data.event_id === l.event_id &&
-          v.data.orders.length === l.quantidade &&
-          new Set(v.data.orders.map((o) => o.unit_index)).size === l.quantidade
-        ) {
+        let ack: unknown = null;
+        try {
+          ack = JSON.parse(texto);
+        } catch {
+          ack = null;
+        }
+        const v = ackValido(ack, l.event_id, l.quantidade);
+        if (v) {
           estado = "aceite";
-          resposta = v.data;
+          resposta = v;
         } else {
           estado = "incerto";
           erro = "Resposta fora do contrato; reenvio com a mesma chave.";
@@ -124,4 +167,53 @@ export async function processarOutbox(testMode: boolean) {
     resultado[estado === "aceite" ? "aceites" : estado === "erro" ? "erros" : "incertos"]++;
   }
   return resultado;
+}
+
+const json = (corpo: unknown, status = 200) =>
+  new Response(JSON.stringify(corpo), {
+    status,
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+  });
+
+/**
+ * Callback Fábrica → ERP (contrato v1). Partilhado pelos dois endereços
+ * (/api/integrations/factory/events e o alias público /api/public/integrations/factory/events).
+ * ACK de sucesso: { accepted: true, event_id: <igual ao recebido>, result } — `result` é extra.
+ */
+export async function tratarEventoFabrica(request: Request): Promise<Response> {
+  const cfg = configFabrica();
+  if (!cfg.token) return json({ accepted: false, error: "not_configured" }, 503);
+  if (!tokenValido(request.headers.get("x-up-integration-token"), cfg.token)) {
+    return json({ accepted: false, error: "unauthorized" }, 401);
+  }
+  let corpo: unknown;
+  try {
+    corpo = await request.json();
+  } catch {
+    return json({ accepted: false, error: "invalid_json" }, 400);
+  }
+  const v = eventoFabrica.safeParse(corpo);
+  if (!v.success) return json({ accepted: false, error: "invalid_body" }, 422);
+
+  const erp = await clienteErpAdmin();
+  const { data, error } = await erp.rpc("fabrica_registar_evento", { p: v.data });
+  if (error) return json({ accepted: false, event_id: v.data.event_id, error: "internal" }, 500);
+  const r = data as { resultado: string };
+  if (r.resultado === "invalido" || r.resultado === "desconhecido") {
+    return json({ accepted: false, event_id: v.data.event_id, error: r.resultado }, 422);
+  }
+  // aplicado | duplicado | fora_de_ordem: todos ficam guardados → ACK positivo e idêntico.
+  return json({ accepted: true, event_id: v.data.event_id, result: r.resultado });
+}
+
+/** Tarefa agendável do envio da fila. Desligada por omissão (fabrica_worker_ativo=false). */
+export async function correrWorkerFabrica(): Promise<Record<string, unknown>> {
+  const cfg = configFabrica();
+  if (!cfg.configurada) return { ok: true, executado: false, motivo: "nao_configurado" };
+  const erp = await clienteErpAdmin();
+  const { data: pode, error } = await erp.rpc("fabrica_worker_pode_correr");
+  if (error) return { ok: false, executado: false, motivo: "erro_leitura" };
+  if (pode !== true) return { ok: true, executado: false, motivo: "desligado" };
+  const r = await processarOutbox(false);
+  return { ok: true, executado: true, ...r };
 }

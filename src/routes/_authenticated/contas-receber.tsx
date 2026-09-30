@@ -50,6 +50,8 @@ function PaginaContasReceber() {
   const [aConfirmar, setAConfirmar] = useState<ContaReceber | null>(null);
   const [referencia, setReferencia] = useState("");
   const [comprovativo, setComprovativo] = useState("");
+  const [dataValor, setDataValor] = useState("");
+  const [chaveOp, setChaveOp] = useState("");
   const [aDevolver, setADevolver] = useState<ContaReceber | null>(null);
   const [motivo, setMotivo] = useState("");
 
@@ -72,7 +74,13 @@ function PaginaContasReceber() {
   const confirmar = useMutation({
     mutationFn: async () => {
       if (!aConfirmar) return;
-      await confirmarPagamento(aConfirmar.id, comprovativo || null, referencia || null);
+      await confirmarPagamento(
+        aConfirmar.id,
+        comprovativo || null,
+        referencia || null,
+        dataValor || null,
+        chaveOp,
+      );
     },
     onSuccess: async () => {
       setAConfirmar(null);
@@ -108,6 +116,8 @@ function PaginaContasReceber() {
     setAConfirmar(c);
     setReferencia(c.referencia ?? "");
     setComprovativo(c.comprovativo_url ?? "");
+    setDataValor("");
+    setChaveOp(crypto.randomUUID());
   };
 
   const Lista = ({ itens }: { itens: ContaReceber[] }) => {
@@ -256,8 +266,21 @@ function PaginaContasReceber() {
             id="ref-receb"
             value={referencia}
             onChange={(e) => setReferencia(e.target.value)}
-            placeholder="Referência bancária ou do financiador"
+            placeholder="Referência do extrato bancário ou do financiador"
           />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="data-valor">Data-valor no banco</Label>
+          <Input
+            id="data-valor"
+            type="date"
+            value={dataValor}
+            onChange={(e) => setDataValor(e.target.value)}
+          />
+          <p className="text-xs text-muted-foreground">
+            Transferências só contam como pagas depois de as ver no extrato: indique a referência e
+            a data-valor.
+          </p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="comp-receb">

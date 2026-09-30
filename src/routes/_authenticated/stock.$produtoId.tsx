@@ -1,3 +1,4 @@
+import { lerCartoesStock } from "@/lib/erp/compras";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Unlock } from "lucide-react";
@@ -201,6 +202,8 @@ function FichaStock() {
             : ""}
         </span>
       </p>
+
+      <CartoesSimples produtoId={stock.produto_id} />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <Cartao titulo="Físico" valor={stock.fisico} nota="Soma de todos os movimentos do livro." />
@@ -474,6 +477,32 @@ function FichaStock() {
           />
         </div>
       </DialogoForm>
+    </div>
+  );
+}
+
+function CartoesSimples({ produtoId }: { produtoId: string }) {
+  const { data } = useQuery({
+    queryKey: ["stock-cartoes", produtoId],
+    queryFn: () => lerCartoesStock(produtoId),
+  });
+  if (!data) return null;
+  const itens = [
+    { t: "Físico", v: data.fisico, n: "O que está no armazém." },
+    { t: "Reservado a clientes", v: data.reservado, n: "Já prometido a vendas." },
+    { t: "Disponível", v: data.disponivel, n: "Físico menos reservado." },
+    { t: "A receber", v: data.a_receber, n: "Encomendado a fornecedores, ainda não chegou." },
+    { t: "A fabricar", v: data.a_fabricar, n: "Vendido para a fábrica fazer." },
+  ];
+  return (
+    <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
+      {itens.map((i) => (
+        <div key={i.t} className="rounded-lg border bg-card p-3">
+          <p className="text-xs text-muted-foreground">{i.t}</p>
+          <p className="text-2xl font-semibold tabular-nums">{Number(i.v)}</p>
+          <p className="text-xs text-muted-foreground">{i.n}</p>
+        </div>
+      ))}
     </div>
   );
 }

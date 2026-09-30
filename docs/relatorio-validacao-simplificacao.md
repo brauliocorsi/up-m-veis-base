@@ -27,3 +27,22 @@ Typecheck e build: OK. Nada publicado, nenhum email, nenhum dado histórico alte
 - Stock: cartões Físico/Reservado/Disponível/A receber/A fabricar e decimais para materiais.
 - `agendar_entrega`: validar cobertura/ETA e distinguir pré-agendado de confirmado.
 - Pré-existentes no verificador de código: 10 cores fixas e 31 escritas de campos de auditoria no frontend.
+
+## Atualização — pendências concluídas (30/09/2026)
+
+**Implementado**
+- Compras: página única "Compras" com Por encomendar (agrupado por fornecedor e produto, uma linha por venda, seleção multi-venda → rascunho; nada enviado), Encomendado, Receber, Histórico.
+- Venda: painel "Fornecimento" por linha (recebido, falta, OC original e atual, chegada prevista, descrição/nota integrais). Nota PDF versionada (`nota_versoes`, `notas/<id>/vN.pdf`, versões antigas nunca reescritas).
+- Financeiro: `registar_pagamento_idem`, `confirmar_pagamento_banco` (transferência exige referência do extrato e data-valor; dupla confirmação devolve "já confirmado"), `devolver_pagamento_idem`, `movimento_caixa_idem` (entrada/saída/sangria), `receber_envelope_rota_idem` (envelope separado do recebimento). Chaves com bloqueio consultivo, valores >0 e só 2 casas.
+- Stock: cartões Físico / Reservado a clientes / Disponível / A receber / A fabricar. Contagem: entradas com referência a ordem da fábrica não dão stock (registadas em `contagem_fabrica_ignorados`); ativação bloqueada enquanto houver entradas suspeitas — deixou de haver booleano declarativo.
+- Agendamento: exige cobertura ou data prevista até ao dia da rota; pré-agendado (venda não passa a "agendado") vs confirmado (`confirmar_pre_agendamento`); capacidade medida com a nova paragem incluída.
+- Integração: ACK do callback `{accepted:true,event_id,result}`; alias público `/api/public/integrations/factory/events` com token; validação da mensagem enviada e do ACK (unit_index 1..n); fila com lease/backoff; worker `/api/public/hooks/fabrica-outbox` desligado por omissão, sem agendamento criado.
+- `auditoria/run.sh` falha (código 2) se não conseguir ligar à base.
+
+**Testado** — base descartável local: 251 testes, 0 falhas, 0 erros SQL (novos T14: permissões, cêntimos, chaves, lease/backoff, Contagem). Typecheck sem erros.
+
+**Pendente (depende de terceiros)**
+- Resposta do proprietário: stock entra em `produced` ou `warehouse_received` (política inativa).
+- Ensaio ponta-a-ponta com o receptor do UP Fábrica (commit 768b6701): requer `UP_FACTORY_URL`/`UP_FACTORY_TOKEN` e ativar worker.
+- Quantidades decimais para materiais: o livro de stock usa inteiros; mudar o tipo exige migração das vistas dependentes — não feita.
+- Avisos de código pré-existentes (10 cores fixas, 31 escritas de auditoria no frontend) e extensão no schema public.

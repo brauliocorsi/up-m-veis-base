@@ -41,6 +41,10 @@ export function DialogoAgendar({ pedidoId, numero, onFechar, onAgendado }: Props
         toast.warning(
           `Agendada para ${res.data}, mas a rota ficou acima da capacidade. ${(res.avisos ?? []).join(" ")}`,
         );
+      } else if (res.pre_agendada) {
+        toast.info(
+          `Pré-agendada para ${res.data}: há artigos ainda a chegar. Confirme a entrega quando estiverem disponíveis.`,
+        );
       } else {
         toast.success(`Entrega agendada para ${res.data}.`);
       }

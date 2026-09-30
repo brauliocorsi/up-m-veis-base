@@ -436,10 +436,12 @@ export async function lerEnvelopes(params?: { porReceber?: boolean }) {
 }
 
 /** Dá entrada do dinheiro do envelope de uma rota conferida no caixa da loja. */
-export async function receberEnvelopeRota(rotaId: string, valor?: number | null) {
-  const { error } = await erp().rpc("receber_envelope_rota", {
+/** Conferência do envelope (distinta da entrega e do recebimento ao cliente). */
+export async function receberEnvelopeRota(rotaId: string, valor?: number | null, chave?: string) {
+  const { error } = await erp().rpc(valor == null ? "receber_envelope_rota" : "receber_envelope_rota_idem", {
+    ...(valor == null ? {} : { p_chave: chave ?? crypto.randomUUID() }),
     p_rota_id: rotaId,
-    p_valor: valor ?? null,
+    p_valor: valor == null ? null : Math.round(valor * 100) / 100,
   });
   if (error) throw error;
 }
@@ -630,14 +632,30 @@ export async function agendarEntrega(params: {
   pedido_id: string;
   rota_id: string;
   confirmar?: boolean;
-}): Promise<{ rota_id: string; data: string; excedeu_capacidade: boolean; avisos: string[] }> {
+}): Promise<ResultadoAgendar> {
   const { data, error } = await erp().rpc("agendar_entrega", {
     p_pedido_id: params.pedido_id,
     p_rota_id: params.rota_id,
     p_confirmar: params.confirmar ?? false,
   });
   if (error) throw error;
-  return data as { rota_id: string; data: string; excedeu_capacidade: boolean; avisos: string[] };
+  return data as ResultadoAgendar;
+}
+
+export interface ResultadoAgendar {
+  rota_id: string;
+  data: string;
+  paragem_id: string;
+  /** true = artigos ainda a chegar até ao dia da rota; a venda não passa a "agendado". */
+  pre_agendada: boolean;
+  excedeu_capacidade: boolean;
+  avisos: string[];
+}
+
+/** Passa uma paragem pré-agendada a confirmada quando todos os artigos já estão disponíveis. */
+export async function confirmarPreAgendamento(paragemId: string) {
+  const { error } = await erp().rpc("confirmar_pre_agendamento", { p_paragem_id: paragemId });
+  if (error) throw error;
 }
 
 export async function desagendarEntrega(params: {
