@@ -88,6 +88,7 @@ begin
   insert into erp.fabrica_ordens (event_id, pedido_id, item_id, unit_index, order_id, order_number, estado)
   values (ev, ped, it, 1, 'ORD-T14-1', 'FAB-T14-0001', 'warehouse_received');
   select count(*) into antes from erp.stock_movimentos where produto_id = prod;
+  create or replace function auth.role() returns text language sql stable as $f$ select coalesce(nullif(current_setting('request.jwt.claim.role', true), ''), 'authenticated') $f$;
   perform set_config('request.jwt.claim.role', 'service_role', true);
   r := erp.registar_movimentos_contagem(jsonb_build_array(
     jsonb_build_object('id', '990001', 'produto_codigo', cod, 'tipo', 'entrada', 'quantidade', 1,
