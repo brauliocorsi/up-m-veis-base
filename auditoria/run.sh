@@ -95,8 +95,9 @@ grep -E "PASSA|FALHA" "$RES" | sed 's/.*NOTICE:  //' | sed 's/^/  /'
 # ---------- 5. Código ----------
 echo
 echo "── CÓDIGO ──"
-bash "$AQUI/30_codigo.sh" "$REPO" | sed 's/^/  /'
-COD=${PIPESTATUS[0]}
+SAIDA_COD=$(bash "$AQUI/30_codigo.sh" "$REPO"); COD=$?
+echo "$SAIDA_COD" | sed 's/^/  /'
+AVISOS_COD=$(echo "$SAIDA_COD" | grep -c "✗" || true)
 
 echo
 echo "════════════════════════════════════════════════════════"
@@ -109,5 +110,6 @@ else
   SAIDA_FINAL=1
 fi
 [ "${COD:-0}" -ne 0 ] && SAIDA_FINAL=1
+[ "${AVISOS_COD:-0}" -gt 0 ] && echo " CÓDIGO: $AVISOS_COD verificação(ões) de código por resolver (não bloqueiam; ver acima)"
 echo "════════════════════════════════════════════════════════"
 exit $SAIDA_FINAL
