@@ -24,7 +24,16 @@ export async function lerPagamentosPendentes(): Promise<Pagamento[]> {
   return (data ?? []) as Pagamento[];
 }
 
+const novaChave = () => crypto.randomUUID();
+
+/** Arredonda a cêntimos e recusa valores não positivos antes de enviar. */
+export function euros(valor: number): number {
+  if (!Number.isFinite(valor) || valor <= 0) throw new Error("O valor tem de ser positivo.");
+  return Math.round(valor * 100) / 100;
+}
+
 export async function registarPagamento(params: {
+  chave?: string;
   pedido_id: string;
   forma_id: string;
   valor: number;
@@ -33,27 +42,36 @@ export async function registarPagamento(params: {
   data_prevista?: string | null;
   observacoes?: string | null;
 }): Promise<string> {
-  const { data, error } = await erp().rpc("registar_pagamento", {
+  const { data, error } = await erp().rpc("registar_pagamento_idem", {
+    p_chave: params.chave ?? novaChave(),
     p_pedido_id: params.pedido_id,
     p_forma_id: params.forma_id,
-    p_valor: params.valor,
+    p_valor: euros(params.valor),
     p_referencia: params.referencia ?? null,
     p_comprovativo_url: params.comprovativo_url ?? null,
     p_data_prevista: params.data_prevista ?? null,
     p_observacoes: params.observacoes ?? null,
   });
   if (error) throw error;
-  return data as string;
+  return (data as { pagamento_id: string }).pagamento_id;
 }
 
+/**
+ * Confirmação explícita. Para transferências à espera do banco exige a
+ * referência do extrato e a data-valor. Repetir a mesma chave não confirma duas vezes.
+ */
 export async function confirmarPagamento(
   id: string,
   comprovativoUrl?: string | null,
   referencia?: string | null,
+  dataValor?: string | null,
+  chave?: string,
 ) {
-  const { error } = await erp().rpc("confirmar_pagamento", {
+  const { error } = await erp().rpc("confirmar_pagamento_banco", {
+    p_chave: chave ?? novaChave(),
     p_pagamento_id: id,
     p_referencia: referencia ?? null,
+    p_data_valor: dataValor ?? null,
     p_comprovativo_url: comprovativoUrl ?? null,
   });
   if (error) throw error;
@@ -68,8 +86,9 @@ export async function rejeitarPagamento(id: string, motivo: string) {
   if (error) throw error;
 }
 
-export async function devolverPagamento(id: string, motivo: string) {
-  const { error } = await erp().rpc("devolver_pagamento", {
+export async function devolverPagamento(id: string, motivo: string, chave?: string) {
+  const { error } = await erp().rpc("devolver_pagamento_idem", {
+    p_chave: chave ?? novaChave(),
     p_pagamento_id: id,
     p_motivo: motivo,
   });
@@ -182,13 +201,17 @@ export async function reabrirCaixa(caixaId: string, motivo: string) {
 }
 
 export async function registarSaidaCaixa(params: {
+  chave?: string;
   valor: number;
   motivo_id: string;
   descricao?: string | null;
   comprovativo_url?: string | null;
 }) {
-  const { error } = await erp().rpc("registar_saida_caixa", {
-    p_valor: params.valor,
+  const { error } = await erp().rpc("movimento_caixa_idem", {
+    p_chave: params.chave ?? novaChave(),
+    p_tipo: "saida",
+    p_caixa_id: null,
+    p_valor: euros(params.valor),
     p_motivo_id: params.motivo_id,
     p_descricao: params.descricao ?? null,
     p_comprovativo_url: params.comprovativo_url ?? null,
@@ -197,16 +220,20 @@ export async function registarSaidaCaixa(params: {
 }
 
 export async function registarSangria(params: {
+  chave?: string;
   caixa_id: string;
   valor: number;
   motivo_id: string;
   descricao?: string | null;
 }) {
-  const { error } = await erp().rpc("registar_sangria", {
+  const { error } = await erp().rpc("movimento_caixa_idem", {
+    p_chave: params.chave ?? novaChave(),
+    p_tipo: "sangria",
     p_caixa_id: params.caixa_id,
-    p_valor: params.valor,
+    p_valor: euros(params.valor),
     p_motivo_id: params.motivo_id,
     p_descricao: params.descricao ?? null,
+    p_comprovativo_url: null,
   });
   if (error) throw error;
 }
@@ -238,13 +265,17 @@ export async function lerMotivosEntrada(): Promise<Motivo[]> {
 
 /** Entrada manual de dinheiro no caixa da loja (reforço, correção, outro). */
 export async function registarEntradaCaixa(params: {
+  chave?: string;
   valor: number;
   motivo_id?: string | null;
   descricao?: string | null;
   comprovativo_url?: string | null;
 }) {
-  const { error } = await erp().rpc("registar_entrada_caixa", {
-    p_valor: params.valor,
+  const { error } = await erp().rpc("movimento_caixa_idem", {
+    p_chave: params.chave ?? novaChave(),
+    p_tipo: "entrada",
+    p_caixa_id: null,
+    p_valor: euros(params.valor),
     p_motivo_id: params.motivo_id ?? null,
     p_descricao: params.descricao ?? null,
     p_comprovativo_url: params.comprovativo_url ?? null,
