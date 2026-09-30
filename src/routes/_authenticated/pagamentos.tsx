@@ -54,6 +54,9 @@ function PaginaPagamentos() {
   const queryClient = useQueryClient();
   const [aConfirmar, setAConfirmar] = useState<Pagamento | null>(null);
   const [comprovativo, setComprovativo] = useState("");
+  const [referencia, setReferencia] = useState("");
+  const [dataValor, setDataValor] = useState("");
+  const [chaveOp, setChaveOp] = useState("");
   const [aRejeitar, setARejeitar] = useState<Pagamento | null>(null);
   const [motivo, setMotivo] = useState("");
 
@@ -71,7 +74,13 @@ function PaginaPagamentos() {
   const confirmar = useMutation({
     mutationFn: async () => {
       if (!aConfirmar) return;
-      await confirmarPagamento(aConfirmar.id, comprovativo);
+      await confirmarPagamento(
+        aConfirmar.id,
+        comprovativo || null,
+        referencia || null,
+        dataValor || null,
+        chaveOp,
+      );
     },
     onSuccess: () => {
       toast.success("Pagamento confirmado.");
@@ -148,6 +157,9 @@ function PaginaPagamentos() {
                     onClick={() => {
                       setAConfirmar(p);
                       setComprovativo(p.comprovativo_url ?? "");
+                      setReferencia(p.referencia ?? "");
+                      setDataValor("");
+                      setChaveOp(crypto.randomUUID());
                     }}
                   >
                     <Check className="mr-1 h-4 w-4" /> Confirmar
@@ -182,6 +194,17 @@ function PaginaPagamentos() {
           <div className="space-y-1.5">
             <Label>Comprovativo (ligação)</Label>
             <Input value={comprovativo} onChange={(e) => setComprovativo(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Referência do extrato</Label>
+            <Input value={referencia} onChange={(e) => setReferencia(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Data-valor no banco</Label>
+            <Input type="date" value={dataValor} onChange={(e) => setDataValor(e.target.value)} />
+            <p className="text-xs text-muted-foreground">
+              Obrigatórias para transferências: só confirme depois de ver o dinheiro no banco.
+            </p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAConfirmar(null)}>
