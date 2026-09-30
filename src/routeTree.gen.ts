@@ -72,6 +72,7 @@ import { Route as AuthenticatedRotasIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedRotasRotaIdRouteImport } from './routes/_authenticated/rotas.$rotaId'
 import { Route as AuthenticatedStockIndexRouteImport } from './routes/_authenticated/stock.index'
 import { Route as AuthenticatedStockProdutoIdRouteImport } from './routes/_authenticated/stock.$produtoId'
+import { Route as ApiIntegrationsFactoryEventsRouteImport } from './routes/api/integrations/factory/events'
 import { Route as ApiPublicHooksSyncContagemRouteImport } from './routes/api/public/hooks/sync-contagem'
 
 const IndexRoute = IndexRouteImport.update({
@@ -422,6 +423,12 @@ const AuthenticatedStockProdutoIdRoute =
     path: '/stock/$produtoId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiIntegrationsFactoryEventsRoute =
+  ApiIntegrationsFactoryEventsRouteImport.update({
+    id: '/api/integrations/factory/events',
+    path: '/api/integrations/factory/events',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksSyncContagemRoute =
   ApiPublicHooksSyncContagemRouteImport.update({
     id: '/api/public/hooks/sync-contagem',
@@ -491,6 +498,7 @@ export interface FileRoutesByFullPath {
   '/planos-producao/': typeof AuthenticatedPlanosProducaoIndexRoute
   '/rotas/': typeof AuthenticatedRotasIndexRoute
   '/stock/': typeof AuthenticatedStockIndexRoute
+  '/api/integrations/factory/events': typeof ApiIntegrationsFactoryEventsRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRoutesByTo {
@@ -555,6 +563,7 @@ export interface FileRoutesByTo {
   '/planos-producao': typeof AuthenticatedPlanosProducaoIndexRoute
   '/rotas': typeof AuthenticatedRotasIndexRoute
   '/stock': typeof AuthenticatedStockIndexRoute
+  '/api/integrations/factory/events': typeof ApiIntegrationsFactoryEventsRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRoutesById {
@@ -622,6 +631,7 @@ export interface FileRoutesById {
   '/_authenticated/planos-producao/': typeof AuthenticatedPlanosProducaoIndexRoute
   '/_authenticated/rotas/': typeof AuthenticatedRotasIndexRoute
   '/_authenticated/stock/': typeof AuthenticatedStockIndexRoute
+  '/api/integrations/factory/events': typeof ApiIntegrationsFactoryEventsRoute
   '/api/public/hooks/sync-contagem': typeof ApiPublicHooksSyncContagemRoute
 }
 export interface FileRouteTypes {
@@ -688,6 +698,7 @@ export interface FileRouteTypes {
     | '/planos-producao/'
     | '/rotas/'
     | '/stock/'
+    | '/api/integrations/factory/events'
     | '/api/public/hooks/sync-contagem'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -752,6 +763,7 @@ export interface FileRouteTypes {
     | '/planos-producao'
     | '/rotas'
     | '/stock'
+    | '/api/integrations/factory/events'
     | '/api/public/hooks/sync-contagem'
   id:
     | '__root__'
@@ -818,6 +830,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planos-producao/'
     | '/_authenticated/rotas/'
     | '/_authenticated/stock/'
+    | '/api/integrations/factory/events'
     | '/api/public/hooks/sync-contagem'
   fileRoutesById: FileRoutesById
 }
@@ -825,6 +838,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiIntegrationsFactoryEventsRoute: typeof ApiIntegrationsFactoryEventsRoute
   ApiPublicHooksSyncContagemRoute: typeof ApiPublicHooksSyncContagemRoute
 }
 
@@ -1271,6 +1285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStockProdutoIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/integrations/factory/events': {
+      id: '/api/integrations/factory/events'
+      path: '/api/integrations/factory/events'
+      fullPath: '/api/integrations/factory/events'
+      preLoaderRoute: typeof ApiIntegrationsFactoryEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sync-contagem': {
       id: '/api/public/hooks/sync-contagem'
       path: '/api/public/hooks/sync-contagem'
@@ -1428,6 +1449,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiIntegrationsFactoryEventsRoute: ApiIntegrationsFactoryEventsRoute,
   ApiPublicHooksSyncContagemRoute: ApiPublicHooksSyncContagemRoute,
 }
 export const routeTree = rootRouteImport
