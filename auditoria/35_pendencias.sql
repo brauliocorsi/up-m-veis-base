@@ -51,7 +51,7 @@ end $$;
 do $$
 declare ev uuid := gen_random_uuid(); ped uuid; it uuid; nec uuid; n int; o erp.fabrica_outbox%rowtype;
 begin
-  select nc.pedido_id, nc.item_id, nc.id into ped, it, nec from erp.necessidades_compra nc
+  select nc.pedido_id, nc.item_id, nc.id into ped, it, nec from erp.necessidades_producao nc
    where nc.item_id is not null limit 1;
   if it is null then raise notice 'PASSA T14.D0: sem linhas de venda nas fixtures (ignorado)'; return; end if;
   insert into erp.fabrica_outbox (event_id, necessidade_id, pedido_id, item_id, revisao, quantidade, payload, estado)
@@ -80,7 +80,7 @@ do $$
 declare it uuid; prod uuid; cod text; antes int; depois int; r jsonb; ev uuid := gen_random_uuid(); nec uuid; ped uuid;
 begin
   select nc.item_id, nc.produto_id, p.cod_barras, nc.id, nc.pedido_id into it, prod, cod, nec, ped
-    from erp.necessidades_compra nc join erp.produtos p on p.id = nc.produto_id
+    from erp.necessidades_producao nc join erp.produtos p on p.id = nc.produto_id
    where p.cod_barras is not null and nc.item_id is not null limit 1;
   if it is null then raise notice 'PASSA T14.E0: sem fixtures (ignorado)'; return; end if;
   insert into erp.fabrica_outbox (event_id, necessidade_id, pedido_id, item_id, revisao, quantidade, payload, estado)
