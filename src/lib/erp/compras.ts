@@ -180,20 +180,33 @@ export async function confirmarEtaOc(id: string, data: string) {
   if (error) throw error;
 }
 
+/**
+ * Receção idempotente: a mesma chave (gerada ao abrir o formulário) nunca
+ * dá entrada duas vezes, mesmo com duplo clique ou nova tentativa de rede.
+ */
 export async function receberOc(params: {
   oc_id: string;
   linhas: Array<{ item_id: string; quantidade: number }>;
   doc?: string | null;
   observacoes?: string | null;
+  chave?: string;
 }) {
-  const { data, error } = await erp().rpc("receber_oc", {
+  const { data, error } = await erp().rpc("receber_oc_idem", {
+    p_chave: params.chave ?? crypto.randomUUID(),
     p_oc_id: params.oc_id,
     p_linhas: params.linhas,
     p_doc: params.doc ?? null,
     p_observacoes: params.observacoes ?? null,
   });
   if (error) throw error;
-  return data as { recebimento_id: string; unidades: number; valor: number };
+  return data as { recebimento_id: string; unidades: number; valor: number; repetido?: boolean };
+}
+
+/** Fecha a receção parcial e passa só o saldo em falta para uma OC diferida (sem nova dívida). */
+export async function diferirSaldoOc(ocId: string): Promise<string> {
+  const { data, error } = await erp().rpc("diferir_saldo_oc", { p_oc_id: ocId });
+  if (error) throw error;
+  return data as string;
 }
 
 export async function cancelarOc(id: string, motivoId: string, nota?: string) {

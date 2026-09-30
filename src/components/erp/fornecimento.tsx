@@ -112,7 +112,11 @@ export function BadgeFornecimento({
     <div className="text-xs">
       <Badge variant="outline">⚪ Por encomendar</Badge>
       <span className="ml-2 text-muted-foreground">
-        {necessidade ? "necessidade criada, ainda sem ordem de compra" : "sem necessidade de compra"}
+        {item.tipo_fornecimento === "producao"
+          ? "a fabricar — encomenda à fábrica na confirmação da venda"
+          : necessidade
+            ? "necessidade criada, ainda sem ordem de compra"
+            : "encomenda ao fornecedor na confirmação da venda"}
       </span>
     </div>
   );
