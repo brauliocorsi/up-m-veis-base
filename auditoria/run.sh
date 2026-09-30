@@ -78,20 +78,36 @@ echo
 echo "── COMPORTAMENTO ──"
 # executar UMA vez e reutilizar: correr duas vezes na mesma base gera falhas falsas
 RES=$(mktemp)
-for t in "$AQUI"/[23]*_*.sql; do PSQL -f "$t"; done > "$RES" 2>&1
+ERROS_TESTES=0
+for t in "$AQUI"/[23]*_*.sql; do
+  SAIDA_T=$(PSQL -v ON_ERROR_STOP=0 -f "$t")
+  echo "$SAIDA_T" >> "$RES"
+  # um ERROR fora de um bloco de exceção esconde testes: conta como falha
+  NE=$(echo "$SAIDA_T" | grep -E "^(psql:.*)?ERROR" | grep -viE "already exists" | grep -c . || true)
+  if [ "$NE" -gt 0 ]; then
+    echo "  ✗ $(basename "$t"): $NE erro(s) SQL"
+    echo "$SAIDA_T" | grep -E "ERROR" | head -3 | sed 's/^/      /'
+    ERROS_TESTES=$((ERROS_TESTES+NE))
+  fi
+done
 grep -E "PASSA|FALHA" "$RES" | sed 's/.*NOTICE:  //' | sed 's/^/  /'
 
 # ---------- 5. Código ----------
 echo
 echo "── CÓDIGO ──"
 bash "$AQUI/30_codigo.sh" "$REPO" | sed 's/^/  /'
+COD=${PIPESTATUS[0]}
 
 echo
 echo "════════════════════════════════════════════════════════"
 TOTAL_FALHAS=$(grep -c "FALHA" "$RES" || true); TOTAL_PASSA=$(grep -c "PASSA" "$RES" || true); rm -f "$RES"
-if [ "$TOTAL_FALHAS" -eq 0 ] && [ "$ERROS" -eq 0 ]; then
+if [ "$TOTAL_FALHAS" -eq 0 ] && [ "$ERROS" -eq 0 ] && [ "$ERROS_TESTES" -eq 0 ] && [ "$TOTAL_PASSA" -gt 0 ]; then
   echo " RESULTADO: $TOTAL_PASSA testes, todos a passar"
+  SAIDA_FINAL=0
 else
-  echo " RESULTADO: $TOTAL_PASSA a passar, $TOTAL_FALHAS a falhar, $ERROS erro(s) de migração"
+  echo " RESULTADO: $TOTAL_PASSA a passar, $TOTAL_FALHAS a falhar, $ERROS erro(s) de migração, $ERROS_TESTES erro(s) SQL nos testes"
+  SAIDA_FINAL=1
 fi
+[ "${COD:-0}" -ne 0 ] && SAIDA_FINAL=1
 echo "════════════════════════════════════════════════════════"
+exit $SAIDA_FINAL

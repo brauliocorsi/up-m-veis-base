@@ -1,4 +1,5 @@
 -- ============================================================
+update erp.definicoes set valor = 'true' where chave = 'fabrica_execucao_interna';
 -- Fase 11b — MRP: capacidade, explosão da BOM e planeamento
 -- Testes [T13]. Executar numa base descartável.
 -- ============================================================
